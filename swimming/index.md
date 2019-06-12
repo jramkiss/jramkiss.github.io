@@ -1,15 +1,14 @@
 ---
 layout: page
-title: Projects
-description: Projects of Lester James V. Miranda
-permalink: /projects/
+title: Swimming
+description: Thoughts about a previous life as a swimmer
+permalink: /swimming/
 ---
 
-I love to build software, experiment with data, and implement machine
-learning systems. Check-out some of my works!
+Thoughts on a previous life as a swimmer.
 
 <ul>
-  {% for post in site.categories.projects %}
+  {% for post in site.categories.life %}
     <li>
         <span>{{ post.date | date_to_string }}</span> » <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a>
         <meta name="description" content="{{ post.summary | escape }}">

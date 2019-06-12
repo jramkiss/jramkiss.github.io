@@ -1,13 +1,11 @@
 ---
 layout: page
-title: Notebook
-description: Notes of Lester James V. Miranda
-permalink: /notebook/
+title: Posts
+description: Notes of JR
+permalink: /posts/
 ---
 
-Whenever I want to scratch an itch or solve a specific problem, I make sure
-to document everything so that I can remember them in the future.
-Hopefully, this notebook will interest you as others did.  
+This is where I document my recent exploration of machine learning and statistics.
 
 <ul>
   {% for post in site.categories.notebook %}
