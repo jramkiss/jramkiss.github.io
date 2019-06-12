@@ -1,17 +1,20 @@
-# This is a heading test
-## This is another test
+---
+# You don't need to edit this file, it's empty on purpose.
+# Edit theme's home layout instead if you wanna make some changes
+# See: https://jekyllrb.com/docs/themes/#overriding-theme-defaults
+layout: page
+---
 
-```python
-  # some python code
-  print ("hello world")
-```
+<img style="float:left; object-fit: cover; border-radius:50%; margin: 8px 50px" width="200" height="200" src="assets/profile.JPG" alt="Profile">
 
-Some inline math   
-$e=mc^2$
+Hi, I'm Lj Miranda and welcome to my blog!
 
-Midline math
-$$\int_\Omega \nabla u \cdot \nabla v~dx = \int_\Omega fv~dx$$
+I'm currently a Machine Learning Researcher at [Thinking Machines Data
+Science](https://thinkingmachin.es/), a data science startup in the
+Philippines.
 
-Simple list:
-* item 1
-* item 2
+Previously, I received my Masters degree from [Waseda
+University](https://www.waseda.jp/top/en) and did an internship at [Preferred
+Networks](https://www.preferred-networks.jp/en/). In this blog, I write about
+my interests in anything about machine learning, software development, and
+research.
