@@ -1,8 +1,8 @@
 ---
 layout: page
-title: Notebook
+title: Posts
 description: Notes of JR
-permalink: /notebook/
+permalink: /posts/
 ---
 
 This is where I document my recent exploration of machine learning and statistics.
