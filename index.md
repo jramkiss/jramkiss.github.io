@@ -7,6 +7,6 @@ layout: page
 
 <img style="float:left; object-fit: cover; border-radius:50%; margin: 8px 50px" width="200" height="200" src="assets/profile.JPG" alt="Profile">
 
-Hi, World
+Hello, World
 
-This is the front page of the website
+This is the front page of my website

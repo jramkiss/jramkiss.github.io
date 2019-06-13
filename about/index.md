@@ -5,12 +5,17 @@ description: About page of JR - Blog
 permalink: /about/
 ---
 
-Hello world
-
 ## Background
 
-# This is a heading test
-## This is another test
+University of Waterloo stats grad and data scientist at [Scribd](https://www.scribd.com)
+
+## Work at Scribd
+
+Stuff
+
+## Other work
+
+stuff
 
 ```python
   # some python code
