@@ -22,7 +22,7 @@ please leave a comment below.
 
 The softmax activation function is often placed at the output layer of a
 neural network. It's commonly used in multi-class learning problems where a
-set of features can be related to one-of-$$K$$ classes. For example, in the
+set of features can be related to one-of-$K$ classes. For example, in the
 CIFAR-10 image classification problem, given a set of pixels as input, we
 need to classify if a particular sample belongs to one-of-ten available
 classes: i.e., cat, dog, airplane, etc.
@@ -35,12 +35,12 @@ S(f_{y_i}) = \dfrac{e^{f_{y_i}}}{\sum_{j}e^{f_j}}
 $$
 
 Intuitively, what the softmax does is that it _squashes_ a vector of size
-$$K$$ between $$0$$ and $$1$$. Furthermore, because it is a normalization of
-the exponential, the sum of this whole vector equates to $$1$$. We can then
+$K$ between $0$ and $1$. Furthermore, because it is a normalization of
+the exponential, the sum of this whole vector equates to $1$. We can then
 interpret the output of the softmax as the probabilities that a certain set
 of features belongs to a certain class.
 
-Thus, given a three-class example below, the scores $$y_i$$ are computed from
+Thus, given a three-class example below, the scores $y_i$ are computed from
 the forward propagation of the network. We then take the softmax and obtain
 the probabilities as shown:
 
@@ -81,7 +81,6 @@ So if we are using the negative log-likelihood as our loss function, when
 does it become unhappy? And when does it become happy? Let's try to plot its
 range:
 
-![Negative log-likelihood](/assets/png/cs231n-ann/neg_log.png){:width="480px"}
 __Figure:__ _The loss function reaches infinity when input
 is 0, and reaches 0 when input is 1._
 {: style="text-align: center;"}
@@ -93,7 +92,7 @@ classes, what's actually happening is that whenever the network assigns high
 confidence at the correct class, the unhappiness is low, but when the network
 assigns low confidence at the correct class, the unhappiness is high.
 
-![Negative log-likelihood](/assets/png/cs231n-ann/neg_log_demo.png){:width="720px"}
+
 __Figure__ _When computing the loss, we can then see that higher
 confidence at the correct class leads to lower loss and vice-versa._
 {: style="text-align: center;"}
@@ -103,9 +102,9 @@ confidence at the correct class leads to lower loss and vice-versa._
 In this part, we will differentiate the softmax function with respect to the
 negative log-likelihood. Following the convention at the [CS231n
 course](http://cs231n.github.io/neural-networks-case-study/#grad), we let
-$$f$$ as a vector containing the class scores for a single example, that is,
-the output of the network. Thus $$f_k$$ is an element for a certain class
-$$k$$ in all $$j$$ classes.
+$f$ as a vector containing the class scores for a single example, that is,
+the output of the network. Thus $f_k$ is an element for a certain class
+$k$ in all $j$ classes.
 
 We can then rewrite the softmax output as
 
@@ -121,9 +120,9 @@ $$
 
 Now, recall that when performing backpropagation, the first thing we have to
 do is to compute how the loss changes with respect to the output of the
-network. Thus, we are looking for $$\dfrac{\partial L_i}{\partial f_k}$$.
+network. Thus, we are looking for $\dfrac{\partial L_i}{\partial f_k}$.
 
-Because $$L$$ is dependent on $$p_k$$, and $$p$$ is dependent on $$f_k$$, we
+Because $L$ is dependent on $p_k$, and $p$ is dependent on $f_k$, we
 can simply relate them via chain rule:
 
 $$
@@ -131,8 +130,8 @@ $$
 $$
 
 There are now two parts in our approach. First (the easiest one), we solve
-$$\dfrac{\partial L_i}{\partial p_k}$$, then we solve $$\dfrac{\partial
-p_{y_i}}{\partial f_k}$$. The first is simply the derivative of the log, the
+$\dfrac{\partial L_i}{\partial p_k}$, then we solve $\dfrac{\partial
+p_{y_i}}{\partial f_k}$. The first is simply the derivative of the log, the
 second is a bit more involved.
 
 Let's do the first one then,
@@ -142,13 +141,13 @@ $$
 $$
 
 For the second one, we have to recall the quotient rule for derivatives, let
-the derivative be represented by the operator $$\mathbf{D}$$:
+the derivative be represented by the operator $\mathbf{D}$:
 
 $$
 \dfrac{f(x)}{g(x)} = \dfrac{g(x) \mathbf{D} f(x) - f(x) \mathbf{D} g(x)}{g(x)^2}
 $$
 
-We let $$\sum_{j} e^{f_j} = \Sigma$$, and by substituting, we obtain
+We let $\sum_{j} e^{f_j} = \Sigma$, and by substituting, we obtain
 
 $$\begin{eqnarray}
 \dfrac{\partial p_k}{\partial f_k} &=& \dfrac{\partial}{\partial f_k} \left(\dfrac{e^{f_k}}{\sum_{j} e^{f_j}}\right) \\
@@ -156,11 +155,11 @@ $$\begin{eqnarray}
 &=& \dfrac{e^{f_k}(\Sigma - e^{f_k})}{\Sigma^2}
 \end{eqnarray}$$
 
-The reason why $$\mathbf{D}\Sigma=e^{f_k}$$ is because if we take the input
-array $$f$$ in the softmax function, we're always "looking" or we're always
+The reason why $\mathbf{D}\Sigma=e^{f_k}$ is because if we take the input
+array $f$ in the softmax function, we're always "looking" or we're always
 taking the derivative of the k-th element. In this case, the derivative with
-respect to the $$k$$-th element will always be $$0$$ in those elements that
-are non-$$k$$, but $$e^{f_k}$$ at $$k$$.
+respect to the $k$-th element will always be $0$ in those elements that
+are non-$k$, but $e^{f_k}$ at $k$.
 
 Continuing our derivation,
 
