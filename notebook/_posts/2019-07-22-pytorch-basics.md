@@ -16,7 +16,7 @@ If you've had some exposure to PyTorch before, you may want to start at the [Lin
 - [PyTorch Basics](#pytorch-basics)
 - [Linear Regression in PyTorch and Numpy](#Linear-Regression-in-PyTorch-and-Numpy)
 
-# PyTorch Basics
+## PyTorch Basics
 
 [PyTorch](http://pytorch.org/) is a framework for building and training deep learning models. It was designed to integrate seamlessly into the Python ecosystem, and work well alongside standard Python libraries, like Numpy. While the primary data structure in Numpy is the array, the primary data structure in PyTorch is a `tensor`. In real life, a tensor is just a generalization of a matrix (which is a generalization of a vector), and you can have fun with the formal definition [here](http://mathworld.wolfram.com/Tensor.html).
 
@@ -24,7 +24,7 @@ For clarity, a vector is just a 1-dimensional tensor, a matrix is a 2-dimensiona
 
 If you're a 100% newby (as we all were at some point), you'll want to start by first downloading PyTorch. Run `pip install torch` in your command line to do so.
 
-### Defining Tensors
+#### Defining Tensors
 
 Now that we have PyTorch installed, we can start getting our feet wet by defining
 some tensors.
@@ -70,7 +70,7 @@ tensor([[[-0.1910, -0.8819, -0.2358],
          [-0.5285, -0.6376,  0.1383]]])
 ```
 
-### PyTorch Math
+#### PyTorch Math
 
 Lets define more tensors so we can do math on them. We'll multiply 2 matricies, then add a scalar and finally sum the resulting tensor.
 
@@ -94,16 +94,18 @@ What'd we do there?
 - [`torch.sum()`](https://pytorch.org/docs/stable/torch.html#torch.sum): Sums the elements of a tensor and returns a tensor of shape 1
 
 
-# Linear Regression in PyTorch and Numpy
+## Linear Regression in PyTorch and Numpy
 
 To illustrate PyTorch without neural networks, let's implement linear regression from scratch in both Numpy and PyTorch. We'll see how much faster using PyTorch tensors are to Numpy arrays.
 
-### Linear Regression Refresher
+#### Linear Regression Refresher
 
+We have data $X$ and continuous response $y$ and want to find $\beta$ that minimizes the "distance" between $f(X)$ and $y$.
 $$
-S(f_{y_i}) = \dfrac{e^{f_{y_i}}}{\sum_{j}e^{f_j}}
+f(X) = \beta_0 + \sum_{j=1}X_j \beta_j
 $$
 
+Turns out there's a nice formula for $\beta$:
 $$
 \beta = (X^{T}X)^{-1}X^{T}y
 $$
