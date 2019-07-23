@@ -46,17 +46,17 @@ What about higher dimesnional tensors?
 torch.zeros((2, 3)) + 2 # same as torch.zeros(2, 3) + torch.tensor(2)
 ```
 
-
-> tensor([[2., 2., 2.],
->        [2., 2., 2.]])
-
+```Text
+tensor([[2., 2., 2.],
+        [2., 2., 2.]])
+```
 
 ```python
 # and 3-dimensions, filled with random numbers
 torch.randn((3, 3, 3)) # same as torch.randn(3, 3, 3)
 ```
 
-```
+```Text
 tensor([[[-0.1910, -0.8819, -0.2358],
          [ 0.2093, -0.4744,  0.3972],
          [-0.5294, -1.4190, -1.4044]],
@@ -88,10 +88,10 @@ torch.sum(torch.matmul(a, b.view((3, 1))) + c)
 
 What'd we do there?
 
-- `torch.randn((N))`: Create a tensor of dimension N and fill it with random numbers
-- `torch.matmul(_, _)`: Matrix multiplication. PyTorch provides many functions for matrix multiplication. `torch.mm(_, _)` can also be used. You can read more about this function [here](https://pytorch.org/docs/stable/torch.html#torch.matmul).
-- `view()`: In order to multiply `a` and `b` in the order we want, we must match their dimensions appropriately. PyTorch provides some other ways of doing this: `b.reshape()` and `b.resize_()`, however `b.view()` is usually the most reliable. In Numpy this can be done with `.reshape()`.
-- `torch.sum()`: Sums the elements of a tensor and returns a tensor of shape 1
+- [`torch.randn()`](https://pytorch.org/docs/stable/torch.html#torch.randn): Create a tensor of dimension N and fill it with random numbers
+- [`torch.matmul()`](https://pytorch.org/docs/stable/torch.html#torch.matmul): Matrix multiplication. PyTorch provides many functions for matrix multiplication. `torch.mm(_, _)` can also be used. You can read more about this function [here](https://pytorch.org/docs/stable/torch.html#torch.matmul).
+- [`torch.Tensor.view()`](https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view): In order to multiply `a` and `b` in the order we want, we must match their dimensions appropriately. PyTorch provides some other ways of doing this: [`torch.Tensor.reshape()`](https://pytorch.org/docs/stable/torch.html#torch.reshape) and `b.resize_()`, however `b.view()` is usually the most reliable. In Numpy this can be done with `.reshape()`.
+- [`torch.sum()`](https://pytorch.org/docs/stable/torch.html#torch.sum): Sums the elements of a tensor and returns a tensor of shape 1
 
 
 # Linear Regression in PyTorch and Numpy
@@ -99,6 +99,6 @@ What'd we do there?
 To illustrate PyTorch without neural networks, let's implement linear regression in both Numpy and PyTorch.
 
 
-```Python
+```python
 print("this is a syntax highlighting test")
 ```
