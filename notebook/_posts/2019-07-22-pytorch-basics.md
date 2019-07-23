@@ -9,11 +9,12 @@ math: true
 ---
 
 This notebook is targeted at Python programmers who want to get started in
-PyTorch, and PyTorch users who want a refresher of the basics. It will begin
-with PyTorch basics, and gradually ramp up to building a simple feed foward
-neural network to predict the famous MNIST dataset.
+PyTorch, and PyTorch users who want a refresher of the basics. It will introduce PyTorch basics, then implement linear regression in both Numpy and PyTorch to compare the two. We'll finish by implementing a simple feed foward neural network to predict the famous MNIST dataset.
+
+If you've had some exposure to PyTorch before, you may want to skip the [PyTorch Basics](#pytorch-basics) section.
 
 - [PyTorch Basics](#pytorch-basics)
+- [Linear Regression in PyTorch and Numpy](#Linear-Regression-in-PyTorch-and-Numpy)
 
 # PyTorch Basics
 
@@ -21,6 +22,15 @@ neural network to predict the famous MNIST dataset.
 
 For more clarity, a vector is just a 1-dimensional tensor, a matrix is a 2-dimensional tensor (greyscale images) and a 3-dimensional array is a 3-dimensional tensor (RGB images).
 
-If you're a 100% newby (as we all were at some point), you'll want to start by first downloading PyTorch. This can be done by running the following in your command line:
+If you're a 100% newby (as we all were at some point), you'll want to start by first downloading PyTorch. Run `pip install torch` in your command line.
 
-`pip install torch`
+
+Now that we have PyTorch installed, we can start.
+
+```python
+import torch
+```
+
+# Linear Regression in PyTorch and Numpy
+
+To illustrate PyTorch without neural networks, let's implement linear regression in both Numpy and PyTorch.
