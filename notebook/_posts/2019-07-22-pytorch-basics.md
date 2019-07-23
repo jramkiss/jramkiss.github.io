@@ -9,7 +9,7 @@ math: true
 ---
 
 This notebook is targeted at Python programmers who want to get started in
-PyTorch, and PyTorch users who want a refresher of the basics. It will introduce PyTorch basics, then implement linear regression in both Numpy and PyTorch to compare the two. We'll finish by fitting a simple feed foward neural network to the famous MNIST dataset.
+PyTorch, and PyTorch users who want a refresher of the basics. We will introduce the basics of PyTorch, then compare implementations of linear regression in both Numpy and PyTorch. Finally, we'll fit a simple feed foward neural network to the famous MNIST dataset.
 
 If you've had some exposure to PyTorch before, you may want to start at the [Linear Regression in PyTorch and Numpy](#Linear-Regression-in-PyTorch-and-Numpy) section.
 
@@ -20,7 +20,7 @@ If you've had some exposure to PyTorch before, you may want to start at the [Lin
 
 [PyTorch](http://pytorch.org/) is a framework for building and training deep learning models. It was designed to integrate seamlessly into the Python ecosystem, and work well alongside standard Python libraries, like Numpy. While the primary data structure in Numpy is the array, the primary data structure in PyTorch is a `tensor`. In real life, a tensor is just a generalization of a matrix (which is a generalization of a vector), and you can have fun with the formal definition [here](http://mathworld.wolfram.com/Tensor.html).
 
-For more clarity, a vector is just a 1-dimensional tensor, a matrix is a 2-dimensional tensor (greyscale images) and a 3-dimensional array is a 3-dimensional tensor (RGB images).
+For clarity, a vector is just a 1-dimensional tensor, a matrix is a 2-dimensional tensor (greyscale images for example) and a 3-dimensional array is a 3-dimensional tensor (RGB images for example).
 
 If you're a 100% newby (as we all were at some point), you'll want to start by first downloading PyTorch. Run `pip install torch` in your command line to do so.
 
@@ -89,16 +89,30 @@ torch.sum(torch.matmul(a, b.view((3, 1))) + c)
 What'd we do there?
 
 - [`torch.randn()`](https://pytorch.org/docs/stable/torch.html#torch.randn): Create a tensor of dimension N and fill it with random numbers
-- [`torch.matmul()`](https://pytorch.org/docs/stable/torch.html#torch.matmul): Matrix multiplication. PyTorch provides many functions for matrix multiplication. `torch.mm(_, _)` can also be used. You can read more about this function [here](https://pytorch.org/docs/stable/torch.html#torch.matmul).
-- [`torch.Tensor.view()`](https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view): In order to multiply `a` and `b` in the order we want, we must match their dimensions appropriately. PyTorch provides some other ways of doing this: [`torch.Tensor.reshape()`](https://pytorch.org/docs/stable/torch.html#torch.reshape) and `b.resize_()`, however `b.view()` is usually the most reliable. In Numpy this can be done with `.reshape()`.
+- [`torch.matmul()`](https://pytorch.org/docs/stable/torch.html#torch.matmul): Matrix multiplication. PyTorch provides many functions for matrix multiplication. [`torch.mm()`](https://pytorch.org/docs/stable/torch.html#torch.matmul) can also be used.
+- [`torch.Tensor.view()`](https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view): In order to multiply `a` and `b` in the order we want, we must match their dimensions appropriately. PyTorch also has `torch.Tensor.reshape()` and `torch.Tensor.resize_()`, however `torch.Tensor.view()` is usually the most reliable. In Numpy this can be done with `.reshape()`.
 - [`torch.sum()`](https://pytorch.org/docs/stable/torch.html#torch.sum): Sums the elements of a tensor and returns a tensor of shape 1
 
 
 # Linear Regression in PyTorch and Numpy
 
-To illustrate PyTorch without neural networks, let's implement linear regression in both Numpy and PyTorch.
+To illustrate PyTorch without neural networks, let's implement linear regression from scratch in both Numpy and PyTorch. We'll see how much faster using PyTorch tensors are to Numpy arrays.
+
+### Linear Regression Refresher
+
+$$
+S(f_{y_i}) = \dfrac{e^{f_{y_i}}}{\sum_{j}e^{f_j}}
+$$
+
+$$
+\beta = (X^{T}X)^{-1}X^{T}y
+$$
+
 
 
 ```python
+import numpy as np
+import Torch
+
 print("this is a syntax highlighting test")
 ```
