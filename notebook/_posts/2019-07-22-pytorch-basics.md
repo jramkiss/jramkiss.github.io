@@ -22,9 +22,12 @@ If you've had some exposure to PyTorch before, you may want to skip the [PyTorch
 
 For more clarity, a vector is just a 1-dimensional tensor, a matrix is a 2-dimensional tensor (greyscale images) and a 3-dimensional array is a 3-dimensional tensor (RGB images).
 
-If you're a 100% newby (as we all were at some point), you'll want to start by first downloading PyTorch. Run `pip install torch` in your command line.
+If you're a 100% newby (as we all were at some point), you'll want to start by first downloading PyTorch. Run `pip install torch` in your command line to do so.
 
-Now that we have PyTorch installed, we can start getting our feet wet.
+### Defining Tensors
+
+Now that we have PyTorch installed, we can start getting our feet wet by defining
+some tensors.
 
 ```python
 import torch
@@ -37,22 +40,20 @@ torch.tensor([1,2,3])
 tensor([1, 2, 3])
 ```
 
-What about higher dimesnional tensors? Here's how we can create 2 and 3 dimensional
-tensors and fill them with random numbers.
+What about higher dimesnional tensors?
 
 ```python
-torch.randn(3, 3)
+torch.zeros((2, 3)) + 2 # same as torch.zeros(2, 3) + torch.tensor(2)
 ```
 
 ```
-tensor([[-2.2302,  1.4493,  2.9640],
-        [ 0.5101,  1.6191, -0.1275],
-        [ 1.2391,  1.3139, -0.6029]])
+tensor([[2., 2., 2.],
+        [2., 2., 2.]])
 ```
 
 ```python
-# and 3-dimensions?
-torch.randn(3, 3, 3)
+# and 3-dimensions, filled with random numbers
+torch.randn((3, 3, 3)) # same as torch.randn(3, 3, 3)
 ```
 
 ```
@@ -69,6 +70,35 @@ tensor([[[-0.1910, -0.8819, -0.2358],
          [-0.5285, -0.6376,  0.1383]]])
 ```
 
+### PyTorch Math
+
+Lets define more tensors so we can do math on them. We'll multiply 2 matricies, then add a scalar and finally sum the resulting tensor.
+
+```python
+a = torch.randn((3))
+a.shape # check the size to be sure: torch.Size([3])
+
+b = torch.randn((1, 3))
+b.size() # same as b.shape
+
+c = torch.randn((1, 1))
+
+torch.sum(torch.matmul(a, b.view((3, 1))) + c)
+```
+
+What'd we do there?
+
+- `torch.randn((N))`: Create a tensor of dimension N and fill it with random numbers
+- `torch.matmul(_, _)`: Matrix multiplication. PyTorch provides many functions for matrix multiplication. `torch.mm(_, _)` can also be used. You can read more about this function [here](https://pytorch.org/docs/stable/torch.html#torch.matmul).
+- `view()`: In order to multiply `a` and `b` in the order we want, we must match their dimensions appropriately. PyTorch provides some other ways of doing this: `b.reshape()` and `b.resize_()`, however `b.view()` is usually the most reliable. In Numpy this can be done with `.reshape()`.
+- `torch.sum()`: Sums the elements of a tensor and returns a tensor of shape 1
+
+
 # Linear Regression in PyTorch and Numpy
 
 To illustrate PyTorch without neural networks, let's implement linear regression in both Numpy and PyTorch.
+
+
+```Python
+print("this is a syntax highlighting test")
+```
