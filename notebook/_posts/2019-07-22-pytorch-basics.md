@@ -24,11 +24,22 @@ For more clarity, a vector is just a 1-dimensional tensor, a matrix is a 2-dimen
 
 If you're a 100% newby (as we all were at some point), you'll want to start by first downloading PyTorch. Run `pip install torch` in your command line.
 
-
-Now that we have PyTorch installed, we can start.
+Now that we have PyTorch installed, we can start getting our feet wet.
 
 ```python
 import torch
+
+# what does a tensor look like..
+torch.tensor([1,2,3])
+
+# lets create one with random numbers...
+torch.randn(3)
+
+# what about a 2-dimensional tensor with random numbers...
+torch.randn(3, 3)
+
+# and 3-dimensions?
+torch.randn(3, 3, 3)
 ```
 
 # Linear Regression in PyTorch and Numpy
