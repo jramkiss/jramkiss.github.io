@@ -44,39 +44,12 @@ Now that we have PyTorch installed, we can start getting our feet wet.
 import torch
 
 # what does a tensor look like?
-x1 = torch.tensor([1,2,3])
-print(x1)
+x = torch.tensor([1,2,3])
+print(x)
 ```
 
 ```
 tensor([1, 2, 3])
-```
-
-
-```python
-# tensor the same shape as x1, but with random numbers:
-x2 = torch.randn_like(x1)
-```
-
-```
----------------------------------------------------------------------------RuntimeError
-Traceback (most recent call last)<ipython-input-1-13cffdd61c7d> in
-<module>()
-----> 1 x2 = torch.randn_like(x1)
-RuntimeError: _th_normal_ not supported on CPUType for Long
-```
-
-
-```python
-print(x2)
-```
-
-```
----------------------------------------------------------------------------NameError
-Traceback (most recent call last)<ipython-input-1-223cd8a8d439> in
-<module>()
-----> 1 print(x2)
-NameError: name 'x2' is not defined
 ```
 
 
@@ -91,9 +64,9 @@ print(x3)
 ```
 
 ```
-tensor([[-0.8489, -1.3318,  0.2898],
-        [ 0.0040, -1.3582, -0.7617],
-        [ 0.1654, -1.6722,  0.8319]])
+tensor([[-2.2302,  1.4493,  2.9640],
+        [ 0.5101,  1.6191, -0.1275],
+        [ 1.2391,  1.3139, -0.6029]])
 ```
 
 
@@ -104,17 +77,17 @@ print(x4)
 ```
 
 ```
-tensor([[[ 1.1768e-01,  1.0128e-01, -1.1197e+00],
-         [ 9.4527e-04,  8.3153e-01,  1.1791e+00],
-         [ 2.6623e+00,  8.0585e-01,  4.3461e-01]],
+tensor([[[-0.1910, -0.8819, -0.2358],
+         [ 0.2093, -0.4744,  0.3972],
+         [-0.5294, -1.4190, -1.4044]],
 
-        [[-3.4099e-01,  1.8556e+00,  6.9014e-01],
-         [-7.6856e-01,  8.1887e-01,  9.1728e-01],
-         [-1.6746e+00,  9.0893e-01, -2.2167e-01]],
+        [[ 0.8187,  1.2440,  0.2051],
+         [-0.4238,  1.2906,  0.6045],
+         [ 1.7416,  0.6723,  1.1501]],
 
-        [[-4.5973e-01,  5.6127e-01,  3.2835e-01],
-         [ 7.5159e-01, -1.7231e+00,  3.6136e-01],
-         [ 4.4655e-01, -6.2232e-01, -5.5383e-01]]])
+        [[-0.3537,  0.0446,  0.2172],
+         [-0.0568, -1.1947,  0.1400],
+         [-0.5285, -0.6376,  0.1383]]])
 ```
 
 

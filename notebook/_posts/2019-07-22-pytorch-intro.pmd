@@ -43,12 +43,8 @@ Now that we have PyTorch installed, we can start getting our feet wet.
 import torch
 
 # what does a tensor look like?
-x1 = torch.tensor([1,2,3])
-print(x1)
-
-# tensor the same shape as x1, but with random numbers:
-x2 = torch.randn_like(x1)
-print(x2)
+x = torch.tensor([1,2,3])
+print(x)
 ```
 
 What about higher dimesnional tensors? Here's how we can create 2 and 3 dimensional
