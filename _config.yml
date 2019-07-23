@@ -53,8 +53,8 @@ kramdown:
 highlighter: rouge
 
 # Disqus
-disqus:
-  shortname: jramkiss-github-io-1
+#disqus:
+#  shortname: jramkiss-github-io-1
 
 # Google analytics
 #google_analytics: UA-106021948-1
@@ -71,6 +71,51 @@ future: true
 
 # Include this line so that travis will not explode
 exclude: [vendor]
+
+Python:
+  type: programming
+  ace_mode: python
+  codemirror_mode: python
+  codemirror_mime_type: text/x-python
+  color: "#3572A5"
+  extensions:
+  - ".py"
+  - ".bzl"
+  - ".cgi"
+  - ".fcgi"
+  - ".gyp"
+  - ".gypi"
+  - ".lmi"
+  - ".py3"
+  - ".pyde"
+  - ".pyi"
+  - ".pyp"
+  - ".pyt"
+  - ".pyw"
+  - ".rpy"
+  - ".spec"
+  - ".tac"
+  - ".wsgi"
+  - ".xpy"
+  filenames:
+  - ".gclient"
+  - BUCK
+  - BUILD
+  - BUILD.bazel
+  - DEPS
+  - SConscript
+  - SConstruct
+  - Snakefile
+  - WORKSPACE
+  - wscript
+  interpreters:
+  - python
+  - python2
+  - python3
+  aliases:
+  - rusthon
+  - python3
+  language_id: 303
 
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list

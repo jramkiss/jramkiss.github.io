@@ -29,7 +29,7 @@ If you're a 100% newby (as we all were at some point), you'll want to start by f
 Now that we have PyTorch installed, we can start getting our feet wet by defining
 some tensors.
 
-```python
+```Python
 import torch
 
 # what does a tensor look like..
@@ -42,7 +42,7 @@ tensor([1, 2, 3])
 
 What about higher dimesnional tensors?
 
-```python
+```Python
 torch.zeros((2, 3)) + 2 # same as torch.zeros(2, 3) + torch.tensor(2)
 ```
 
@@ -51,7 +51,7 @@ tensor([[2., 2., 2.],
         [2., 2., 2.]])
 ```
 
-```python
+```Python
 # and 3-dimensions, filled with random numbers
 torch.randn((3, 3, 3)) # same as torch.randn(3, 3, 3)
 ```
