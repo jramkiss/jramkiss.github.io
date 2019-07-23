@@ -99,7 +99,6 @@ What'd we do there?
 
 <br>
 ---
-<br>
 
 
 ## Linear Regression in PyTorch and Numpy
