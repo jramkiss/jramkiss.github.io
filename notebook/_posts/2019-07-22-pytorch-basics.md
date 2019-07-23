@@ -16,7 +16,7 @@ If you've had some exposure to PyTorch before, you may want to start at the [Lin
 - [PyTorch Basics](#pytorch-basics)
 - [Linear Regression in PyTorch and Numpy](#linear-regression-in-pytorch-and-numpy)
 
-
+<br>
 ---
 
 
@@ -97,8 +97,9 @@ What'd we do there?
 - [`torch.Tensor.view()`](https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view): In order to multiply two matricies in the order we want (in this case `a` and `b`), we must reshape one tensor so that their dimensions match appropriately. PyTorch also has `torch.Tensor.reshape()` and `torch.Tensor.resize_()`, however `torch.Tensor.view()` is usually the most reliable. In Numpy this can be done with `.reshape()`.
 - [`torch.sum()`](https://pytorch.org/docs/stable/torch.html#torch.sum): Sums the elements of a tensor and returns a tensor of shape 1
 
-
+<br>
 ---
+<br>
 
 
 ## Linear Regression in PyTorch and Numpy
@@ -119,7 +120,7 @@ $$
 \beta = (X^{T}X)^{-1}X^{T}y
 $$
 
-###### Linear Regression in PyTorch
+#### Linear Regression in PyTorch
 
 ```python
 import Torch
@@ -133,7 +134,7 @@ print("this is a syntax highlighting test")
 ```
 
 
-###### Linear Regression in Nump
+#### Linear Regression in Numpy
 
 ```python
 import numpy as np
