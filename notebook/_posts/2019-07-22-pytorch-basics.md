@@ -9,7 +9,7 @@ math: true
 ---
 
 This notebook is targeted at Python programmers who want to get started in
-PyTorch, and PyTorch users who want a refresher of the basics. We will introduce the basics of PyTorch, then compare implementations of linear regression in both Numpy and PyTorch. Finally, we'll fit a simple feed foward neural network to the famous MNIST dataset.
+PyTorch, and PyTorch users who want a refresher of the basics. We will introduce the basics of PyTorch, then compare implementations of linear regression in both Numpy and PyTorch. Finally, we'll fit a simple feed forward neural network to the famous MNIST dataset.
 
 If you've had some exposure to PyTorch before, you may want to start at the [Linear Regression in PyTorch and Numpy](#linear-regression-in-pytorch-and-numpy) section.
 
@@ -126,12 +126,23 @@ import Torch
 
 torch.manual_seed(10)
 
-torch_X = torch.randn((5, 5))
-torch_y = torch.randn(5)
+torch_X = torch.randn((10, 5))
+torch_X[:, 0] = 1 # set first columnn of X to be 1 for the bias term
 
-print("this is a syntax highlighting test")
+torch_y = torch.randn(10)
+
+start = time.time()
+torch_beta_1 = torch.inverse(torch.matmul(torch.t(torch_X), torch_X))
+torch_beta_2 = torch.matmul(torch.t(torch_X), torch_y)
+torch_beta = torch.matmul(torch_beta_1, torch_beta_2)
+end = time.time()
+
+print("Elapsed time for PyTorch: " + str(end - start))
 ```
 
+```text
+Elapsed time for PyTorch: 0.002402067184448242
+```
 
 #### Linear Regression in Numpy
 
