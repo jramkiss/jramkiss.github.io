@@ -15,6 +15,7 @@ If you've had some exposure to PyTorch before, you may want to start at the [Lin
 
 - [PyTorch Basics](#pytorch-basics)
 - [Linear Regression in PyTorch and Numpy](#linear-regression-in-pytorch-and-numpy)
+- [Intro to Neural Networks in PyTorch](#intro-to-neural-networks-in-pytorch)
 
 <br>
 ---
@@ -128,7 +129,6 @@ torch.manual_seed(10)
 
 torch_X = torch.randn((10, 5))
 torch_X[:, 0] = 1 # set first columnn of X to be 1 for the bias term
-
 torch_y = torch.randn(10)
 
 start = time.time()
@@ -140,8 +140,8 @@ end = time.time()
 print("Elapsed time for PyTorch: " + str(end - start))
 ```
 
-```text
-Elapsed time for PyTorch: 0.002402067184448242
+```Text
+Elapsed time for PyTorch: 0.0003104209899902344
 ```
 
 #### Linear Regression in Numpy
@@ -156,5 +156,19 @@ np.random.seed(10)
 np_X = torch_X.numpy()
 np_y = torch_y.numpy()
 
-print("this is a syntax highlighting test")
+start = time.time()
+np_beta_1 = np.linalg.inv(np.dot(np_X.transpose(), np_X))
+np_beta_2 = np.dot(np_X.transpose(),  np_y)
+np_beta = np.dot(np_beta_1, np_beta_2)
+end = time.time()
+
+print("Elapsed time for Numpy: " + str(end - start))
 ```
+
+```Text
+Elapsed time for Numpy: 0.0053136348724365234
+```
+
+You can also use a cuda GPU by setting `torch.device("cuda")`. If you don't know what kind of GPU you have, simply use `torch.cuda.is_available()`. The results above were produced without the use of a GPU.
+
+## Intro to Neural Networks in PyTorch
