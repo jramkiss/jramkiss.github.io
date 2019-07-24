@@ -9,9 +9,9 @@ math: true
 ---
 
 This notebook is targeted at Python programmers who want to get started in
-PyTorch, and PyTorch users who want a refresher of the basics. We will introduce the basics of PyTorch, then compare implementations of linear regression in both Numpy and PyTorch. Finally, we'll fit a simple feed forward neural network to the famous MNIST dataset.
+PyTorch, and PyTorch users who want a refresher of the basics. We will introduce the basics of PyTorch and compare implementations of linear regression in both Numpy and PyTorch. Finally, we'll fit a simple feed forward neural network to the famous MNIST dataset.
 
-If you've had some exposure to PyTorch before, you may want to start at the [Linear Regression in PyTorch and Numpy](#linear-regression-in-pytorch-and-numpy) section.
+Each section is designed to be used independent of the previous sections, so if you've had some exposure to PyTorch before, you may want to start at [Intro to Neural Networks in PyTorch](#intro-to-neural-networks-in-pytorch).
 
 - [PyTorch Basics](#pytorch-basics)
 - [Linear Regression in PyTorch and Numpy](#linear-regression-in-pytorch-and-numpy)
@@ -75,33 +75,6 @@ tensor([[[-0.1910, -0.8819, -0.2358],
          [-0.5285, -0.6376,  0.1383]]])
 ```
 
-#### PyTorch Math
-
-Let's define more tensors so we can start doing math with them. We'll multiply 2 matricies, then add a scalar and finally sum the resulting tensor.
-
-```python
-a = torch.randn((3))
-a.shape # check the size to be sure: torch.Size([3])
-
-b = torch.randn((1, 3))
-b.size() # same as b.shape
-
-c = torch.randn((1, 1))
-
-torch.sum(torch.matmul(a, b.view((3, 1))) + c)
-```
-
-What'd we do there?
-
-- [`torch.randn()`](https://pytorch.org/docs/stable/torch.html#torch.randn): Create a tensor of dimension N and fill it with random numbers
-- [`torch.matmul()`](https://pytorch.org/docs/stable/torch.html#torch.matmul): Matrix multiplication. PyTorch provides many functions for matrix multiplication. [`torch.mm()`](https://pytorch.org/docs/stable/torch.html#torch.matmul) can also be used.
-- [`torch.Tensor.view()`](https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view): In order to multiply two matricies in the order we want (in this case `a` and `b`), we must reshape one tensor so that their dimensions match appropriately. PyTorch also has `torch.Tensor.reshape()` and `torch.Tensor.resize_()`, however `torch.Tensor.view()` is usually the most reliable. In Numpy this can be done with `.reshape()`.
-- [`torch.sum()`](https://pytorch.org/docs/stable/torch.html#torch.sum): Sums the elements of a tensor and returns a tensor of shape 1
-
-<br>
----
-
-
 ## Linear Regression in PyTorch and Numpy
 
 To illustrate PyTorch without neural networks, let's implement linear regression from scratch in both Numpy and PyTorch. We'll see how much faster using PyTorch tensors are to Numpy arrays.
@@ -125,8 +98,6 @@ $$
 ```python
 import Torch
 
-torch.manual_seed(10)
-
 torch_X = torch.randn((10, 5))
 torch_X[:, 0] = 1 # set first columnn of X to be 1 for the bias term
 torch_y = torch.randn(10)
@@ -144,14 +115,9 @@ print("Elapsed time for PyTorch: " + str(end - start))
 Elapsed time for PyTorch: 0.0003104209899902344
 ```
 
-#### Linear Regression in Numpy
+#### Numpy Implementation
 
 ```python
-import numpy as np
-import torch
-
-np.random.seed(10)
-
 # convert the tensor defined above to numpy to have the same data
 np_X = torch_X.numpy()
 np_y = torch_y.numpy()
@@ -169,6 +135,29 @@ print("Elapsed time for Numpy: " + str(end - start))
 Elapsed time for Numpy: 0.0053136348724365234
 ```
 
+What'd we do there?
+
+- [`torch.randn()`](https://pytorch.org/docs/stable/torch.html#torch.randn): Create a tensor of dimension N and fill it with random numbers
+- [`torch.matmul()`](https://pytorch.org/docs/stable/torch.html#torch.matmul): Matrix multiplication. PyTorch provides many functions for matrix multiplication. [`torch.mm()`](https://pytorch.org/docs/stable/torch.html#torch.matmul) can also be used.
+- [`torch.t()`](https://pytorch.org/docs/stable/torch.html#torch.t): Matrix transpose
+- [`torch.Tensor.view()`](https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view): In order to multiply two matricies in the order we want (in this case `a` and `b`), we must reshape one tensor so that their dimensions match appropriately. PyTorch also has `torch.Tensor.reshape()` and `torch.Tensor.resize_()`, however `torch.Tensor.view()` is usually the most reliable. In Numpy this can be done with `.reshape()`.
+
+
 You can also use a cuda GPU by setting `torch.device("cuda")`. If you don't know what kind of GPU you have, simply use `torch.cuda.is_available()`. The results above were produced without the use of a GPU.
 
 ## Intro to Neural Networks in PyTorch
+
+#### Downloading and Visualizing MNIST
+
+```python
+from torchvision import datasets, transforms
+
+# Define a transform to normalize the data -- dont really unnderstand this part
+transform = transforms.Compose([transforms.ToTensor(),
+                              transforms.Normalize((0.5,), (0.5,)),
+                              ])
+
+# Download and load the training data
+trainset = datasets.MNIST('~/.pytorch/MNIST_data/', download=True, train=True,          transform=transform)
+trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
+```
