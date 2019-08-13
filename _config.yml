@@ -37,7 +37,7 @@ social_sites:
   #googleplus: +jekyll
 
 # Build settings
-markdown: CommonMarkGhPages
+markdown: kramdown #CommonMarkGhPages
 theme: minima
 plugins:
   - jekyll-feed
