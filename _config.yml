@@ -47,9 +47,9 @@ plugins:
   - jekyll-sitemap
 
 # commonmark extensions
-commonmark:
-  options: ["SMART", "FOOTNOTES"]
-  extensions: ["strikethrough", "autolink", "table", "tagfilter"]
+#commonmark:
+#  options: ["SMART", "FOOTNOTES"]
+#  extensions: ["strikethrough", "autolink", "table", "tagfilter"]
 
 # Highlighter settings
 highlighter: rouge
