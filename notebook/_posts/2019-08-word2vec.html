@@ -1,0 +1,407 @@
+<!DOCTYPE html><html><head>
+      <title>Word Vectors Decomposed - Word2Vec and GloVe</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({"extensions":["tex2jax.js"],"jax":["input/TeX","output/HTML-CSS"],"messageStyle":"none","tex2jax":{"processEnvironments":false,"processEscapes":true,"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"extensions":["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]},"HTML-CSS":{"availableFonts":["TeX"]}});
+        </script>
+        <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"></script>
+        
+      
+      
+
+      
+      
+      
+      
+      
+      
+
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{padding:0 1.6em;margin-top:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li{margin-bottom:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{list-style-type:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  150px);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <h1 class="mume-header" id="word-vectors-decomposed-word2vec-and-glove">Word Vectors Decomposed - Word2Vec and GloVe</h1>
+
+<p>This post will introduce and explain the intuition and math behind <a href="https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf">word2vec</a> and <a href="https://nlp.stanford.edu/pubs/glove.pdf">GloVe</a>. At the end, the reader will be able to explain these algorithms in lehman terms, and have a solid understanding of the math involved. Only very basic math concepts are necessary for the understanding of this post.</p>
+<div class="code-chunk" data-id="code-chunk-id-0" data-cmd="toc"><div class="input-div"><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div><ul>
+<li><a href="#word-vectors-decomposed-word2vec-and-glove">Word Vectors Decomposed - Word2Vec and GloVe</a>
+<ul>
+<li><a href="#word2vec">Word2Vec</a>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#deep-dive">Deep Dive</a>
+<ul>
+<li><a href="#skip-gram-model">Skip-Gram Model</a></li>
+<li><a href="#problems-with-naive-softmax">Problems with Naive Softmax</a></li>
+<li><a href="#negative-sampling-loss">Negative Sampling Loss</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#glove">GloVe</a></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+</li>
+</ul>
+<h2 class="mume-header" id="word2vec">Word2Vec</h2>
+
+<p>The original paper presenting word2vec can be found <a href="https://arxiv.org/pdf/1310.4546.pdf">here</a>.</p>
+<h3 class="mume-header" id="overview">Overview</h3>
+
+<p>Word2vec tries to find vector representations of words by predicting the words that appear in its context. This results in interesting word similarities:</p>
+<blockquote>
+<p>We&#x2019;re going to train a simple neural network with a single hidden layer to perform a certain task, but then we&#x2019;re not actually going to use that neural network for the task we trained it on! Instead, the goal is actually just to learn the weights of the hidden layer&#x2013;we&#x2019;ll see that these weights are actually the &#x201C;word vectors&#x201D; that we&#x2019;re trying to learn.</p>
+</blockquote>
+<ul>
+<li><span class="mathjax-exps">$word2vec(&apos;king&apos;) - word2vec(&apos;man&apos;) + word2vec(&apos;woman&apos;) = word2vec(&apos;queen&apos;)$</span></li>
+<li><span class="mathjax-exps">$word2vec(&apos;germany&apos;) + word2vec(&apos;capital&apos;) = word2vec(&apos;berlin&apos;)$</span></li>
+</ul>
+<p>It does this by altering vector representations of words, such that contextual words in a window around a target word are close in the embedding space. The objective is to simultaneously (1) maximize the probability that an observed word appears in the context of it&apos;s target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.</p>
+<p>An example of the window, target word and context words is shown below.</p>
+<blockquote>
+<p>Corpus: The dog is very big and like treats<br>
+Target Word: &quot;very&quot;<br>
+Context words: &quot;is&quot;, &quot;big&quot;</p>
+</blockquote>
+<h3 class="mume-header" id="deep-dive">Deep Dive</h3>
+
+<h4 class="mume-header" id="skip-gram-model">Skip-Gram Model</h4>
+
+<p>The skip-gram model is an architecture for learning word embeddings that was first presented in this <a href="https://arxiv.org/pdf/1301.3781.pdf">paper</a>. The idea is that we take a word in the vocabulary as the &quot;target&quot; or &quot;center&quot; word, and predict the words around it. &apos;Around&apos; is determined by a pre-specified window size, <span class="mathjax-exps">$m$</span>.</p>
+<p>More formally, we have an input sequence of words, <span class="mathjax-exps">$w_1, w_2,.., w_T$</span>, each which has a context window around them, <span class="mathjax-exps">$-m \le j \le m$</span>. For each word in the context window, <span class="mathjax-exps">$w_{t+j}$</span>, we calculate the probability that it appears in the context of target word <span class="mathjax-exps">$w_t$</span>. The probability of word <span class="mathjax-exps">$w_{t+j}$</span> appearing in the context of the given target word <span class="mathjax-exps">$w_t$</span> can be expressed as <span class="mathjax-exps">$p(w_{t+j} | w_t)$</span>.<br>
+The mathematical way of representing this is shown below. Breaking down this equation into its constituent parts and referencing their explanation above will help to understand it.</p>
+<p></p><div class="mathjax-exps">$$J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} | w_t; \theta))$$</div><p></p>
+<p>The skip-gram model is different from other approaches to word embeddings, such as continuous bag-of-words, which is also presented in the original <a href="https://arxiv.org/pdf/1301.3781.pdf">skip-gram paper</a>. The continuous bag-of-words architecture attempts to predict the target word given its context.</p>
+<blockquote>
+<p><em>PUT A VISUALIZATION OF A SENTENCE, THE TARGET WORD AND WINDOW</em></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"><img src="word2vec_viz.png" alt="Figure 1: Taken from Stanford&apos;s NLP course."></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Figure 1: Taken from Stanford&apos;s NLP course, shows the skip gram prediction of &quot;banking&quot; with window size 2.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>SGNS seeks to represent each word w &#x2208; <span class="mathjax-exps">$V_W$</span> and each context c &#x2208; VC as d-dimensional vectors w and &#x20D7;c, such that words that are &#x201C;similar&#x201D; to each other will have similar vector representations. It does so by trying to maximize a function of the product w &#xB7; &#x20D7;c for (w, c) pairs that occur in D, and minimize it for negative examples: (w, cN ) pairs that do not necessarily occur in D. The negative examples are created by stochastically corrupting observed (w, c) pairs from D &#x2013; hence the name &#x201C;negative sampling&#x201D;. For each observation of (w,c), SGNS draws k contexts from the empirical unigram distribution P (c) = #(c).</p>
+</blockquote>
+<h4 class="mume-header" id="problems-with-naive-softmax">Problems with Naive Softmax</h4>
+
+<p>Before we start, recall that an objective or loss function, <span class="mathjax-exps">$J(\theta)$</span>, is a way of determining the goodness of a model. We alter the parameters of this function, <span class="mathjax-exps">$\theta$</span>, to find the best fit for the model. Here we make the ideas about target and context words discussed above more concrete. Note that the parameters of our model are the word embeddings (vectors) we want to find.</p>
+<p>The probability, <span class="mathjax-exps">$p(w_{t+j} | w_t; \theta))$</span>, can be expressed using the naive softmax function:</p>
+<p></p><div class="mathjax-exps">$$p(w_{t+j} | w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}$$</div><p></p>
+<p>Where:</p>
+<ul>
+<li><span class="mathjax-exps">$W$</span> is the size of the vocabulary</li>
+<li><span class="mathjax-exps">$c$</span> and <span class="mathjax-exps">$o$</span> are indices of the words in the vocabulary at sequence positions <span class="mathjax-exps">$t$</span> and <span class="mathjax-exps">$j$</span> respectively</li>
+<li><span class="mathjax-exps">$u_o = word2vec(w_{t+j})$</span></li>
+<li><span class="mathjax-exps">$v_c = word2vec(w_t)$</span></li>
+</ul>
+<p>Here, <span class="mathjax-exps">$u_o$</span> is the &quot;context&quot; vector representation of word <span class="mathjax-exps">$o$</span> and <span class="mathjax-exps">$v_c$</span> is the &quot;target&quot; vector representation of word <span class="mathjax-exps">$c$</span>. Having two representations simplifies the calculations, and we can always combine the two representations after.</p>
+<p>Although we now have a way of quantifying the probability a word appears in the context of another, the <span class="mathjax-exps">$\sum_{w=1}^W e^{u_w^T v_c}$</span> term presents difficulty. It requires us to iterate over all words in the vocabulary and do some calculation. The computational complexity of this term is proportional to the size of the vocabulary, which can be massive, more than <span class="mathjax-exps">$10^6$</span>. The authors introduce a clever way of dealing with this called negative sampling.</p>
+<h4 class="mume-header" id="negative-sampling-loss">Negative Sampling Loss</h4>
+
+<p>Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample <span class="mathjax-exps">$k$</span> words and determine the probability that these words <strong>do not</strong> co-occur with the target word. The idea is to train binary logistic regressions for a true pair versus a couple of noise pairs. According to the paper, this is done because a good model should be able to differentiate between data and noise.</p>
+<p>W=To incorporate negative sampling, the skip-gram objective function needs to be altered by replacing <span class="mathjax-exps">$p(w_{t+j} | w_t)$</span> with:</p>
+<p></p><div class="mathjax-exps">$$log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]$$</div><p></p>
+<p>Where <span class="mathjax-exps">$\sigma(.)$</span> is the <a href="https://en.wikipedia.org/wiki/Sigmoid_function">sigmoid function</a>.</p>
+<blockquote>
+<p>Thus the task is to distinguish the target word <span class="mathjax-exps">$w_t$</span> from draws from the noise distribution <span class="mathjax-exps">$P_n(w)$</span> using logistic regression, where there are <span class="mathjax-exps">$k$</span> negative samples for each data sample.</p>
+</blockquote>
+<p><strong>New Objective Function</strong></p>
+<p></p><div class="mathjax-exps">$$J(\theta) = \frac{-1}{T} \sum_{t=1}^{T}J_t(\theta)$$</div><p></p>
+<p></p><div class="mathjax-exps">$$J_t(\theta) = log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]$$</div><p></p>
+<p></p><div class="mathjax-exps">$$P(w) = U(w)^{3/4}/Z$$</div><p></p>
+<p>This is too much, lets look each component of <span class="mathjax-exps">$J_t(\theta)$</span> and try to convince ourselves this makes sense.</p>
+<p><strong><em>The first part</em></strong>, <span class="mathjax-exps">$log(\sigma(u_o^Tv_c))$</span>, can be interpreted as the log &quot;probability&quot; of the target and context words co-occurring. We want our model to find vector representations of <span class="mathjax-exps">$u_o$</span> and <span class="mathjax-exps">$v_c$</span> to maximize this probability. The word probability is used loosely here, and is only thrown around because the sigmoid function returns a number between 0 and 1.</p>
+<p><strong><em>The second part</em></strong>, <span class="mathjax-exps">$\sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]$</span>, is where the &quot;sampling&quot; in negative sampling happens. Let&apos;s break this up more to make it clearer. It&apos;ll come in handy to note that <span class="mathjax-exps">$\sigma(-x) = 1 - \sigma(x)$</span>.<br>
+First, we can drop the <span class="mathjax-exps">$E_{j \sim P(w)}$</span> term, since we already know we will be sampling words from some distribution, <span class="mathjax-exps">$P(w)$</span></p>
+<p></p><div class="mathjax-exps">$$\sum_{i = 1}^{k} log(\sigma(-u_j^T v_c)) = \sum_{i = 1}^{k} log(1 - \sigma(u_j^T v_c))$$</div><p></p>
+<p><strong>QUESTION</strong> - Does this term, <span class="mathjax-exps">$E_{j \sim P(w)}$</span> mean an expected value? So we multiply <span class="mathjax-exps">$log(\sigma(.))$</span> by <span class="mathjax-exps">$p(j)$</span>?</p>
+<p>Now this makes a bit more sense, we&apos;re taking the log of 1 minus the probability that the sampled word, <span class="mathjax-exps">$j$</span>, appears in the context of the target word <span class="mathjax-exps">$c$</span>. This is just log of the probability that <span class="mathjax-exps">$j$</span> does <strong>not</strong> appear in the context of the target word <span class="mathjax-exps">$c$</span>. Since <span class="mathjax-exps">$j$</span> is a randomly drawn word out of ~<span class="mathjax-exps">$10^6$</span> words, there&apos;s a very small chance it appears in the context of <span class="mathjax-exps">$c$</span>, so this probability should be high.<br>
+There is also a summation term here up to <span class="mathjax-exps">$k$</span> elements. All this is saying is that we&apos;re sampling <span class="mathjax-exps">$k$</span> words from <span class="mathjax-exps">$P(w)$</span>.</p>
+<p>Finally, we have to specify a distribution for negative sampling, <span class="mathjax-exps">$P(w) = U(w)^{3/4}/Z$</span>. Here, <span class="mathjax-exps">$U(w)$</span> is the unigram distribution and is raised to the <span class="mathjax-exps">$\frac{3}{4}$</span>th power to sample rarer words in the vocabulary. <span class="mathjax-exps">$Z$</span> is just a normalization term.</p>
+<p>To summarize, this loss function is trying to maximize the probability that word <span class="mathjax-exps">$o$</span> appears in the context of word <span class="mathjax-exps">$c$</span>, while minimizing the probability that a randomly selected word from the vocabulary appears in the context of word <span class="mathjax-exps">$c$</span>. We use the gradient of this loss function to update the word vectors, <span class="mathjax-exps">$u_o$</span> and <span class="mathjax-exps">$v_c$</span> to get our word embeddings.</p>
+<p><strong>Summary of Word2Vec</strong></p>
+<ul>
+<li>Iterate through every word in the whole corpus</li>
+<li>Predict surrounding words (context words) using word vectors</li>
+<li>Update the word vectors based on the loss function</li>
+</ul>
+<hr>
+<h2 class="mume-header" id="glove">GloVe</h2>
+
+<hr>
+<h2 class="mume-header" id="resources">Resources</h2>
+
+<p>Atom <a href="https://shd101wyy.github.io/markdown-preview-enhanced/#/">markdown docs</a>.<br>
+Small <a href="https://www.aclweb.org/anthology/Q15-1016">review</a> of GloVe and word2vec<br>
+<a href="https://www.aclweb.org/anthology/D15-1036">Evaluating</a> unsupervised word embeddings<br>
+Stanford NLP coursenotes on <a href="http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes02-wordvecs2.pdf">GloVe</a><br>
+Stanford NLP coursenotes on <a href="http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes01-wordvecs1.pdf">word2vec</a></p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
