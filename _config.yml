@@ -36,8 +36,6 @@ social_sites:
   #youtube: jekyll
   #googleplus: +jekyll
 
-rss: rss
-
 # Build settings
 markdown: CommonMarkGhPages
 theme: minima
