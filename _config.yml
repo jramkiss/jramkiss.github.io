@@ -37,7 +37,7 @@ social_sites:
   #googleplus: +jekyll
 
 # Build settings
-markdown: CommonMark #kramdown
+#markdown: CommonMark #kramdown
 theme: minima
 plugins:
   - jekyll-feed
