@@ -6,7 +6,15 @@ category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
+markdown:
+  path: 2019-08-12-word2vec_GFM.md
+  ignore_from_front_matter: true
+  absolute_image_path: false
+export_on_save:
+  markdown: true
 ---
+
+
 
 This post will introduce and explain the intuition and math behind [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf) and [GloVe](https://nlp.stanford.edu/pubs/glove.pdf). At the end, the reader will be able to explain these algorithms in lehman terms, and have a solid understanding of the math involved. Only very basic math concepts are necessary for the understanding of this post.
 
@@ -70,7 +78,7 @@ The skip-gram model is different from other approaches to word embeddings, such 
 
 > _PUT A VISUALIZATION OF A SENTENCE, THE TARGET WORD AND WINDOW_
 
-| ![Figure 1: Taken from Stanford's NLP course.](word2vec_viz.png) |
+| ![Figure 1: Taken from Stanford's NLP course.](../../assets/word2vec_viz.png) |
 |:--:|
 | Figure 1: Taken from Stanford's NLP course, shows the skip gram prediction of "banking" with window size 2. |
 
@@ -240,7 +248,7 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
 ```
 
-![](word2vec_pca(1).png)
+![](../../assets/word2vec_pca(1).png)
 
 ---
 
