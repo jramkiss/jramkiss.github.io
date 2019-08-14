@@ -37,17 +37,13 @@ social_sites:
   #googleplus: +jekyll
 
 # Build settings
-markdown: CommonMark #CommonMarkGhPages
+markdown: CommonMark #kramdown
 theme: minima
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
 
-# commonmark extensions
-#commonmark:
-#  options: ["SMART", "FOOTNOTES"]
-#  extensions: ["strikethrough", "autolink", "table", "tagfilter"]
 
 # Highlighter settings
 highlighter: rouge
