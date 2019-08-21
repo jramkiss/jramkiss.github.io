@@ -6,14 +6,13 @@ category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-markdown:
-  path: 2019-08-12-word2vec_GFM.md
-  ignore_from_front_matter: true
-  absolute_image_path: false
-export_on_save:
-  markdown: true
+#markdown:
+#  path: 2019-08-12-word2vec_GFM.md
+#  ignore_from_front_matter: true
+#  absolute_image_path: false
+#export_on_save:
+#  markdown: true
 ---
-
 
 
 This post will introduce and explain the intuition and math behind [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf) and [GloVe](https://nlp.stanford.edu/pubs/glove.pdf). At the end, the reader will be able to explain these algorithms in lehman terms, and have a solid understanding of the math involved. Only very basic math concepts are necessary for the understanding of this post.
@@ -31,42 +30,38 @@ This post will introduce and explain the intuition and math behind [word2vec](ht
     - [Word Arithmetic](#word-arithmetic)
     - [Visualizing word2vec Embeddings](#visualizing-word2vec-embeddings)
 - [GloVe](#glove)
-- [GloVe VS Word2vec](#glove-vs-word2vec)
+  - [Overview](#overview-1)
+  - [Deep Dive](#deep-dive-1)
+    - [The Co-Occurrence Matrix](#the-co-occurrence-matrix)
+    - [From Word2vec to GloVe](#from-word2vec-to-glove)
+- [Fasttext](#fasttext)
+- [GloVe VS Word2vec VS Fasttext](#glove-vs-word2vec-vs-fasttext)
 - [Appendix](#appendix)
+  - [From Word2vec to GloVe - Math](#from-word2vec-to-glove-math)
+  - [Code](#code)
 - [Resources](#resources)
 
 <!-- /code_chunk_output -->
 
 ## Word2Vec
 
-The original paper presenting word2vec can be found [here](https://arxiv.org/pdf/1310.4546.pdf).
+[Word2vec](https://arxiv.org/pdf/1310.4546.pdf) comes in two flavors, the continuous bag-of-words and skip-gram model. These models are similar; CBOW predicts a target word given the context words, and skip-gram predicts context words given the target word. This inversion might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation, which is useful for smaller datasets. Skip-gram on the other hand treats each context-target pair as a new observation, and tends to do better on larger data sets.
 
 ### Overview
 
-Word2vec tries to find vector representations of words by predicting the words that appear in its context. This results in interesting word similarities:
-
-> We’re going to train a simple neural network with a single hidden layer to perform a certain task, but then we’re not actually going to use that neural network for the task we trained it on! Instead, the goal is actually just to learn the weights of the hidden layer–we’ll see that these weights are actually the “word vectors” that we’re trying to learn.
+We focus on the skip-gram model in this post. The model architecture is a 1-layer neural network, whose weights we learn. These weights are then used as the word vectors. The objective is to simultaneously (1) maximize the probability that an observed word appears in the context of it's target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.
 
 * $word2vec('king') - word2vec('man') + word2vec('woman') = word2vec('queen')$  
 * $word2vec('doctor') - word2vec('man') + word2vec('woman') = word2vec('nurse')$
 
-> It comes in two flavors, the Continuous Bag-of-Words model (CBOW) and the Skip-Gram model (Section 3.1 and 3.2 in Mikolov et al.). Algorithmically, these models are similar, except that CBOW predicts target words (e.g. 'mat') from source context words ('the cat sits on the'), while the skip-gram does the inverse and predicts source context-words from the target words. This inversion might seem like an arbitrary choice, but statistically it has the effect that CBOW smoothes over a lot of the distributional information (by treating an entire context as one observation). For the most part, this turns out to be a useful thing for smaller datasets. However, skip-gram treats each context-target pair as a new observation, and this tends to do better when we have larger datasets. We will focus on the skip-gram model in the rest of this tutorial.
-
-It does this by altering vector representations of words, such that contextual words in a window around a target word are close in the embedding space. The objective is to simultaneously (1) maximize the probability that an observed word appears in the context of it's target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.
-
-An example of the window, target word and context words is shown below.
-
-> Corpus: The dog is very big and like treats  
-> Target Word: "very"  
-> Context words: "is", "big"
 
 ### Deep Dive
 
 #### Skip-Gram Model
 
-The skip-gram model is an architecture for learning word embeddings that was first presented in this [paper](https://arxiv.org/pdf/1301.3781.pdf). The idea is that we take a word in the vocabulary as the "target" or "center" word, and predict the words around it. 'Around' is determined by a pre-specified window size, $m$.
+The skip-gram model is an architecture for learning word embeddings that was first presented in this [paper](https://arxiv.org/pdf/1301.3781.pdf). The idea is that we take a word in the input sequence as the "target" or "center" word, and predict the words around it. 'Around' is determined by a pre-specified window size, $m$.
 
-More formally, we have an input sequence of words, $w_1, w_2,.., w_T$, each which has a context window around them, $-m \le j \le m$. For each word in the context window, $w_{t+j}$, we calculate the probability that it appears in the context of target word $w_t$. The probability of word $w_{t+j}$ appearing in the context of the given target word $w_t$ can be expressed as $p(w_{t+j} | w_t)$.
+More formally, we have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window around them, $-m \le j \le m$. For each word in the context window, $w_{t+j}$, we calculate the probability that it appears in the context of target word $w_t$. The probability of word $w_{t+j}$ appearing in the context of the given target word $w_t$ can be expressed as $p(w_{t+j} | w_t)$.
 The mathematical way of representing this is shown below. Breaking down this equation into its constituent parts and referencing their explanation above will help to understand it.
 
 $$
@@ -236,7 +231,7 @@ This is a different results from the original query! Biases in the training data
 
 #### Visualizing word2vec Embeddings
 
-To wrap up word2vec, lets look at how the model clusters different words. I've compiled words from different walks of life to see if word2vec was able to unravel their semantic similarities. These words are parsed through word2vec, then the first 2 principal components are plotted.
+To wrap up word2vec, lets look at how the model clusters different words. I've compiled words from different walks of life to see if word2vec was able to unravel their semantic similarities. These words are parsed through word2vec, then the first 2 principal components are plotted. Some expected similarities are seen here, however it should be noted that we lose a lot of information from reducing the dimension from 300 to 2.
 
 
 ```python
@@ -252,13 +247,74 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
 
 ---
 
-## GloVe
+## GloVe  
 
-Some stuff about GloVe
+GloVe (Global Vectors) is another architecture for producing word embeddings. It improves on some key downsides of the skip-gram model, as well as incorporating its advantages. One of these downsides is the loss of corpus statistics due to capturing information one window at a time. GloVe's loss function incorporates word-word occurrence counts to capture global information about context.
+
+
+One of these downsides of the skip-gram is it tries to capture information from the corpus one window at a time. In doing so, it loses out on key statistical information about the entire corpus, such as word co-occurrence counts. On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.
+
+>  GloVe, for Global Vectors, because the global corpus statistics are captured directly by the model.
+
+### Overview
+
+For each pair of words, GloVe tries to minimize the difference between their dot product and log co-occurrence count.
+
+### Deep Dive
+
+#### The Co-Occurrence Matrix  
+
+We have a matrix, $X$, where each row corresponds to a target word, and each column corresponds to a context word. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Now we can define $P_{ij}$, the probability of word $j$ occurring in the context of word $i$, as $P(i | j) = \frac{X_{ij}}{X_i}$.
+
+Two main advantages of computing the co-occurrence matrix is that it contains all statistical information about the corpus and only needs to be computed once. We will see how it's used in the next section.
+
+#### From Word2vec to GloVe
+
+The skip-gram model uses negative sampling to bypass the bottleneck of naive softmax loss. GloVe takes a different approach to this, which we'll discuss in this section.
+
+Starting from the naive softmax function, we calculate the probability, $Q_{ij}$, that word $j$ appears in the context of word $i$. Then summing $-log(Q_{ij})$ for each context-target word pair (i.e. each $i$ and $j$) in the corpus can give us the global loss. This is similar to cross-entropy loss.
+
+$$J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) $$
+
+Since the words $i$ and $j$ appear $X_{ij}$ times in the corpus, we don't need to iterate over all windows in the corpus, but can iterate over the vocabulary instead. As a refresher, the corpus is the body of text we train the model on, and the vocabulary is all unique words in that text.
+
+$$ J = - \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} log Q_{ij} $$
+
+Re-arranging some terms, we can come up with this:  
+
+$$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
+
+**What's going on right now?**
+- **Where did $P_{ij}$ come from?** - Remember that $P_{ij} = \frac{X_{ij}}{X_i}$ and $X_i = \sum_k X_{ik}$, therefore we can substitute $X_{ij} = P_{ij}X_i$.
+- **What's the relationship between $P_{ij}$ and $Q_{ij}$?** - Remember that $P_{ij}$ is the probability that word $j$ appears in the context of word $i$ but $Q_{ij}$ is also the probability that word $j$ appears in the context of word $i$. The difference between the two lies in how they are calculated; $P_{ij}$ is calculated using the data (corpus and vocabulary), so it doesn't change. On the other hand, $Q_{ij}$ is the naive softmax probability, that is calculated using the dot product of word vectors of $i$ and $j$, ($u_j^T v_i$). We have the ability to change $Q_{ij}$ by changing these word vectors.
+- **What's the point of $P_{ij}log(Q_{ij})$?** - Now that we've refreshed our memory of $P$ and $Q$, we can see that $P$ is the *true* probability distribution of context and target words, and $Q$ is some made up distribution based on the "goodness" of the word vectors. We really want these two distributions to be close to each other. Observing this, $H = P_{ij}log(Q_{ij})$, when $P$ and $Q$ are close to each other, $H$ is small, and when $P$ and $Q$ are far apart, $H$ gets larger. Our end goal is the minimization of $J$, so the smaller $H$ is is better.
+
+See [Appendix](#appendix) for more
+
+Now we need to find some measure of "closeness" between $P$ and $Q$. We still have $Q_{ij}$ and $P_{ij}$ whose normalization terms we have to iteration over the entire vocabulary to calculate. GloVe overcomes this by dropping the normalization terms completely.
+
+
+> To begin, cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events. Furthermore, for the measure to be bounded it requires that the model distribution Q be properly normalized. This presents a computational bottleneck. A natural choice would be a least squares objective in which normalization factors in Q and P are discarded
+
+Continuing down the cross-entropy route doesn't work because of the normalization terms for probability distributions. We just discard these normalization terms, and turn the loss into a weighted least squares function.
+
+$$ \hat{J} = \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} (\hat{P}_{ij} - \hat{Q}_{ij})^2 $$
+
+Where $\hat{Q}_{ij} = e^{u_j^T v_i}$ and $\hat{P}_{ij} = X_{ij}$ are un-normalized probability distributions. The problem with this is that $X_{ij}$ takes on very large values for common words in the vocabulary, like "the", "of", etc. GloVe accounts for this is by taking the log counts. The new objective function then becomes:
+
+$$ \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} X_{ij} (u_j^T v_i - log(X_{ij}))^2 $$
+
+We still end up with the normalization factor, $X_{ij}$ which can still suffer from huge values from common words. To deal with this, a weighting function, $f(X)$, is introduced to cap large values.
+
+$$ \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2 $$
 
 ---
 
-## GloVe VS Word2vec
+## Fasttext
+
+---
+
+## GloVe VS Word2vec VS Fasttext
 - Which is more robust?
 - Which is more efficient?
 - What does word2vec capture than GloVe doesn't?
@@ -268,6 +324,19 @@ Some stuff about GloVe
 
 ## Appendix
 
+### From Word2vec to GloVe - Math
+
+Naive Softmax function:
+$$ Q_{ij} = \frac{e^{u_j^T v_i}}{\sum_{w=1}^W e^{u_w^T v_i}} $$
+The bottleneck to the naive softmax function is that the calculation of $\sum_{w=1}^W e^{u_w^T v_i}$ requires iteration over the entire vocabulary.
+
+Summing negative log of $Q_{ij}$ to get the global loss:
+$$J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) $$
+
+$$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
+The term: $\sum_{j = 1}^{W} P_{ij}log(Q_{ij})$ is the cross-entropy of $P_{ij}$ and $Q_{ij}$.
+
+### Code
 ```Python
 # find the 3 most similar words to the vector "vec"
 def find_most_similar (vec, words = None) :
