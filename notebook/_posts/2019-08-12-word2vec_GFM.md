@@ -29,6 +29,7 @@ This post will introduce and explain the intuition and math behind [word2vec](ht
   - [Deep Dive](#deep-dive-1 )
     - [The Co-Occurrence Matrix](#the-co-occurrence-matrix )
     - [From Word2vec to GloVe](#from-word2vec-to-glove )
+  - [GloVe in Python](#glove-in-python )
 - [Fasttext](#fasttext )
 - [GloVe VS Word2vec VS Fasttext](#glove-vs-word2vec-vs-fasttext )
 - [Appendix](#appendix )
@@ -39,13 +40,11 @@ This post will introduce and explain the intuition and math behind [word2vec](ht
   
   
   
-##  Word2Vec
-  
+##  Word2Vec {#word2vec }
   
 [Word2vec](https://arxiv.org/pdf/1310.4546.pdf ) comes in two flavors, the continuous bag-of-words and skip-gram model. These models are similar; CBOW predicts a target word given the context words, and skip-gram predicts context words given the target word. This inversion might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation, which is useful for smaller datasets. Skip-gram on the other hand treats each context-target pair as a new observation, and tends to do better on larger data sets.
   
-###  Overview
-  
+###  Overview {#overview }
   
 We focus on the skip-gram model in this post. The model architecture is a 1-layer neural network, whose weights we learn. These weights are then used as the word vectors. The objective is to simultaneously (1) maximize the probability that an observed word appears in the context of it's target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.
   
@@ -53,11 +52,9 @@ We focus on the skip-gram model in this post. The model architecture is a 1-laye
 * <img src="https://latex.codecogs.com/gif.latex?word2vec(&#x27;doctor&#x27;)%20-%20word2vec(&#x27;man&#x27;)%20+%20word2vec(&#x27;woman&#x27;)%20=%20word2vec(&#x27;nurse&#x27;)"/>
   
   
-###  Deep Dive
+###  Deep Dive {#deep-dive }
   
-  
-####  Skip-Gram Model
-  
+####  Skip-Gram Model {#skip-gram-model }
   
 The skip-gram model is an architecture for learning word embeddings that was first presented in this [paper](https://arxiv.org/pdf/1301.3781.pdf ). The idea is that we take a word in the input sequence as the "target" or "center" word, and predict the words around it. 'Around' is determined by a pre-specified window size, <img src="https://latex.codecogs.com/gif.latex?m"/>.
   
@@ -80,8 +77,7 @@ The skip-gram model is different from other approaches to word embeddings, such 
 > SGNS seeks to represent each word w ∈ <img src="https://latex.codecogs.com/gif.latex?V_W"/> and each context c ∈ VC as d-dimensional vectors w and ⃗c, such that words that are “similar” to each other will have similar vector representations. It does so by trying to maximize a function of the product w · ⃗c for (w, c) pairs that occur in D, and minimize it for negative examples: (w, cN ) pairs that do not necessarily occur in D. The negative examples are created by stochastically corrupting observed (w, c) pairs from D – hence the name “negative sampling”. For each observation of (w,c), SGNS draws k contexts from the empirical unigram distribution P (c) = #(c).
   
   
-####  Problems with Naive Softmax
-  
+####  Problems with Naive Softmax {#problems-with-naive-softmax }
   
 Before we start, recall that an objective or loss function, <img src="https://latex.codecogs.com/gif.latex?J(&#x5C;theta)"/>, is a way of determining the goodness of a model. We alter the parameters of this function, <img src="https://latex.codecogs.com/gif.latex?&#x5C;theta"/>, to find the best fit for the model. Here we make the ideas about target and context words discussed above more concrete. Note that the parameters of our model are the word embeddings (vectors) we want to find.
   
@@ -101,8 +97,7 @@ Here, <img src="https://latex.codecogs.com/gif.latex?u_o"/> is the "context" vec
   
 Although we now have a way of quantifying the probability a word appears in the context of another, the <img src="https://latex.codecogs.com/gif.latex?&#x5C;sum_{w=1}^W%20e^{u_w^T%20v_c}"/> term presents difficulty. It requires us to iterate over all words in the vocabulary and do some calculation. The computational complexity of this term is proportional to the size of the vocabulary, which can be massive, more than <img src="https://latex.codecogs.com/gif.latex?10^6"/>. The authors introduce a clever way of dealing with this called negative sampling.
   
-####  Negative Sampling Loss
-  
+####  Negative Sampling Loss {#negative-sampling-loss }
   
 Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample <img src="https://latex.codecogs.com/gif.latex?k"/> words and determine the probability that these words **do not** co-occur with the target word. The idea is to train binary logistic regressions for a true pair versus a couple of noise pairs. According to the paper, this is done because a good model should be able to differentiate between data and noise.
   
@@ -151,8 +146,7 @@ To summarize, this loss function is trying to maximize the probability that word
 -   Predict surrounding words (context words) using word vectors
 -   Update the word vectors based on the loss function
   
-###  Word2vec in Python
-  
+###  Word2vec in Python {#word2vec-in-python }
   
 Instead of training our own word2vec model, we'll use a pre-trained model to visualize word embeddings. We'll use Google's News dataset model, which can be downloaded [here](https://code.google.com/archive/p/word2vec/ ). Fair warning that the model is 1.5Gb, and is trained on a vocabulary of 3 million words, with embedding vectors of length 300.
   
@@ -193,8 +187,7 @@ list(zip(animal_list, animal_similarity))
  ('hamster', 0.5817574)]
 ```
   
-####  Word Arithmetic
-  
+####  Word Arithmetic {#word-arithmetic }
   
 Let's add and subtract some word vectors, then see what the closest word to the resulting vector is. We've all seen the "king" - "man" + "woman" = "queen" example, so I'll present some new ones.
   
@@ -226,8 +219,7 @@ find_most_similar(wv["doctor"] - wv["woman"] + wv["man"],
 This is a different results from the original query! Biases in the training data are captured and expressed by the model. I won't go into detail about this here. Instead you should take away that the order of arithmetic for word vectors matters a great deal.
   
   
-####  Visualizing word2vec Embeddings
-  
+####  Visualizing word2vec Embeddings {#visualizing-word2vec-embeddings }
   
 To wrap up word2vec, lets look at how the model clusters different words. I've compiled words from different walks of life to see if word2vec was able to unravel their semantic similarities. These words are parsed through word2vec, then the first 2 principal components are plotted. Some expected similarities are seen here, however it should be noted that we lose a lot of information from reducing the dimension from 300 to 2.
   
@@ -241,12 +233,14 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
 ```
   
-![](../../assets/word2vec_pca(1 ).png)
+![](../../assets/word2vec_pca.png )
+  
+Error: Command failed: pandoc -f markdown+tex_math_single_backslash -o /Users/jonathanr/Documents/github/jramkiss.github.io/notebook/_posts/word2vec_and_glove.pdf --toc --highlight-style=tango --number-sections --pdf-engine=pdflatex
+pdflatex not found. Please select a different --pdf-engine or install pdflatex
   
 ---
   
-##  GloVe  
-  
+##  GloVe   {#glove }
   
 GloVe (Global Vectors) is another architecture for producing word embeddings. It improves on some key downsides of the skip-gram model, as well as incorporating its advantages. One of these downsides is the loss of corpus statistics due to capturing information one window at a time. GloVe's loss function incorporates word-word occurrence counts to capture global information about context.
   
@@ -255,23 +249,19 @@ One of these downsides of the skip-gram is it tries to capture information from 
   
 >  GloVe, for Global Vectors, because the global corpus statistics are captured directly by the model.
   
-###  Overview
-  
+###  Overview {#overview-1 }
   
 For each pair of words, GloVe tries to minimize the difference between their dot product and log co-occurrence count.
   
-###  Deep Dive
+###  Deep Dive {#deep-dive-1 }
   
-  
-####  The Co-Occurrence Matrix  
-  
+####  The Co-Occurrence Matrix   {#the-co-occurrence-matrix }
   
 We have a matrix, <img src="https://latex.codecogs.com/gif.latex?X"/>, where each row corresponds to a target word, and each column corresponds to a context word. The entry at <img src="https://latex.codecogs.com/gif.latex?X_{ij}"/> is then the number of times word <img src="https://latex.codecogs.com/gif.latex?j"/> occurs in the context of word <img src="https://latex.codecogs.com/gif.latex?i"/>. Context is defined in the same way as the skip-gram model. Summing over all the values in row <img src="https://latex.codecogs.com/gif.latex?i"/>, will give the number of words that occur in its context, <img src="https://latex.codecogs.com/gif.latex?X_i%20=%20&#x5C;sum_k%20X_{ik}"/>. Now we can define <img src="https://latex.codecogs.com/gif.latex?P_{ij}"/>, the probability of word <img src="https://latex.codecogs.com/gif.latex?j"/> occurring in the context of word <img src="https://latex.codecogs.com/gif.latex?i"/>, as <img src="https://latex.codecogs.com/gif.latex?P(i%20|%20j)%20=%20&#x5C;frac{X_{ij}}{X_i}"/>.
   
 Two main advantages of computing the co-occurrence matrix is that it contains all statistical information about the corpus and only needs to be computed once. We will see how it's used in the next section.
   
-####  From Word2vec to GloVe
-  
+####  From Word2vec to GloVe {#from-word2vec-to-glove }
   
 The skip-gram model uses negative sampling to bypass the bottleneck of naive softmax loss. GloVe takes a different approach to this, which we'll discuss in this section.
   
@@ -295,11 +285,12 @@ Re-arranging some terms, we can come up with this:
 - **What's the relationship between <img src="https://latex.codecogs.com/gif.latex?P_{ij}"/> and <img src="https://latex.codecogs.com/gif.latex?Q_{ij}"/>?** - Remember that <img src="https://latex.codecogs.com/gif.latex?P_{ij}"/> is the probability that word <img src="https://latex.codecogs.com/gif.latex?j"/> appears in the context of word <img src="https://latex.codecogs.com/gif.latex?i"/> but <img src="https://latex.codecogs.com/gif.latex?Q_{ij}"/> is also the probability that word <img src="https://latex.codecogs.com/gif.latex?j"/> appears in the context of word <img src="https://latex.codecogs.com/gif.latex?i"/>. The difference between the two lies in how they are calculated; <img src="https://latex.codecogs.com/gif.latex?P_{ij}"/> is calculated using the data (corpus and vocabulary), so it doesn't change. On the other hand, <img src="https://latex.codecogs.com/gif.latex?Q_{ij}"/> is the naive softmax probability, that is calculated using the dot product of word vectors of <img src="https://latex.codecogs.com/gif.latex?i"/> and <img src="https://latex.codecogs.com/gif.latex?j"/>, (<img src="https://latex.codecogs.com/gif.latex?u_j^T%20v_i"/>). We have the ability to change <img src="https://latex.codecogs.com/gif.latex?Q_{ij}"/> by changing these word vectors.
 - **What's the point of <img src="https://latex.codecogs.com/gif.latex?P_{ij}log(Q_{ij})"/>?** - Now that we've refreshed our memory of <img src="https://latex.codecogs.com/gif.latex?P"/> and <img src="https://latex.codecogs.com/gif.latex?Q"/>, we can see that <img src="https://latex.codecogs.com/gif.latex?P"/> is the *true* probability distribution of context and target words, and <img src="https://latex.codecogs.com/gif.latex?Q"/> is some made up distribution based on the "goodness" of the word vectors. We really want these two distributions to be close to each other. Observing this, <img src="https://latex.codecogs.com/gif.latex?H%20=%20P_{ij}log(Q_{ij})"/>, when <img src="https://latex.codecogs.com/gif.latex?P"/> and <img src="https://latex.codecogs.com/gif.latex?Q"/> are close to each other, <img src="https://latex.codecogs.com/gif.latex?H"/> is small, and when <img src="https://latex.codecogs.com/gif.latex?P"/> and <img src="https://latex.codecogs.com/gif.latex?Q"/> are far apart, <img src="https://latex.codecogs.com/gif.latex?H"/> gets larger. Our end goal is the minimization of <img src="https://latex.codecogs.com/gif.latex?J"/>, so the smaller <img src="https://latex.codecogs.com/gif.latex?H"/> is is better.
   
+See [Appendix](#appendix ) for more
+  
+Now we need to find some measure of "closeness" between <img src="https://latex.codecogs.com/gif.latex?P"/> and <img src="https://latex.codecogs.com/gif.latex?Q"/>. We still have <img src="https://latex.codecogs.com/gif.latex?Q_{ij}"/> and <img src="https://latex.codecogs.com/gif.latex?P_{ij}"/> whose normalization terms we have to iteration over the entire vocabulary to calculate. GloVe overcomes this by dropping the normalization terms completely.
   
   
-We still have the naive softmax term, <img src="https://latex.codecogs.com/gif.latex?Q_{ij}"/>, which requires iteration over the entire vocabulary to calculate. See [Appendix](#appendix ) for more. GloVe overcomes this by altering the loss function entirely to exclude this normalization term. Discarding this changes the problem from classification to regression. We now have a weighted least-squares loss.
-  
-> To begin, cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are of- ten modeled poorly with too much weight given to the unlikely events. Furthermore, for the mea- sure to be bounded it requires that the model distribution Q be properly normalized. This presents a computational bottleneck. A natural choice would be a least squares objective in which normalization factors in Q and P are discarded
+> To begin, cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events. Furthermore, for the measure to be bounded it requires that the model distribution Q be properly normalized. This presents a computational bottleneck. A natural choice would be a least squares objective in which normalization factors in Q and P are discarded
   
 Continuing down the cross-entropy route doesn't work because of the normalization terms for probability distributions. We just discard these normalization terms, and turn the loss into a weighted least squares function.
   
@@ -316,15 +307,28 @@ We still end up with the normalization factor, <img src="https://latex.codecogs.
 <p align="center"><img src="https://latex.codecogs.com/gif.latex?&#x5C;hat{J}%20=%20&#x5C;sum_{w%20=%201}^{W}%20&#x5C;sum_{w%20=%201}^{W}%20f(X_{ij})%20(u_j^T%20v_i%20-%20log(X_{ij}))^2"/></p>  
   
   
+###  GloVe in Python {#glove-in-python }
+  
+Similar to word2vec, we can use the `gensim` package to load pretrained GloVe models and manipulate them in a similar way.
+  
+```python
+import gensim.downloader as api
+  
+# Download pretrained GloVe model from:
+# https://nlp.stanford.edu/projects/glove/
+glove_model = api.load("glove-wiki-gigaword-100")
+glove = glove_model.wv
+  
+del glove_model
+```
+  
 ---
   
-##  Fasttext
-  
+##  Fasttext {#fasttext }
   
 ---
   
-##  GloVe VS Word2vec VS Fasttext
-  
+##  GloVe VS Word2vec VS Fasttext {#glove-vs-word2vec-vs-fasttext }
 - Which is more robust?
 - Which is more efficient?
 - What does word2vec capture than GloVe doesn't?
@@ -332,11 +336,9 @@ We still end up with the normalization factor, <img src="https://latex.codecogs.
   
 ---
   
-##  Appendix
+##  Appendix {#appendix }
   
-  
-###  From Word2vec to GloVe - Math
-  
+###  From Word2vec to GloVe - Math {#from-word2vec-to-glove-math }
   
 Naive Softmax function:
 <p align="center"><img src="https://latex.codecogs.com/gif.latex?Q_{ij}%20=%20&#x5C;frac{e^{u_j^T%20v_i}}{&#x5C;sum_{w=1}^W%20e^{u_w^T%20v_i}}"/></p>  
@@ -351,8 +353,7 @@ Summing negative log of <img src="https://latex.codecogs.com/gif.latex?Q_{ij}"/>
   
 The term: <img src="https://latex.codecogs.com/gif.latex?&#x5C;sum_{j%20=%201}^{W}%20P_{ij}log(Q_{ij})"/> is the cross-entropy of <img src="https://latex.codecogs.com/gif.latex?P_{ij}"/> and <img src="https://latex.codecogs.com/gif.latex?Q_{ij}"/>.
   
-###  Code
-  
+###  Code {#code }
 ```Python
 # find the 3 most similar words to the vector "vec"
 def find_most_similar (vec, words = None) :
@@ -380,8 +381,7 @@ def plot_embeds(word_list, word_embeddings = None, figsize = (10,10)) :
   
 ---
   
-##  Resources
-  
+##  Resources {#resources }
 Small [review](https://www.aclweb.org/anthology/Q15-1016 ) of GloVe and word2vec
 [Evaluating](https://www.aclweb.org/anthology/D15-1036 ) unsupervised word embeddings
 Stanford NLP coursenotes on [GloVe](http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes02-wordvecs2.pdf )

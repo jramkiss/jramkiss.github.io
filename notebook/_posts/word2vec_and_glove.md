@@ -6,18 +6,12 @@ category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-output:
-  pdf_document:
-    toc: true
-    number_sections: true
-    highlight: tango
-
-#markdown:
-#  path: 2019-08-12-word2vec_GFM.md
-#  ignore_from_front_matter: true
-#  absolute_image_path: false
-#export_on_save:
-#  markdown: true
+markdown:
+  path: 2019-08-12-word2vec_GFM.md
+  ignore_from_front_matter: true
+  absolute_image_path: false
+export_on_save:
+  markdown: true
 ---
 
 
@@ -251,6 +245,9 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
 ```
 
 ![](../../assets/word2vec_pca.png)
+
+Error: Command failed: pandoc -f markdown+tex_math_single_backslash -o /Users/jonathanr/Documents/github/jramkiss.github.io/notebook/_posts/word2vec_and_glove.pdf --toc --highlight-style=tango --number-sections --pdf-engine=pdflatex
+pdflatex not found. Please select a different --pdf-engine or install pdflatex
 
 ---
 
