@@ -6,6 +6,12 @@ category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
+    highlight: tango
+
 #markdown:
 #  path: 2019-08-12-word2vec_GFM.md
 #  ignore_from_front_matter: true
@@ -34,6 +40,7 @@ This post will introduce and explain the intuition and math behind [word2vec](ht
   - [Deep Dive](#deep-dive-1)
     - [The Co-Occurrence Matrix](#the-co-occurrence-matrix)
     - [From Word2vec to GloVe](#from-word2vec-to-glove)
+  - [GloVe in Python](#glove-in-python)
 - [Fasttext](#fasttext)
 - [GloVe VS Word2vec VS Fasttext](#glove-vs-word2vec-vs-fasttext)
 - [Appendix](#appendix)
@@ -243,7 +250,7 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
 ```
 
-![](../../assets/word2vec_pca(1).png)
+![](../../assets/word2vec_pca.png)
 
 ---
 
@@ -307,6 +314,21 @@ $$ \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} X_{ij} (u_j^T v_i - log(X_{ij}))^
 We still end up with the normalization factor, $X_{ij}$ which can still suffer from huge values from common words. To deal with this, a weighting function, $f(X)$, is introduced to cap large values.
 
 $$ \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2 $$
+
+### GloVe in Python
+
+Similar to word2vec, we can use the `gensim` package to load pretrained GloVe models and manipulate them in a similar way.
+
+```python
+import gensim.downloader as api
+
+# Download pretrained GloVe model from:
+# https://nlp.stanford.edu/projects/glove/
+glove_model = api.load("glove-wiki-gigaword-100")
+glove = glove_model.wv
+
+del glove_model
+```
 
 ---
 

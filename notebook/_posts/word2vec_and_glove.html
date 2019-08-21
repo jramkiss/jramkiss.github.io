@@ -1,0 +1,545 @@
+<!DOCTYPE html><html><head>
+      <title>Word Vectors Decomposed - Word2Vec and GloVe</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      
+        <script type="text/x-mathjax-config">
+          MathJax.Hub.Config({"extensions":["tex2jax.js"],"jax":["input/TeX","output/HTML-CSS"],"messageStyle":"none","tex2jax":{"processEnvironments":false,"processEscapes":true,"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]},"TeX":{"extensions":["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"]},"HTML-CSS":{"availableFonts":["TeX"],"imageFont":null},"root":"file:///Users/jonathanr/.atom/packages/markdown-preview-enhanced/node_modules/@shd101wyy/mume/dependencies/mathjax"});
+        </script>
+        <script type="text/javascript" async src="file:////Users/jonathanr/.atom/packages/markdown-preview-enhanced/node_modules/@shd101wyy/mume/dependencies/mathjax/MathJax.js" charset="UTF-8"></script>
+        
+      
+      
+
+      
+      
+      
+      
+      
+      
+
+      <style>
+      /**
+ * prism.js Github theme based on GitHub's theme.
+ * @author Sam Clarke
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #333;
+  background: none;
+  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.4;
+
+  -moz-tab-size: 8;
+  -o-tab-size: 8;
+  tab-size: 8;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: .8em;
+  overflow: auto;
+  /* border: 1px solid #ddd; */
+  border-radius: 3px;
+  /* background: #fff; */
+  background: #f5f5f5;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal;
+  background: #f5f5f5;
+}
+
+.token.comment,
+.token.blockquote {
+  color: #969896;
+}
+
+.token.cdata {
+  color: #183691;
+}
+
+.token.doctype,
+.token.punctuation,
+.token.variable,
+.token.macro.property {
+  color: #333;
+}
+
+.token.operator,
+.token.important,
+.token.keyword,
+.token.rule,
+.token.builtin {
+  color: #a71d5d;
+}
+
+.token.string,
+.token.url,
+.token.regex,
+.token.attr-value {
+  color: #183691;
+}
+
+.token.property,
+.token.number,
+.token.boolean,
+.token.entity,
+.token.atrule,
+.token.constant,
+.token.symbol,
+.token.command,
+.token.code {
+  color: #0086b3;
+}
+
+.token.tag,
+.token.selector,
+.token.prolog {
+  color: #63a35c;
+}
+
+.token.function,
+.token.namespace,
+.token.pseudo-element,
+.token.class,
+.token.class-name,
+.token.pseudo-class,
+.token.id,
+.token.url-reference .token.variable,
+.token.attr-name {
+  color: #795da3;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.title,
+.token.title .token.punctuation {
+  font-weight: bold;
+  color: #1d3e81;
+}
+
+.token.list {
+  color: #ed6a43;
+}
+
+.token.inserted {
+  background-color: #eaffea;
+  color: #55a532;
+}
+
+.token.deleted {
+  background-color: #ffecec;
+  color: #bd2c00;
+}
+
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+
+/* JSON */
+.language-json .token.property {
+  color: #183691;
+}
+
+.language-markup .token.tag .token.punctuation {
+  color: #333;
+}
+
+/* CSS */
+code.language-css,
+.language-css .token.function {
+  color: #0086b3;
+}
+
+/* YAML */
+.language-yaml .token.atrule {
+  color: #63a35c;
+}
+
+code.language-yaml {
+  color: #183691;
+}
+
+/* Ruby */
+.language-ruby .token.function {
+  color: #333;
+}
+
+/* Markdown */
+.language-markdown .token.url {
+  color: #795da3;
+}
+
+/* Makefile */
+.language-makefile .token.symbol {
+  color: #795da3;
+}
+
+.language-makefile .token.variable {
+  color: #183691;
+}
+
+.language-makefile .token.builtin {
+  color: #0086b3;
+}
+
+/* Bash */
+.language-bash .token.keyword {
+  color: #0086b3;
+}
+
+/* highlight */
+pre[data-line] {
+  position: relative;
+  padding: 1em 0 1em 3em;
+}
+pre[data-line] .line-highlight-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  display: block;
+  width: 100%;
+}
+
+pre[data-line] .line-highlight {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: inherit 0;
+  margin-top: 1em;
+  background: hsla(24, 20%, 50%,.08);
+  background: linear-gradient(to right, hsla(24, 20%, 50%,.1) 70%, hsla(24, 20%, 50%,0));
+  pointer-events: none;
+  line-height: inherit;
+  white-space: pre;
+}
+
+pre[data-line] .line-highlight:before, 
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-start);
+  position: absolute;
+  top: .4em;
+  left: .6em;
+  min-width: 1em;
+  padding: 0 .5em;
+  background-color: hsla(24, 20%, 50%,.4);
+  color: hsl(24, 20%, 95%);
+  font: bold 65%/1.5 sans-serif;
+  text-align: center;
+  vertical-align: .3em;
+  border-radius: 999px;
+  text-shadow: none;
+  box-shadow: 0 1px white;
+}
+
+pre[data-line] .line-highlight[data-end]:after {
+  content: attr(data-end);
+  top: auto;
+  bottom: .4em;
+}html body{font-family:"Helvetica Neue",Helvetica,"Segoe UI",Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ul,html body>ol{margin-bottom:16px}html body ul,html body ol{padding-left:2em}html body ul.no-list,html body ol.no-list{padding:0;list-style-type:none}html body ul ul,html body ul ol,html body ol ol,html body ol ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:bold;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:bold}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em !important;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::before,html body code::after{letter-spacing:-0.2em;content:"\00a0"}html body pre>code{padding:0;margin:0;font-size:.85em !important;word-break:normal;white-space:pre;background:transparent;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;font-size:.85em !important;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:before,html body pre tt:before,html body pre code:after,html body pre tt:after{content:normal}html body p,html body blockquote,html body ul,html body ol,html body dl,html body pre{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body pre,html body code{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview .pagebreak,.markdown-preview .newpage{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center !important}.markdown-preview:not([for="preview"]) .code-chunk .btn-group{display:none}.markdown-preview:not([for="preview"]) .code-chunk .status{display:none}.markdown-preview:not([for="preview"]) .code-chunk .output-div{margin-bottom:16px}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0}@media screen and (min-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode]) .markdown-preview{font-size:14px !important;padding:1em}}@media print{html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for="html-export"]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,0.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,0.66);border:4px solid rgba(150,150,150,0.66);background-clip:content-box}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{padding:0 1.6em;margin-top:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc li{margin-bottom:.8em}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc ul{list-style-type:none}html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% -  300px);padding:2em calc(50% - 457px -  150px);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for="html-export"]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for="html-export"]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+    </head>
+    <body for="html-export">
+      <div class="mume markdown-preview  ">
+      <p>This post will introduce and explain the intuition and math behind <a href="https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf">word2vec</a> and <a href="https://nlp.stanford.edu/pubs/glove.pdf">GloVe</a>. At the end, the reader will be able to explain these algorithms in lehman terms, and have a solid understanding of the math involved. Only very basic math concepts are necessary for the understanding of this post.</p>
+<div class="code-chunk" data-id="code-chunk-id-0" data-cmd="toc"><div class="input-div"><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div>
+<ul>
+<li><a href="#word2vec">Word2Vec</a>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#deep-dive">Deep Dive</a>
+<ul>
+<li><a href="#skip-gram-model">Skip-Gram Model</a></li>
+<li><a href="#problems-with-naive-softmax">Problems with Naive Softmax</a></li>
+<li><a href="#negative-sampling-loss">Negative Sampling Loss</a></li>
+</ul></li>
+<li><a href="#word2vec-in-python">Word2vec in Python</a>
+<ul>
+<li><a href="#word-arithmetic">Word Arithmetic</a></li>
+<li><a href="#visualizing-word2vec-embeddings">Visualizing word2vec Embeddings</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#glove">GloVe</a>
+<ul>
+<li><a href="#overview-1">Overview</a></li>
+<li><a href="#deep-dive-1">Deep Dive</a>
+<ul>
+<li><a href="#the-co-occurrence-matrix">The Co-Occurrence Matrix</a></li>
+<li><a href="#from-word2vec-to-glove">From Word2vec to GloVe</a></li>
+</ul></li>
+<li><a href="#glove-in-python">GloVe in Python</a></li>
+</ul></li>
+<li><a href="#fasttext">Fasttext</a></li>
+<li><a href="#glove-vs-word2vec-vs-fasttext">GloVe VS Word2vec VS Fasttext</a></li>
+<li><a href="#appendix">Appendix</a>
+<ul>
+<li><a href="#from-word2vec-to-glove-math">From Word2vec to GloVe - Math</a></li>
+<li><a href="#code">Code</a></li>
+</ul></li>
+<li><a href="#resources">Resources</a></li>
+</ul>
+<h2 id="word2vec">Word2Vec</h2>
+<p><a href="https://arxiv.org/pdf/1310.4546.pdf">Word2vec</a> comes in two flavors, the continuous bag-of-words and skip-gram model. These models are similar; CBOW predicts a target word given the context words, and skip-gram predicts context words given the target word. This inversion might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation, which is useful for smaller datasets. Skip-gram on the other hand treats each context-target pair as a new observation, and tends to do better on larger data sets.</p>
+<h3 id="overview">Overview</h3>
+<p>We focus on the skip-gram model in this post. The model architecture is a 1-layer neural network, whose weights we learn. These weights are then used as the word vectors. The objective is to simultaneously (1) maximize the probability that an observed word appears in the context of it&#x2019;s target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.</p>
+<ul>
+<li><span class="math inline">\(word2vec(&apos;king&apos;) - word2vec(&apos;man&apos;) + word2vec(&apos;woman&apos;) = word2vec(&apos;queen&apos;)\)</span><br>
+</li>
+<li><span class="math inline">\(word2vec(&apos;doctor&apos;) - word2vec(&apos;man&apos;) + word2vec(&apos;woman&apos;) = word2vec(&apos;nurse&apos;)\)</span></li>
+</ul>
+<h3 id="deep-dive">Deep Dive</h3>
+<h4 id="skip-gram-model">Skip-Gram Model</h4>
+<p>The skip-gram model is an architecture for learning word embeddings that was first presented in this <a href="https://arxiv.org/pdf/1301.3781.pdf">paper</a>. The idea is that we take a word in the input sequence as the &#x201C;target&#x201D; or &#x201C;center&#x201D; word, and predict the words around it. &#x2018;Around&#x2019; is determined by a pre-specified window size, <span class="math inline">\(m\)</span>.</p>
+<p>More formally, we have an input sequence of words, <span class="math inline">\(w_1, w_2,.., w_T\)</span>, each of which has a context window around them, <span class="math inline">\(-m \le j \le m\)</span>. For each word in the context window, <span class="math inline">\(w_{t+j}\)</span>, we calculate the probability that it appears in the context of target word <span class="math inline">\(w_t\)</span>. The probability of word <span class="math inline">\(w_{t+j}\)</span> appearing in the context of the given target word <span class="math inline">\(w_t\)</span> can be expressed as <span class="math inline">\(p(w_{t+j} | w_t)\)</span>. The mathematical way of representing this is shown below. Breaking down this equation into its constituent parts and referencing their explanation above will help to understand it.</p>
+<p><span class="math display">\[
+J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} | w_t; \theta))
+\]</span></p>
+<p>The skip-gram model is different from other approaches to word embeddings, such as continuous bag-of-words, which is also presented in the original <a href="https://arxiv.org/pdf/1301.3781.pdf">skip-gram paper</a>. The continuous bag-of-words architecture attempts to predict the target word given its context.</p>
+<blockquote>
+<p><em>PUT A VISUALIZATION OF A SENTENCE, THE TARGET WORD AND WINDOW</em></p>
+</blockquote>
+<table>
+<colgroup>
+<col style="width: 100%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;"><img src="../../assets/word2vec_viz.png" alt="Figure 1: Taken from Stanford&#x2019;s NLP course."></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Figure 1: Taken from Stanford&#x2019;s NLP course, shows the skip gram prediction of &#x201C;banking&#x201D; with window size 2.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>SGNS seeks to represent each word w &#x2208; <span class="math inline">\(V_W\)</span> and each context c &#x2208; VC as d-dimensional vectors w and &#x20D7;c, such that words that are &#x201C;similar&#x201D; to each other will have similar vector representations. It does so by trying to maximize a function of the product w &#xB7; &#x20D7;c for (w, c) pairs that occur in D, and minimize it for negative examples: (w, cN ) pairs that do not necessarily occur in D. The negative examples are created by stochastically corrupting observed (w, c) pairs from D &#x2013; hence the name &#x201C;negative sampling&#x201D;. For each observation of (w,c), SGNS draws k contexts from the empirical unigram distribution P (c) = #(c).</p>
+</blockquote>
+<h4 id="problems-with-naive-softmax">Problems with Naive Softmax</h4>
+<p>Before we start, recall that an objective or loss function, <span class="math inline">\(J(\theta)\)</span>, is a way of determining the goodness of a model. We alter the parameters of this function, <span class="math inline">\(\theta\)</span>, to find the best fit for the model. Here we make the ideas about target and context words discussed above more concrete. Note that the parameters of our model are the word embeddings (vectors) we want to find.</p>
+<p>The probability, <span class="math inline">\(p(w_{t+j} | w_t; \theta))\)</span>, can be expressed using the naive softmax function:</p>
+<p><span class="math display">\[
+p(w_{t+j} | w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(W\)</span> is the size of the vocabulary</li>
+<li><span class="math inline">\(c\)</span> and <span class="math inline">\(o\)</span> are indices of the words in the vocabulary at sequence positions <span class="math inline">\(t\)</span> and <span class="math inline">\(j\)</span> respectively</li>
+<li><span class="math inline">\(u_o = word2vec(w_{t+j})\)</span></li>
+<li><span class="math inline">\(v_c = word2vec(w_t)\)</span></li>
+</ul>
+<p>Here, <span class="math inline">\(u_o\)</span> is the &#x201C;context&#x201D; vector representation of word <span class="math inline">\(o\)</span> and <span class="math inline">\(v_c\)</span> is the &#x201C;target&#x201D; vector representation of word <span class="math inline">\(c\)</span>. Having two representations simplifies the calculations, and we can always combine the two representations after.</p>
+<p>Although we now have a way of quantifying the probability a word appears in the context of another, the <span class="math inline">\(\sum_{w=1}^W e^{u_w^T v_c}\)</span> term presents difficulty. It requires us to iterate over all words in the vocabulary and do some calculation. The computational complexity of this term is proportional to the size of the vocabulary, which can be massive, more than <span class="math inline">\(10^6\)</span>. The authors introduce a clever way of dealing with this called negative sampling.</p>
+<h4 id="negative-sampling-loss">Negative Sampling Loss</h4>
+<p>Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample <span class="math inline">\(k\)</span> words and determine the probability that these words <strong>do not</strong> co-occur with the target word. The idea is to train binary logistic regressions for a true pair versus a couple of noise pairs. According to the paper, this is done because a good model should be able to differentiate between data and noise.</p>
+<p>W=To incorporate negative sampling, the skip-gram objective function needs to be altered by replacing <span class="math inline">\(p(w_{t+j} | w_t)\)</span> with:</p>
+<p><span class="math display">\[
+log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]
+\]</span></p>
+<p>Where <span class="math inline">\(\sigma(.)\)</span> is the <a href="https://en.wikipedia.org/wiki/Sigmoid_function">sigmoid function</a>.</p>
+<blockquote>
+<p>Thus the task is to distinguish the target word <span class="math inline">\(w_t\)</span> from draws from the noise distribution <span class="math inline">\(P_n(w)\)</span> using logistic regression, where there are <span class="math inline">\(k\)</span> negative samples for each data sample.</p>
+</blockquote>
+<p><strong>New Objective Function</strong></p>
+<p><span class="math display">\[
+J(\theta) = \frac{-1}{T} \sum_{t=1}^{T}J_t(\theta)
+\]</span></p>
+<p><span class="math display">\[
+J_t(\theta) = log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]
+\]</span></p>
+<p><span class="math display">\[
+P(w) = U(w)^{3/4}/Z
+\]</span></p>
+<p>This is too much, lets look each component of <span class="math inline">\(J_t(\theta)\)</span> and try to convince ourselves this makes sense.</p>
+<p><strong><em>The first part</em></strong>, <span class="math inline">\(log(\sigma(u_o^Tv_c))\)</span>, can be interpreted as the log &#x201C;probability&#x201D; of the target and context words co-occurring. We want our model to find vector representations of <span class="math inline">\(u_o\)</span> and <span class="math inline">\(v_c\)</span> to maximize this probability. The word probability is used loosely here, and is only thrown around because the sigmoid function returns a number between 0 and 1.</p>
+<p><strong><em>The second part</em></strong>, <span class="math inline">\(\sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]\)</span>, is where the &#x201C;sampling&#x201D; in negative sampling happens. Let&#x2019;s break this up more to make it clearer. It&#x2019;ll come in handy to note that <span class="math inline">\(\sigma(-x) = 1 - \sigma(x)\)</span>. First, we can drop the <span class="math inline">\(E_{j \sim P(w)}\)</span> term, since we already know we will be sampling words from some distribution, <span class="math inline">\(P(w)\)</span></p>
+<p><span class="math display">\[
+\sum_{i = 1}^{k} log(\sigma(-u_j^T v_c)) = \sum_{i = 1}^{k} log(1 - \sigma(u_j^T v_c))
+\]</span></p>
+<p>Now this makes a bit more sense, we&#x2019;re taking the log of 1 minus the probability that the sampled word, <span class="math inline">\(j\)</span>, appears in the context of the target word <span class="math inline">\(c\)</span>. This is just log of the probability that <span class="math inline">\(j\)</span> does <strong>not</strong> appear in the context of the target word <span class="math inline">\(c\)</span>. Since <span class="math inline">\(j\)</span> is a randomly drawn word out of ~<span class="math inline">\(10^6\)</span> words, there&#x2019;s a very small chance it appears in the context of <span class="math inline">\(c\)</span>, so this probability should be high. There is also a summation term here up to <span class="math inline">\(k\)</span> elements. All this is saying is that we&#x2019;re sampling <span class="math inline">\(k\)</span> words from <span class="math inline">\(P(w)\)</span>.</p>
+<p>Finally, we have to specify a distribution for negative sampling, <span class="math inline">\(P(w) = U(w)^{3/4}/Z\)</span>. Here, <span class="math inline">\(U(w)\)</span> is the unigram distribution and is raised to the <span class="math inline">\(\frac{3}{4}\)</span>th power to sample rarer words in the vocabulary. <span class="math inline">\(Z\)</span> is just a normalization term.</p>
+<p>To summarize, this loss function is trying to maximize the probability that word <span class="math inline">\(o\)</span> appears in the context of word <span class="math inline">\(c\)</span>, while minimizing the probability that a randomly selected word from the vocabulary appears in the context of word <span class="math inline">\(c\)</span>. We use the gradient of this loss function to update the word vectors, <span class="math inline">\(u_o\)</span> and <span class="math inline">\(v_c\)</span> to get our word embeddings.</p>
+<p><strong>Summary of Word2Vec</strong></p>
+<ul>
+<li>Iterate through every word in the whole corpus</li>
+<li>Predict surrounding words (context words) using word vectors</li>
+<li>Update the word vectors based on the loss function</li>
+</ul>
+<h3 id="word2vec-in-python">Word2vec in Python</h3>
+<p>Instead of training our own word2vec model, we&#x2019;ll use a pre-trained model to visualize word embeddings. We&#x2019;ll use Google&#x2019;s News dataset model, which can be downloaded <a href="https://code.google.com/archive/p/word2vec/">here</a>. Fair warning that the model is 1.5Gb, and is trained on a vocabulary of 3 million words, with embedding vectors of length 300.</p>
+<p>This model doesn&#x2019;t contain some common words, like &#x201C;and&#x201D; or &#x201C;of&#x201D;, however it does contain others like &#x201C;the&#x201D; and &#x201C;also&#x201D;. <a href="https://github.com/chrisjmccormick/inspect_word2vec">This repo</a> has a more in-depth analysis of what the model contains and doesn&#x2019;t.</p>
+<p>We&#x2019;ll use the <code>gensim</code> Python package to load and explore the model. If you dont have it installed, run <code>pip install gensim</code> in your command line.</p>
+<pre class="text language-text language-python" data-role="codeBlock" data-info="python"><span class="token keyword">import</span> gensim
+
+<span class="token comment"># Download model and save it to current directory, or update the path</span>
+model_path <span class="token operator">=</span> <span class="token string">&quot;GoogleNews-vectors-negative300.bin&quot;</span>
+
+<span class="token comment"># Load Google&apos;s pre-trained Word2Vec model.</span>
+model <span class="token operator">=</span> gensim<span class="token punctuation">.</span>models<span class="token punctuation">.</span>KeyedVectors<span class="token punctuation">.</span>load_word2vec_format<span class="token punctuation">(</span>model_path<span class="token punctuation">,</span> binary<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>  
+
+<span class="token comment"># extract word vectors from the model</span>
+wv <span class="token operator">=</span> model<span class="token punctuation">.</span>wv
+
+<span class="token comment"># remove model from env</span>
+<span class="token keyword">del</span> model</pre>
+<p>Now we have vector representations for all words in the vocabulary in <code>wv</code> and can query this like a dictionary.</p>
+<pre class="text language-text language-python" data-role="codeBlock" data-info="python">dog_vec <span class="token operator">=</span> wv<span class="token punctuation">[</span><span class="token string">&quot;dog&quot;</span><span class="token punctuation">]</span> <span class="token comment"># &quot;dog&quot; embedding</span>
+
+<span class="token comment"># Distances from each word in animal_list to the word animal</span>
+animal_list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&quot;dog&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;cat&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;mouse&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;hamster&quot;</span><span class="token punctuation">]</span>
+animal_similarity <span class="token operator">=</span> wv<span class="token punctuation">.</span>distances<span class="token punctuation">(</span><span class="token string">&quot;animal&quot;</span><span class="token punctuation">,</span> animal_list<span class="token punctuation">)</span>
+<span class="token builtin">list</span><span class="token punctuation">(</span><span class="token builtin">zip</span><span class="token punctuation">(</span>animal_list<span class="token punctuation">,</span> animal_similarity<span class="token punctuation">)</span><span class="token punctuation">)</span></pre>
+<pre class="text language-text" data-role="codeBlock" data-info="text"><code>[(&apos;dog&apos;, 0.35619873),
+ (&apos;cat&apos;, 0.40923107),
+ (&apos;mouse&apos;, 0.69155),
+ (&apos;hamster&apos;, 0.5817574)]</code></pre>
+<h4 id="word-arithmetic">Word Arithmetic</h4>
+<p>Let&#x2019;s add and subtract some word vectors, then see what the closest word to the resulting vector is. We&#x2019;ve all seen the &#x201C;king&#x201D; - &#x201C;man&#x201D; + &#x201C;woman&#x201D; = &#x201C;queen&#x201D; example, so I&#x2019;ll present some new ones.</p>
+<p>Results generated by the <code>find_most_similar</code> function are of the form (word, cosine similarity), where &#x201C;word&#x201D; is the closest word to the vector parsed into the function. Cosine similarity values closer to 1 means the vectors (words) are more similar. Its definition can be found in the appendix. Let&#x2019;s see what the model thinks a <code>doctor - man + woman</code> is:</p>
+<pre class="text language-text language-python" data-role="codeBlock" data-info="python">find_most_similar<span class="token punctuation">(</span>wv<span class="token punctuation">[</span><span class="token string">&quot;doctor&quot;</span><span class="token punctuation">]</span> <span class="token operator">-</span> wv<span class="token punctuation">[</span><span class="token string">&quot;man&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span> wv<span class="token punctuation">[</span><span class="token string">&quot;woman&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                  <span class="token punctuation">[</span><span class="token string">&quot;man&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;doctor&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;woman&quot;</span><span class="token punctuation">]</span><span class="token punctuation">)</span></pre>
+<pre class="text language-text" data-role="codeBlock" data-info="text"><code>[(&apos;gynecologist&apos;, 0.7276507616043091),
+ (&apos;nurse&apos;, 0.6698512434959412),
+ (&apos;physician&apos;, 0.6674120426177979)]</code></pre>
+<p>Interesting, what about if we make a subtle change to <code>doctor - woman + man</code>?</p>
+<pre class="text language-text language-python" data-role="codeBlock" data-info="python">find_most_similar<span class="token punctuation">(</span>wv<span class="token punctuation">[</span><span class="token string">&quot;doctor&quot;</span><span class="token punctuation">]</span> <span class="token operator">-</span> wv<span class="token punctuation">[</span><span class="token string">&quot;woman&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span> wv<span class="token punctuation">[</span><span class="token string">&quot;man&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+                  <span class="token punctuation">[</span><span class="token string">&quot;man&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;doctor&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;woman&quot;</span><span class="token punctuation">]</span><span class="token punctuation">)</span></pre>
+<pre class="text language-text" data-role="codeBlock" data-info="text"><code>[(&apos;physician&apos;, 0.6823904514312744),
+ (&apos;surgeon&apos;, 0.5908077359199524),
+ (&apos;dentist&apos;, 0.570309042930603)]</code></pre>
+<p>This is a different results from the original query! Biases in the training data are captured and expressed by the model. I won&#x2019;t go into detail about this here. Instead you should take away that the order of arithmetic for word vectors matters a great deal.</p>
+<h4 id="visualizing-word2vec-embeddings">Visualizing word2vec Embeddings</h4>
+<p>To wrap up word2vec, lets look at how the model clusters different words. I&#x2019;ve compiled words from different walks of life to see if word2vec was able to unravel their semantic similarities. These words are parsed through word2vec, then the first 2 principal components are plotted. Some expected similarities are seen here, however it should be noted that we lose a lot of information from reducing the dimension from 300 to 2.</p>
+<pre class="text language-text language-python" data-role="codeBlock" data-info="python"><span class="token comment"># Embedding that makes sense</span>
+plot_embeds<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&quot;dog&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;cat&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;hamster&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;pet&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span>                   <span class="token comment"># animals</span>
+            <span class="token punctuation">[</span><span class="token string">&quot;boy&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;girl&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;man&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;woman&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span>                    <span class="token comment"># humans</span>
+            <span class="token punctuation">[</span><span class="token string">&quot;grown&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;adult&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;young&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;baby&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span>                <span class="token comment"># age</span>
+            <span class="token punctuation">[</span><span class="token string">&quot;german&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;english&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;spanish&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;french&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span>         <span class="token comment"># languages</span>
+            <span class="token punctuation">[</span><span class="token string">&quot;mathematics&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;physics&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;biology&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;chemistry&quot;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>  <span class="token comment"># natural sciences</span></pre>
+<p><img src="../../assets/word2vec_pca(1).png"></p>
+<hr>
+<h2 id="glove">GloVe</h2>
+<p>GloVe (Global Vectors) is another architecture for producing word embeddings. It improves on some key downsides of the skip-gram model, as well as incorporating its advantages. One of these downsides is the loss of corpus statistics due to capturing information one window at a time. GloVe&#x2019;s loss function incorporates word-word occurrence counts to capture global information about context.</p>
+<p>One of these downsides of the skip-gram is it tries to capture information from the corpus one window at a time. In doing so, it loses out on key statistical information about the entire corpus, such as word co-occurrence counts. On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.</p>
+<blockquote>
+<p>GloVe, for Global Vectors, because the global corpus statistics are captured directly by the model.</p>
+</blockquote>
+<h3 id="overview-1">Overview</h3>
+<p>For each pair of words, GloVe tries to minimize the difference between their dot product and log co-occurrence count.</p>
+<h3 id="deep-dive-1">Deep Dive</h3>
+<h4 id="the-co-occurrence-matrix">The Co-Occurrence Matrix</h4>
+<p>We have a matrix, <span class="math inline">\(X\)</span>, where each row corresponds to a target word, and each column corresponds to a context word. The entry at <span class="math inline">\(X_{ij}\)</span> is then the number of times word <span class="math inline">\(j\)</span> occurs in the context of word <span class="math inline">\(i\)</span>. Context is defined in the same way as the skip-gram model. Summing over all the values in row <span class="math inline">\(i\)</span>, will give the number of words that occur in its context, <span class="math inline">\(X_i = \sum_k X_{ik}\)</span>. Now we can define <span class="math inline">\(P_{ij}\)</span>, the probability of word <span class="math inline">\(j\)</span> occurring in the context of word <span class="math inline">\(i\)</span>, as <span class="math inline">\(P(i | j) = \frac{X_{ij}}{X_i}\)</span>.</p>
+<p>Two main advantages of computing the co-occurrence matrix is that it contains all statistical information about the corpus and only needs to be computed once. We will see how it&#x2019;s used in the next section.</p>
+<h4 id="from-word2vec-to-glove">From Word2vec to GloVe</h4>
+<p>The skip-gram model uses negative sampling to bypass the bottleneck of naive softmax loss. GloVe takes a different approach to this, which we&#x2019;ll discuss in this section.</p>
+<p>Starting from the naive softmax function, we calculate the probability, <span class="math inline">\(Q_{ij}\)</span>, that word <span class="math inline">\(j\)</span> appears in the context of word <span class="math inline">\(i\)</span>. Then summing <span class="math inline">\(-log(Q_{ij})\)</span> for each context-target word pair (i.e.&#xA0;each <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>) in the corpus can give us the global loss. This is similar to cross-entropy loss.</p>
+<p><span class="math display">\[J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) \]</span></p>
+<p>Since the words <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> appear <span class="math inline">\(X_{ij}\)</span> times in the corpus, we don&#x2019;t need to iterate over all windows in the corpus, but can iterate over the vocabulary instead. As a refresher, the corpus is the body of text we train the model on, and the vocabulary is all unique words in that text.</p>
+<p><span class="math display">\[ J = - \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} log Q_{ij} \]</span></p>
+<p>Re-arranging some terms, we can come up with this:</p>
+<p><span class="math display">\[ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) \]</span></p>
+<p><strong>What&#x2019;s going on right now?</strong> - <strong>Where did <span class="math inline">\(P_{ij}\)</span> come from?</strong> - Remember that <span class="math inline">\(P_{ij} = \frac{X_{ij}}{X_i}\)</span> and <span class="math inline">\(X_i = \sum_k X_{ik}\)</span>, therefore we can substitute <span class="math inline">\(X_{ij} = P_{ij}X_i\)</span>. - <strong>What&#x2019;s the relationship between <span class="math inline">\(P_{ij}\)</span> and <span class="math inline">\(Q_{ij}\)</span>?</strong> - Remember that <span class="math inline">\(P_{ij}\)</span> is the probability that word <span class="math inline">\(j\)</span> appears in the context of word <span class="math inline">\(i\)</span> but <span class="math inline">\(Q_{ij}\)</span> is also the probability that word <span class="math inline">\(j\)</span> appears in the context of word <span class="math inline">\(i\)</span>. The difference between the two lies in how they are calculated; <span class="math inline">\(P_{ij}\)</span> is calculated using the data (corpus and vocabulary), so it doesn&#x2019;t change. On the other hand, <span class="math inline">\(Q_{ij}\)</span> is the naive softmax probability, that is calculated using the dot product of word vectors of <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, (<span class="math inline">\(u_j^T v_i\)</span>). We have the ability to change <span class="math inline">\(Q_{ij}\)</span> by changing these word vectors. - <strong>What&#x2019;s the point of <span class="math inline">\(P_{ij}log(Q_{ij})\)</span>?</strong> - Now that we&#x2019;ve refreshed our memory of <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>, we can see that <span class="math inline">\(P\)</span> is the <em>true</em> probability distribution of context and target words, and <span class="math inline">\(Q\)</span> is some made up distribution based on the &#x201C;goodness&#x201D; of the word vectors. We really want these two distributions to be close to each other. Observing this, <span class="math inline">\(H = P_{ij}log(Q_{ij})\)</span>, when <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> are close to each other, <span class="math inline">\(H\)</span> is small, and when <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> are far apart, <span class="math inline">\(H\)</span> gets larger. Our end goal is the minimization of <span class="math inline">\(J\)</span>, so the smaller <span class="math inline">\(H\)</span> is is better.</p>
+<p>See <a href="#appendix">Appendix</a> for more</p>
+<p>Now we need to find some measure of &#x201C;closeness&#x201D; between <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>. We still have <span class="math inline">\(Q_{ij}\)</span> and <span class="math inline">\(P_{ij}\)</span> whose normalization terms we have to iteration over the entire vocabulary to calculate. GloVe overcomes this by dropping the normalization terms completely.</p>
+<blockquote>
+<p>To begin, cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events. Furthermore, for the measure to be bounded it requires that the model distribution Q be properly normalized. This presents a computational bottleneck. A natural choice would be a least squares objective in which normalization factors in Q and P are discarded</p>
+</blockquote>
+<p>Continuing down the cross-entropy route doesn&#x2019;t work because of the normalization terms for probability distributions. We just discard these normalization terms, and turn the loss into a weighted least squares function.</p>
+<p><span class="math display">\[ \hat{J} = \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} (\hat{P}_{ij} - \hat{Q}_{ij})^2 \]</span></p>
+<p>Where <span class="math inline">\(\hat{Q}_{ij} = e^{u_j^T v_i}\)</span> and <span class="math inline">\(\hat{P}_{ij} = X_{ij}\)</span> are un-normalized probability distributions. The problem with this is that <span class="math inline">\(X_{ij}\)</span> takes on very large values for common words in the vocabulary, like &#x201C;the&#x201D;, &#x201C;of&#x201D;, etc. GloVe accounts for this is by taking the log counts. The new objective function then becomes:</p>
+<p><span class="math display">\[ \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} X_{ij} (u_j^T v_i - log(X_{ij}))^2 \]</span></p>
+<p>We still end up with the normalization factor, <span class="math inline">\(X_{ij}\)</span> which can still suffer from huge values from common words. To deal with this, a weighting function, <span class="math inline">\(f(X)\)</span>, is introduced to cap large values.</p>
+<p><span class="math display">\[ \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2 \]</span></p>
+<h3 id="glove-in-python">GloVe in Python</h3>
+<p>Similar to word2vec, we can use the <code>gensim</code> package to load pretrained GloVe models and manipulate them in a similar way.</p>
+<pre class="text language-text language-python" data-role="codeBlock" data-info="python"><span class="token keyword">import</span> gensim<span class="token punctuation">.</span>downloader <span class="token keyword">as</span> api
+
+<span class="token comment"># Download pretrained GloVe model from:</span>
+<span class="token comment"># https://nlp.stanford.edu/projects/glove/</span>
+glove_model <span class="token operator">=</span> api<span class="token punctuation">.</span>load<span class="token punctuation">(</span><span class="token string">&quot;glove-wiki-gigaword-100&quot;</span><span class="token punctuation">)</span>
+glove <span class="token operator">=</span> glove_model<span class="token punctuation">.</span>wv
+
+<span class="token keyword">del</span> glove_model</pre>
+<hr>
+<h2 id="fasttext">Fasttext</h2>
+<hr>
+<h2 id="glove-vs-word2vec-vs-fasttext">GloVe VS Word2vec VS Fasttext</h2>
+<ul>
+<li>Which is more robust?</li>
+<li>Which is more efficient?</li>
+<li>What does word2vec capture than GloVe doesn&#x2019;t?</li>
+<li></li>
+</ul>
+<hr>
+<h2 id="appendix">Appendix</h2>
+<h3 id="from-word2vec-to-glove-math">From Word2vec to GloVe - Math</h3>
+<p>Naive Softmax function: <span class="math display">\[ Q_{ij} = \frac{e^{u_j^T v_i}}{\sum_{w=1}^W e^{u_w^T v_i}} \]</span> The bottleneck to the naive softmax function is that the calculation of <span class="math inline">\(\sum_{w=1}^W e^{u_w^T v_i}\)</span> requires iteration over the entire vocabulary.</p>
+<p>Summing negative log of <span class="math inline">\(Q_{ij}\)</span> to get the global loss: <span class="math display">\[J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) \]</span></p>
+<p><span class="math display">\[ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) \]</span> The term: <span class="math inline">\(\sum_{j = 1}^{W} P_{ij}log(Q_{ij})\)</span> is the cross-entropy of <span class="math inline">\(P_{ij}\)</span> and <span class="math inline">\(Q_{ij}\)</span>.</p>
+<h3 id="code">Code</h3>
+<pre class="text language-text language-python" data-role="codeBlock" data-info="Python"><span class="token comment"># find the 3 most similar words to the vector &quot;vec&quot;</span>
+<span class="token keyword">def</span> <span class="token function">find_most_similar</span> <span class="token punctuation">(</span>vec<span class="token punctuation">,</span> words <span class="token operator">=</span> <span class="token boolean">None</span><span class="token punctuation">)</span> <span class="token punctuation">:</span>
+    <span class="token comment"># vec: resulting vector from word Arithmetic</span>
+    <span class="token comment"># words: list of words that comprise vec</span>
+    s <span class="token operator">=</span> wv<span class="token punctuation">.</span>similar_by_vector<span class="token punctuation">(</span>vec<span class="token punctuation">,</span> topn <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">)</span>
+    <span class="token comment"># filter out words like &quot;king&quot; and &quot;man&quot;, or else they will be included in the similarity</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>words <span class="token operator">!=</span> <span class="token boolean">None</span><span class="token punctuation">)</span> <span class="token punctuation">:</span>
+      word_sim <span class="token operator">=</span> <span class="token builtin">list</span><span class="token punctuation">(</span><span class="token builtin">filter</span><span class="token punctuation">(</span><span class="token keyword">lambda</span> x<span class="token punctuation">:</span> <span class="token punctuation">(</span>x<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token keyword">not</span> <span class="token keyword">in</span> words<span class="token punctuation">)</span><span class="token punctuation">,</span> s<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">3</span><span class="token punctuation">]</span>
+    <span class="token keyword">else</span> <span class="token punctuation">:</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>s<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span>word_sim<span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">plot_embeds</span><span class="token punctuation">(</span>word_list<span class="token punctuation">,</span> word_embeddings <span class="token operator">=</span> <span class="token boolean">None</span><span class="token punctuation">,</span> figsize <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">:</span>
+    <span class="token comment"># pca on the embedding</span>
+    pca <span class="token operator">=</span> PCA<span class="token punctuation">(</span>n_components<span class="token operator">=</span><span class="token number">2</span><span class="token punctuation">)</span>
+    X <span class="token operator">=</span> pca<span class="token punctuation">.</span>fit_transform<span class="token punctuation">(</span>wv<span class="token punctuation">[</span>word_list<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+    ax <span class="token operator">=</span> plt<span class="token punctuation">.</span>figure<span class="token punctuation">(</span>figsize<span class="token operator">=</span>figsize<span class="token punctuation">)</span>
+    ax<span class="token punctuation">.</span>subplots<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    _ <span class="token operator">=</span> plt<span class="token punctuation">.</span>scatter<span class="token punctuation">(</span>X<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> X<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> label<span class="token punctuation">,</span> point <span class="token keyword">in</span> <span class="token builtin">list</span><span class="token punctuation">(</span><span class="token builtin">zip</span><span class="token punctuation">(</span>word_list<span class="token punctuation">,</span> X<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        _ <span class="token operator">=</span> plt<span class="token punctuation">.</span>annotate<span class="token punctuation">(</span>label<span class="token punctuation">,</span> <span class="token punctuation">(</span>point<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> point<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre>
+<hr>
+<h2 id="resources">Resources</h2>
+<p>Small <a href="https://www.aclweb.org/anthology/Q15-1016">review</a> of GloVe and word2vec <a href="https://www.aclweb.org/anthology/D15-1036">Evaluating</a> unsupervised word embeddings Stanford NLP coursenotes on <a href="http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes02-wordvecs2.pdf">GloVe</a> Stanford NLP coursenotes on <a href="http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes01-wordvecs1.pdf">word2vec</a> <a href="https://nlp.stanford.edu/pubs/glove.pdf">GloVe</a> <a href="http://web.stanford.edu/class/cs224n/index.html#coursework">Stanford NLP coursenotes</a> <a href="https://radimrehurek.com/gensim/models/word2vec.html">Gensim Models</a> <a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/word2vec/word2vec_basic.py">Word2vec in Tensorflow</a> Atom <a href="https://shd101wyy.github.io/markdown-preview-enhanced/#/">markdown docs</a>.</p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
