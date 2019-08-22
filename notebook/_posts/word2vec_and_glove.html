@@ -267,32 +267,19 @@ pre[data-line] .line-highlight[data-end]:after {
     </head>
     <body for="html-export">
       <div class="mume markdown-preview  ">
-      <p>This post will introduce and explain the intuition and math behind <a href="https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf">word2vec</a> and <a href="https://nlp.stanford.edu/pubs/glove.pdf">GloVe</a>. At the end, the reader will be able to explain these algorithms in lehman terms, and have a solid understanding of the math involved. Only very basic math concepts are necessary for the understanding of this post.</p>
+      <p>This post will explain the math and intuition behind <a href="https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf">word2vec</a>, <a href="https://nlp.stanford.edu/pubs/glove.pdf">GloVe</a> and fasttext.</p>
 <div class="code-chunk" data-id="code-chunk-id-0" data-cmd="toc"><div class="input-div"><div class="btn-group"><div class="run-btn btn"><span>&#x25B6;&#xFE0E;</span></div><div class="run-all-btn btn">all</div></div><div class="status">running...</div></div><div class="output-div"></div></div>
 <ul>
 <li><a href="#word2vec">Word2Vec</a>
 <ul>
 <li><a href="#overview">Overview</a></li>
-<li><a href="#deep-dive">Deep Dive</a>
-<ul>
-<li><a href="#skip-gram-model">Skip-Gram Model</a></li>
-<li><a href="#problems-with-naive-softmax">Problems with Naive Softmax</a></li>
-<li><a href="#negative-sampling-loss">Negative Sampling Loss</a></li>
-</ul></li>
-<li><a href="#word2vec-in-python">Word2vec in Python</a>
-<ul>
-<li><a href="#word-arithmetic">Word Arithmetic</a></li>
-<li><a href="#visualizing-word2vec-embeddings">Visualizing word2vec Embeddings</a></li>
-</ul></li>
+<li><a href="#deep-dive">Deep Dive</a></li>
+<li><a href="#word2vec-in-python">Word2vec in Python</a></li>
 </ul></li>
 <li><a href="#glove">GloVe</a>
 <ul>
 <li><a href="#overview-1">Overview</a></li>
-<li><a href="#deep-dive-1">Deep Dive</a>
-<ul>
-<li><a href="#the-co-occurrence-matrix">The Co-Occurrence Matrix</a></li>
-<li><a href="#from-word2vec-to-glove">From Word2vec to GloVe</a></li>
-</ul></li>
+<li><a href="#deep-dive-1">Deep Dive</a></li>
 <li><a href="#glove-in-python">GloVe in Python</a></li>
 </ul></li>
 <li><a href="#fasttext">Fasttext</a></li>
@@ -305,32 +292,21 @@ pre[data-line] .line-highlight[data-end]:after {
 <li><a href="#resources">Resources</a></li>
 </ul>
 <h2 id="word2vec">Word2Vec</h2>
-<p><a href="https://arxiv.org/pdf/1310.4546.pdf">Word2vec</a> comes in two flavors, the continuous bag-of-words and skip-gram model. These models are similar; CBOW predicts a target word given the context words, and skip-gram predicts context words given the target word. This inversion might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation, which is useful for smaller datasets. Skip-gram on the other hand treats each context-target pair as a new observation, and tends to do better on larger data sets.</p>
+<p>The <a href="https://arxiv.org/pdf/1310.4546.pdf">word2vec</a> model typically refers to an implementation of one of two models, the continuous bag-of-words (CBOW) or the skip-gram model. They are very similar, CBOW accepts context words as input and predicts the target word and skip-gram accepts the target word as input and predicts a context word. This inversion might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation, which is useful for smaller datasets. Skip-gram on the other hand treats each context-target pair as a new observation, and tends to do better on larger data sets.</p>
+<p><a href="https://arxiv.org/pdf/1301.3781.pdf">Original paper</a></p>
 <h3 id="overview">Overview</h3>
-<p>We focus on the skip-gram model in this post. The model architecture is a 1-layer neural network, whose weights we learn. These weights are then used as the word vectors. The objective is to simultaneously (1) maximize the probability that an observed word appears in the context of it&#x2019;s target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.</p>
-<ul>
-<li><span class="math inline">\(word2vec(&apos;king&apos;) - word2vec(&apos;man&apos;) + word2vec(&apos;woman&apos;) = word2vec(&apos;queen&apos;)\)</span><br>
-</li>
-<li><span class="math inline">\(word2vec(&apos;doctor&apos;) - word2vec(&apos;man&apos;) + word2vec(&apos;woman&apos;) = word2vec(&apos;nurse&apos;)\)</span></li>
-</ul>
+<p>Although this post will primarily focus on the skip-gram model, both models are single layer neural networks whose weights we learn. This weight matrix will then contain the word vectors for all of our words. The objective function tries to simultaneously (1) maximize the probability that an observed word appears in the context of it&#x2019;s target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.</p>
+<p>If you&#x2019;re still unsure about neural network weights and the weight matrix, I recommend reading <a href="http://neuralnetworksanddeeplearning.com/chap1.html">this chapter</a></p>
 <h3 id="deep-dive">Deep Dive</h3>
-<h4 id="skip-gram-model">Skip-Gram Model</h4>
-<p>The skip-gram model is an architecture for learning word embeddings that was first presented in this <a href="https://arxiv.org/pdf/1301.3781.pdf">paper</a>. The idea is that we take a word in the input sequence as the &#x201C;target&#x201D; or &#x201C;center&#x201D; word, and predict the words around it. &#x2018;Around&#x2019; is determined by a pre-specified window size, <span class="math inline">\(m\)</span>.</p>
-<p>More formally, we have an input sequence of words, <span class="math inline">\(w_1, w_2,.., w_T\)</span>, each of which has a context window around them, <span class="math inline">\(-m \le j \le m\)</span>. For each word in the context window, <span class="math inline">\(w_{t+j}\)</span>, we calculate the probability that it appears in the context of target word <span class="math inline">\(w_t\)</span>. The probability of word <span class="math inline">\(w_{t+j}\)</span> appearing in the context of the given target word <span class="math inline">\(w_t\)</span> can be expressed as <span class="math inline">\(p(w_{t+j} | w_t)\)</span>. The mathematical way of representing this is shown below. Breaking down this equation into its constituent parts and referencing their explanation above will help to understand it.</p>
-<p><span class="math display">\[
-J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} | w_t; \theta))
-\]</span></p>
-<p>The skip-gram model is different from other approaches to word embeddings, such as continuous bag-of-words, which is also presented in the original <a href="https://arxiv.org/pdf/1301.3781.pdf">skip-gram paper</a>. The continuous bag-of-words architecture attempts to predict the target word given its context.</p>
-<blockquote>
-<p><em>PUT A VISUALIZATION OF A SENTENCE, THE TARGET WORD AND WINDOW</em></p>
-</blockquote>
+<p>The idea behind the skip-gram model is we take a word in an input sequence as the &#x201C;target&#x201D; or &#x201C;center&#x201D; word, and predict the words around it. &#x2018;Around&#x2019; is determined by a pre-specified window size, <span class="math inline">\(m\)</span>. In the figure below, we have a window size of 2, the input word is &#x201C;banking&#x201D; and its context words are &#x201C;turning&#x201D;, &#x201C;into&#x201D;, &#x201C;crises&#x201D; and &#x201C;as&#x201D;. <strong>We want to quantify the probability that each word in the window appears in the context of the target word.</strong></p>
+<p><br></p>
 <table>
 <colgroup>
 <col style="width: 100%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: center;"><img src="../../assets/word2vec_viz.png" alt="Figure 1: Taken from Stanford&#x2019;s NLP course."></th>
+<th style="text-align: center;"><img src="../../assets/word2vec_viz.png" alt="Figure1"></th>
 </tr>
 </thead>
 <tbody>
@@ -339,12 +315,13 @@ J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>SGNS seeks to represent each word w &#x2208; <span class="math inline">\(V_W\)</span> and each context c &#x2208; VC as d-dimensional vectors w and &#x20D7;c, such that words that are &#x201C;similar&#x201D; to each other will have similar vector representations. It does so by trying to maximize a function of the product w &#xB7; &#x20D7;c for (w, c) pairs that occur in D, and minimize it for negative examples: (w, cN ) pairs that do not necessarily occur in D. The negative examples are created by stochastically corrupting observed (w, c) pairs from D &#x2013; hence the name &#x201C;negative sampling&#x201D;. For each observation of (w,c), SGNS draws k contexts from the empirical unigram distribution P (c) = #(c).</p>
-</blockquote>
-<h4 id="problems-with-naive-softmax">Problems with Naive Softmax</h4>
-<p>Before we start, recall that an objective or loss function, <span class="math inline">\(J(\theta)\)</span>, is a way of determining the goodness of a model. We alter the parameters of this function, <span class="math inline">\(\theta\)</span>, to find the best fit for the model. Here we make the ideas about target and context words discussed above more concrete. Note that the parameters of our model are the word embeddings (vectors) we want to find.</p>
-<p>The probability, <span class="math inline">\(p(w_{t+j} | w_t; \theta))\)</span>, can be expressed using the naive softmax function:</p>
+<p><br></p>
+<p>Before we start to build the objective function discussed above, here&#x2019;s some useful notation. We have an input sequence of words, <span class="math inline">\(w_1, w_2,.., w_T\)</span>, each of which has a context window, <span class="math inline">\(-m \le j \le m\)</span>. We&#x2019;ll call this input sequence the <em>corpus</em>, and all its unique words the <em>vocabulary</em>. Each word in the vocabulary will have 2 vector representations, <span class="math inline">\(u_o\)</span> for context and <span class="math inline">\(v_c\)</span> for target. In figure 1, <span class="math inline">\(u_{turning}\)</span> is the vector representation of &#x201C;turning&#x201D; as a context word, and <span class="math inline">\(v_{banking}\)</span> is the vector representation of &#x201C;banking&#x201D; as a target word.</p>
+<p>We want to calculate the probability that each word in the window, <span class="math inline">\(w_{t+j}\)</span>, appears in the context of target word <span class="math inline">\(w_t\)</span>. This might seem weird, but the probability is based on the vector representations of each word. Every time we encounter a word in context of a target word, we alter their vector representations to be &#x201C;closer&#x201D;. Referring to the example above, <span class="math inline">\(p(turning | banking)\)</span> &gt; <span class="math inline">\(p(problems | banking)\)</span>, so the vectors for &#x201C;turning&#x201D; and &#x201C;banking&#x201D; will be updated to be closer than &#x201C;problems&#x201D; and &#x201C;banking&#x201D;. We can now define a function that describes this. <span class="math inline">\(\theta\)</span> is a placeholder representing all the vector representations.</p>
+<p><span class="math display">\[
+J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} | w_t; \theta))
+\]</span></p>
+<p>The only problem here is we have no idea how to find <span class="math inline">\(p(w_{t+j} | w_t; \theta)\)</span>. We&#x2019;ll start with using the softmax function. This will calculate the probability of a word vector, <span class="math inline">\(u_o\)</span>, co-occurring with a target word vector, <span class="math inline">\(v_c\)</span>. It essentially means &#x201C;how similar is context word <span class="math inline">\(u_o\)</span> to target word <span class="math inline">\(v_c\)</span>, relative to all other context words in the vocabulary&#x201D;. The measure of similarity between two words is measured by the dot product <span class="math inline">\(u_o^T v_c\)</span>.</p>
 <p><span class="math display">\[
 p(w_{t+j} | w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
 \]</span></p>
@@ -355,11 +332,10 @@ p(w_{t+j} | w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
 <li><span class="math inline">\(u_o = word2vec(w_{t+j})\)</span></li>
 <li><span class="math inline">\(v_c = word2vec(w_t)\)</span></li>
 </ul>
-<p>Here, <span class="math inline">\(u_o\)</span> is the &#x201C;context&#x201D; vector representation of word <span class="math inline">\(o\)</span> and <span class="math inline">\(v_c\)</span> is the &#x201C;target&#x201D; vector representation of word <span class="math inline">\(c\)</span>. Having two representations simplifies the calculations, and we can always combine the two representations after.</p>
-<p>Although we now have a way of quantifying the probability a word appears in the context of another, the <span class="math inline">\(\sum_{w=1}^W e^{u_w^T v_c}\)</span> term presents difficulty. It requires us to iterate over all words in the vocabulary and do some calculation. The computational complexity of this term is proportional to the size of the vocabulary, which can be massive, more than <span class="math inline">\(10^6\)</span>. The authors introduce a clever way of dealing with this called negative sampling.</p>
+<p>Although we now have a way of quantifying the probability a word appears in the context of another, the <span class="math inline">\(\sum_{w=1}^W e^{u_w^T v_c}\)</span> requires us to iterate over all words in the vocabulary. To deal with this, we must approximate the softmax probability. One way of doing this is negative sampling.</p>
 <h4 id="negative-sampling-loss">Negative Sampling Loss</h4>
-<p>Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample <span class="math inline">\(k\)</span> words and determine the probability that these words <strong>do not</strong> co-occur with the target word. The idea is to train binary logistic regressions for a true pair versus a couple of noise pairs. According to the paper, this is done because a good model should be able to differentiate between data and noise.</p>
-<p>W=To incorporate negative sampling, the skip-gram objective function needs to be altered by replacing <span class="math inline">\(p(w_{t+j} | w_t)\)</span> with:</p>
+<p>Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample <span class="math inline">\(k\)</span> words and determine the probability that these words <strong>do not</strong> co-occur with the target word.The intuition behind this is that a good model should be able to differentiate between data and noise.</p>
+<p>To incorporate negative sampling, the objective function needs to be altered by replacing <span class="math inline">\(p(w_{t+j} | w_t)\)</span> with:</p>
 <p><span class="math display">\[
 log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]
 \]</span></p>
@@ -377,15 +353,19 @@ J_t(\theta) = log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sig
 <p><span class="math display">\[
 P(w) = U(w)^{3/4}/Z
 \]</span></p>
-<p>This is too much, lets look each component of <span class="math inline">\(J_t(\theta)\)</span> and try to convince ourselves this makes sense.</p>
-<p><strong><em>The first part</em></strong>, <span class="math inline">\(log(\sigma(u_o^Tv_c))\)</span>, can be interpreted as the log &#x201C;probability&#x201D; of the target and context words co-occurring. We want our model to find vector representations of <span class="math inline">\(u_o\)</span> and <span class="math inline">\(v_c\)</span> to maximize this probability. The word probability is used loosely here, and is only thrown around because the sigmoid function returns a number between 0 and 1.</p>
-<p><strong><em>The second part</em></strong>, <span class="math inline">\(\sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]\)</span>, is where the &#x201C;sampling&#x201D; in negative sampling happens. Let&#x2019;s break this up more to make it clearer. It&#x2019;ll come in handy to note that <span class="math inline">\(\sigma(-x) = 1 - \sigma(x)\)</span>. First, we can drop the <span class="math inline">\(E_{j \sim P(w)}\)</span> term, since we already know we will be sampling words from some distribution, <span class="math inline">\(P(w)\)</span></p>
+<p>Let&#x2019;s look each component of <span class="math inline">\(J_t(\theta)\)</span> and try to convince ourselves this makes sense.</p>
+<p><strong>The first part,</strong> <span class="math inline">\(log(\sigma(u_o^Tv_c))\)</span>, can be interpreted as the log probability of the target and context words co-occurring. We want the model to find <span class="math inline">\(u_o\)</span> and <span class="math inline">\(v_c\)</span> to maximize this probability.</p>
+<p><strong>The second part,</strong>, <span class="math inline">\(\sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]\)</span>, is where the &#x201C;sampling&#x201D; in negative sampling happens. Let&#x2019;s break this up more to make it clearer. It&#x2019;ll come in handy to note that <span class="math inline">\(\sigma(-x) = 1 - \sigma(x)\)</span>.</p>
+<p>We can first drop the <span class="math inline">\(E_{j \sim P(w)}\)</span> term, since we already know we will be sampling words from some distribution, <span class="math inline">\(P(w)\)</span>:</p>
 <p><span class="math display">\[
 \sum_{i = 1}^{k} log(\sigma(-u_j^T v_c)) = \sum_{i = 1}^{k} log(1 - \sigma(u_j^T v_c))
 \]</span></p>
-<p>Now this makes a bit more sense, we&#x2019;re taking the log of 1 minus the probability that the sampled word, <span class="math inline">\(j\)</span>, appears in the context of the target word <span class="math inline">\(c\)</span>. This is just log of the probability that <span class="math inline">\(j\)</span> does <strong>not</strong> appear in the context of the target word <span class="math inline">\(c\)</span>. Since <span class="math inline">\(j\)</span> is a randomly drawn word out of ~<span class="math inline">\(10^6\)</span> words, there&#x2019;s a very small chance it appears in the context of <span class="math inline">\(c\)</span>, so this probability should be high. There is also a summation term here up to <span class="math inline">\(k\)</span> elements. All this is saying is that we&#x2019;re sampling <span class="math inline">\(k\)</span> words from <span class="math inline">\(P(w)\)</span>.</p>
+<p>Now this is easier to read, we&#x2019;re taking the log of 1 minus the probability that the sampled word, <span class="math inline">\(j\)</span>, appears in the context of the target word <span class="math inline">\(c\)</span>. This is just log of the <em>probability that <span class="math inline">\(j\)</span> does <strong>not</strong> appear in the context of the target word</em> <span class="math inline">\(c\)</span>. Since <span class="math inline">\(j\)</span> is randomly drawn out of ~<span class="math inline">\(10^6\)</span> words, there&#x2019;s a very small chance it appears in the context of <span class="math inline">\(c\)</span>, so this probability should be high. We do this for each of the <span class="math inline">\(k\)</span> sampled words.</p>
 <p>Finally, we have to specify a distribution for negative sampling, <span class="math inline">\(P(w) = U(w)^{3/4}/Z\)</span>. Here, <span class="math inline">\(U(w)\)</span> is the unigram distribution and is raised to the <span class="math inline">\(\frac{3}{4}\)</span>th power to sample rarer words in the vocabulary. <span class="math inline">\(Z\)</span> is just a normalization term.</p>
 <p>To summarize, this loss function is trying to maximize the probability that word <span class="math inline">\(o\)</span> appears in the context of word <span class="math inline">\(c\)</span>, while minimizing the probability that a randomly selected word from the vocabulary appears in the context of word <span class="math inline">\(c\)</span>. We use the gradient of this loss function to update the word vectors, <span class="math inline">\(u_o\)</span> and <span class="math inline">\(v_c\)</span> to get our word embeddings.</p>
+<blockquote>
+<p>SGNS seeks to represent each word w in <span class="math inline">\(V_W\)</span> and each context c in VC as d-dimensional vectors w andc, such that words that are &#x201C;similar&#x201D; to each other will have similar vector representations. It does so by trying to maximize a function of the product w &#xB7;c for (w, c) pairs that occur in D, and minimize it for negative examples: (w, cN ) pairs that do not necessarily occur in D. The negative examples are created by stochastically corrupting observed (w, c) pairs from D &#x2013; hence the name &#x201C;negative sampling&#x201D;. For each observation of (w,c), SGNS draws k contexts from the empirical unigram distribution P (c) = #(c).</p>
+</blockquote>
 <p><strong>Summary of Word2Vec</strong></p>
 <ul>
 <li>Iterate through every word in the whole corpus</li>
@@ -393,12 +373,11 @@ P(w) = U(w)^{3/4}/Z
 <li>Update the word vectors based on the loss function</li>
 </ul>
 <h3 id="word2vec-in-python">Word2vec in Python</h3>
-<p>Instead of training our own word2vec model, we&#x2019;ll use a pre-trained model to visualize word embeddings. We&#x2019;ll use Google&#x2019;s News dataset model, which can be downloaded <a href="https://code.google.com/archive/p/word2vec/">here</a>. Fair warning that the model is 1.5Gb, and is trained on a vocabulary of 3 million words, with embedding vectors of length 300.</p>
-<p>This model doesn&#x2019;t contain some common words, like &#x201C;and&#x201D; or &#x201C;of&#x201D;, however it does contain others like &#x201C;the&#x201D; and &#x201C;also&#x201D;. <a href="https://github.com/chrisjmccormick/inspect_word2vec">This repo</a> has a more in-depth analysis of what the model contains and doesn&#x2019;t.</p>
-<p>We&#x2019;ll use the <code>gensim</code> Python package to load and explore the model. If you dont have it installed, run <code>pip install gensim</code> in your command line.</p>
+<p>Instead of training our own word2vec model, we&#x2019;ll use a pre-trained model to visualize word embeddings. We&#x2019;ll use Google&#x2019;s News dataset model, which can be downloaded <a href="https://code.google.com/archive/p/word2vec/">here</a>. The model is 1.5Gb, and is trained on a vocabulary of 3 million words, with embedding vectors of length 300. <a href="https://github.com/chrisjmccormick/inspect_word2vec">This repo</a> has an in-depth analysis of the words in the model.</p>
+<p>We&#x2019;ll use the <code>gensim</code> Python package to load and explore the model. If you don&#x2019;t have it installed, run <code>pip install gensim</code> in your command line.</p>
 <pre class="text language-text language-python" data-role="codeBlock" data-info="python"><span class="token keyword">import</span> gensim
 
-<span class="token comment"># Download model and save it to current directory, or update the path</span>
+<span class="token comment"># Download model and save it to current directory, or update the model_path</span>
 model_path <span class="token operator">=</span> <span class="token string">&quot;GoogleNews-vectors-negative300.bin&quot;</span>
 
 <span class="token comment"># Load Google&apos;s pre-trained Word2Vec model.</span>
@@ -409,20 +388,9 @@ wv <span class="token operator">=</span> model<span class="token punctuation">.<
 
 <span class="token comment"># remove model from env</span>
 <span class="token keyword">del</span> model</pre>
-<p>Now we have vector representations for all words in the vocabulary in <code>wv</code> and can query this like a dictionary.</p>
-<pre class="text language-text language-python" data-role="codeBlock" data-info="python">dog_vec <span class="token operator">=</span> wv<span class="token punctuation">[</span><span class="token string">&quot;dog&quot;</span><span class="token punctuation">]</span> <span class="token comment"># &quot;dog&quot; embedding</span>
-
-<span class="token comment"># Distances from each word in animal_list to the word animal</span>
-animal_list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&quot;dog&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;cat&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;mouse&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;hamster&quot;</span><span class="token punctuation">]</span>
-animal_similarity <span class="token operator">=</span> wv<span class="token punctuation">.</span>distances<span class="token punctuation">(</span><span class="token string">&quot;animal&quot;</span><span class="token punctuation">,</span> animal_list<span class="token punctuation">)</span>
-<span class="token builtin">list</span><span class="token punctuation">(</span><span class="token builtin">zip</span><span class="token punctuation">(</span>animal_list<span class="token punctuation">,</span> animal_similarity<span class="token punctuation">)</span><span class="token punctuation">)</span></pre>
-<pre class="text language-text" data-role="codeBlock" data-info="text"><code>[(&apos;dog&apos;, 0.35619873),
- (&apos;cat&apos;, 0.40923107),
- (&apos;mouse&apos;, 0.69155),
- (&apos;hamster&apos;, 0.5817574)]</code></pre>
-<h4 id="word-arithmetic">Word Arithmetic</h4>
-<p>Let&#x2019;s add and subtract some word vectors, then see what the closest word to the resulting vector is. We&#x2019;ve all seen the &#x201C;king&#x201D; - &#x201C;man&#x201D; + &#x201C;woman&#x201D; = &#x201C;queen&#x201D; example, so I&#x2019;ll present some new ones.</p>
-<p>Results generated by the <code>find_most_similar</code> function are of the form (word, cosine similarity), where &#x201C;word&#x201D; is the closest word to the vector parsed into the function. Cosine similarity values closer to 1 means the vectors (words) are more similar. Its definition can be found in the appendix. Let&#x2019;s see what the model thinks a <code>doctor - man + woman</code> is:</p>
+<p>Now we have vector representations for all words in the vocabulary in <code>wv</code> and can start to do word math. We&#x2019;ll add and subtract some word vectors, then see what the closest word to the resulting vector is. Publications and blog posts have exhausted the &#x201C;king&#x201D; - &#x201C;man&#x201D; + &#x201C;woman&#x201D; = &#x201C;queen&#x201D; example, so I&#x2019;ll present some new ones.</p>
+<p>Results generated by the <code>find_most_similar</code> function are of the form (word, cosine similarity), where &#x201C;word&#x201D; is the closest word to the vector parsed into the function. Cosine similarity values closer to 1 means the vectors (words) are more similar. The function definition can be found in the appendix.</p>
+<p>Start with: <code>doctor - man + woman</code></p>
 <pre class="text language-text language-python" data-role="codeBlock" data-info="python">find_most_similar<span class="token punctuation">(</span>wv<span class="token punctuation">[</span><span class="token string">&quot;doctor&quot;</span><span class="token punctuation">]</span> <span class="token operator">-</span> wv<span class="token punctuation">[</span><span class="token string">&quot;man&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span> wv<span class="token punctuation">[</span><span class="token string">&quot;woman&quot;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
                   <span class="token punctuation">[</span><span class="token string">&quot;man&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;doctor&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;woman&quot;</span><span class="token punctuation">]</span><span class="token punctuation">)</span></pre>
 <pre class="text language-text" data-role="codeBlock" data-info="text"><code>[(&apos;gynecologist&apos;, 0.7276507616043091),
@@ -434,51 +402,60 @@ animal_similarity <span class="token operator">=</span> wv<span class="token pun
 <pre class="text language-text" data-role="codeBlock" data-info="text"><code>[(&apos;physician&apos;, 0.6823904514312744),
  (&apos;surgeon&apos;, 0.5908077359199524),
  (&apos;dentist&apos;, 0.570309042930603)]</code></pre>
-<p>This is a different results from the original query! Biases in the training data are captured and expressed by the model. I won&#x2019;t go into detail about this here. Instead you should take away that the order of arithmetic for word vectors matters a great deal.</p>
+<p>This is a different results from the original query! Biases in the training data are captured and expressed by the model. I won&#x2019;t go into detail about this here. Instead the take away should be that the order of arithmetic for word vectors matters a great deal.</p>
 <h4 id="visualizing-word2vec-embeddings">Visualizing word2vec Embeddings</h4>
-<p>To wrap up word2vec, lets look at how the model clusters different words. I&#x2019;ve compiled words from different walks of life to see if word2vec was able to unravel their semantic similarities. These words are parsed through word2vec, then the first 2 principal components are plotted. Some expected similarities are seen here, however it should be noted that we lose a lot of information from reducing the dimension from 300 to 2.</p>
+<p>To wrap up word2vec, lets look at how the model clusters different words. I&#x2019;ve compiled words from different walks of life to see if word2vec was able to unravel their semantic similarities. These words are parsed through word2vec, then the first 2 principal components are plotted. Some expected similarities are seen here, however we lose a lot of information from reducing the dimension from 300 to 2.</p>
 <pre class="text language-text language-python" data-role="codeBlock" data-info="python"><span class="token comment"># Embedding that makes sense</span>
 plot_embeds<span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token string">&quot;dog&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;cat&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;hamster&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;pet&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span>                   <span class="token comment"># animals</span>
             <span class="token punctuation">[</span><span class="token string">&quot;boy&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;girl&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;man&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;woman&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span>                    <span class="token comment"># humans</span>
             <span class="token punctuation">[</span><span class="token string">&quot;grown&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;adult&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;young&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;baby&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span>                <span class="token comment"># age</span>
             <span class="token punctuation">[</span><span class="token string">&quot;german&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;english&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;spanish&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;french&quot;</span><span class="token punctuation">]</span> <span class="token operator">+</span>         <span class="token comment"># languages</span>
             <span class="token punctuation">[</span><span class="token string">&quot;mathematics&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;physics&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;biology&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;chemistry&quot;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>  <span class="token comment"># natural sciences</span></pre>
-<p><img src="../../assets/word2vec_pca(1).png"></p>
+<p><img src="../../assets/word2vec_pca.png"></p>
 <hr>
 <h2 id="glove">GloVe</h2>
-<p>GloVe (Global Vectors) is another architecture for producing word embeddings. It improves on some key downsides of the skip-gram model, as well as incorporating its advantages. One of these downsides is the loss of corpus statistics due to capturing information one window at a time. GloVe&#x2019;s loss function incorporates word-word occurrence counts to capture global information about context.</p>
-<p>One of these downsides of the skip-gram is it tries to capture information from the corpus one window at a time. In doing so, it loses out on key statistical information about the entire corpus, such as word co-occurrence counts. On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.</p>
+<p>GloVe (Global Vectors) is another architecture for producing word embeddings. It improves on some key downsides of the skip-gram model. The main downside of the skip-gram is the loss of corpus statistics due to capturing information one window at a time. To solve this, GloVe incorporates word co-occurrence counts to capture global information about context.</p>
+<blockquote>
+<p>On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.</p>
+</blockquote>
 <blockquote>
 <p>GloVe, for Global Vectors, because the global corpus statistics are captured directly by the model.</p>
 </blockquote>
 <h3 id="overview-1">Overview</h3>
-<p>For each pair of words, GloVe tries to minimize the difference between their dot product and log co-occurrence count.</p>
+<p>The skip-gram model uses negative sampling to bypass the bottleneck of naive softmax loss. GloVe takes a different approach to this by changing the problem from classification to regression. For each pair of word vectors, GloVe tries to minimize the difference between their dot product and log co-occurrence count.</p>
 <h3 id="deep-dive-1">Deep Dive</h3>
 <h4 id="the-co-occurrence-matrix">The Co-Occurrence Matrix</h4>
-<p>We have a matrix, <span class="math inline">\(X\)</span>, where each row corresponds to a target word, and each column corresponds to a context word. The entry at <span class="math inline">\(X_{ij}\)</span> is then the number of times word <span class="math inline">\(j\)</span> occurs in the context of word <span class="math inline">\(i\)</span>. Context is defined in the same way as the skip-gram model. Summing over all the values in row <span class="math inline">\(i\)</span>, will give the number of words that occur in its context, <span class="math inline">\(X_i = \sum_k X_{ik}\)</span>. Now we can define <span class="math inline">\(P_{ij}\)</span>, the probability of word <span class="math inline">\(j\)</span> occurring in the context of word <span class="math inline">\(i\)</span>, as <span class="math inline">\(P(i | j) = \frac{X_{ij}}{X_i}\)</span>.</p>
+<p>The co-occurrence matrix, <span class="math inline">\(X\)</span>, is generated from the corpus and vocabulary. The entry at <span class="math inline">\(X_{ij}\)</span> is then the number of times word <span class="math inline">\(j\)</span> occurs in the context of word <span class="math inline">\(i\)</span>. Context is defined in the same way as the skip-gram model. Summing over all the values in row <span class="math inline">\(i\)</span>, will give the number of words that occur in its context, <span class="math inline">\(X_i = \sum_k X_{ik}\)</span>. Then the probability of word <span class="math inline">\(j\)</span> occurring in the context of word <span class="math inline">\(i\)</span> is <span class="math inline">\(P(i | j) = \frac{X_{ij}}{X_i}\)</span>.</p>
 <p>Two main advantages of computing the co-occurrence matrix is that it contains all statistical information about the corpus and only needs to be computed once. We will see how it&#x2019;s used in the next section.</p>
-<h4 id="from-word2vec-to-glove">From Word2vec to GloVe</h4>
-<p>The skip-gram model uses negative sampling to bypass the bottleneck of naive softmax loss. GloVe takes a different approach to this, which we&#x2019;ll discuss in this section.</p>
-<p>Starting from the naive softmax function, we calculate the probability, <span class="math inline">\(Q_{ij}\)</span>, that word <span class="math inline">\(j\)</span> appears in the context of word <span class="math inline">\(i\)</span>. Then summing <span class="math inline">\(-log(Q_{ij})\)</span> for each context-target word pair (i.e.&#xA0;each <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>) in the corpus can give us the global loss. This is similar to cross-entropy loss.</p>
+<h4 id="deriving-glove-from-softmax">Deriving GloVe from Softmax</h4>
+<p>We can use the softmax function, <span class="math inline">\(Q_{ij}\)</span>, to find the global loss by summing over all target-context word pairs.</p>
 <p><span class="math display">\[J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) \]</span></p>
-<p>Since the words <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> appear <span class="math inline">\(X_{ij}\)</span> times in the corpus, we don&#x2019;t need to iterate over all windows in the corpus, but can iterate over the vocabulary instead. As a refresher, the corpus is the body of text we train the model on, and the vocabulary is all unique words in that text.</p>
+<p>Since words <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> appear <span class="math inline">\(X_{ij}\)</span> times in the corpus, we don&#x2019;t need to iterate over all windows in the corpus, but can iterate over the vocabulary instead.</p>
 <p><span class="math display">\[ J = - \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} log Q_{ij} \]</span></p>
 <p>Re-arranging some terms, we can come up with this:</p>
 <p><span class="math display">\[ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) \]</span></p>
-<p><strong>What&#x2019;s going on right now?</strong> - <strong>Where did <span class="math inline">\(P_{ij}\)</span> come from?</strong> - Remember that <span class="math inline">\(P_{ij} = \frac{X_{ij}}{X_i}\)</span> and <span class="math inline">\(X_i = \sum_k X_{ik}\)</span>, therefore we can substitute <span class="math inline">\(X_{ij} = P_{ij}X_i\)</span>. - <strong>What&#x2019;s the relationship between <span class="math inline">\(P_{ij}\)</span> and <span class="math inline">\(Q_{ij}\)</span>?</strong> - Remember that <span class="math inline">\(P_{ij}\)</span> is the probability that word <span class="math inline">\(j\)</span> appears in the context of word <span class="math inline">\(i\)</span> but <span class="math inline">\(Q_{ij}\)</span> is also the probability that word <span class="math inline">\(j\)</span> appears in the context of word <span class="math inline">\(i\)</span>. The difference between the two lies in how they are calculated; <span class="math inline">\(P_{ij}\)</span> is calculated using the data (corpus and vocabulary), so it doesn&#x2019;t change. On the other hand, <span class="math inline">\(Q_{ij}\)</span> is the naive softmax probability, that is calculated using the dot product of word vectors of <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>, (<span class="math inline">\(u_j^T v_i\)</span>). We have the ability to change <span class="math inline">\(Q_{ij}\)</span> by changing these word vectors. - <strong>What&#x2019;s the point of <span class="math inline">\(P_{ij}log(Q_{ij})\)</span>?</strong> - Now that we&#x2019;ve refreshed our memory of <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>, we can see that <span class="math inline">\(P\)</span> is the <em>true</em> probability distribution of context and target words, and <span class="math inline">\(Q\)</span> is some made up distribution based on the &#x201C;goodness&#x201D; of the word vectors. We really want these two distributions to be close to each other. Observing this, <span class="math inline">\(H = P_{ij}log(Q_{ij})\)</span>, when <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> are close to each other, <span class="math inline">\(H\)</span> is small, and when <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> are far apart, <span class="math inline">\(H\)</span> gets larger. Our end goal is the minimization of <span class="math inline">\(J\)</span>, so the smaller <span class="math inline">\(H\)</span> is is better.</p>
-<p>See <a href="#appendix">Appendix</a> for more</p>
-<p>Now we need to find some measure of &#x201C;closeness&#x201D; between <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>. We still have <span class="math inline">\(Q_{ij}\)</span> and <span class="math inline">\(P_{ij}\)</span> whose normalization terms we have to iteration over the entire vocabulary to calculate. GloVe overcomes this by dropping the normalization terms completely.</p>
+<p><strong>What&#x2019;s going on right now?</strong></p>
+<ul>
+<li><strong>Where did <span class="math inline">\(P_{ij}\)</span> come from?</strong> - Remember that <span class="math inline">\(P_{ij} = \frac{X_{ij}}{X_i}\)</span> and <span class="math inline">\(X_i = \sum_k X_{ik}\)</span>, therefore we can substitute <span class="math inline">\(X_{ij} = P_{ij}X_i\)</span>.</li>
+<li><strong>What&#x2019;s the relationship between <span class="math inline">\(P_{ij}\)</span> and <span class="math inline">\(Q_{ij}\)</span>?</strong> - <span class="math inline">\(P_{ij}\)</span> is the probability that word <span class="math inline">\(j\)</span> appears in the context of word <span class="math inline">\(i\)</span>, but <span class="math inline">\(Q_{ij}\)</span> is also the probability that word <span class="math inline">\(j\)</span> appears in the context of word <span class="math inline">\(i\)</span>. The difference between the two lies in how they are calculated. <span class="math inline">\(P_{ij}\)</span> is calculated using the co-occurrence matrix and doesn&#x2019;t change. <span class="math inline">\(Q_{ij}\)</span> is the naive softmax probability, that is calculated using the dot product of word vectors <span class="math inline">\(u_j\)</span> and <span class="math inline">\(v_i\)</span>. We have the ability to change <span class="math inline">\(Q_{ij}\)</span> by changing these vectors.</li>
+<li><strong>What&#x2019;s the point of <span class="math inline">\(P_{ij}log(Q_{ij})\)</span>?</strong> - Now that we&#x2019;ve refreshed our memory of <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>, we can see that <span class="math inline">\(P\)</span> is the <em>true</em> probability distribution of context and target words, and <span class="math inline">\(Q\)</span> is some made up distribution based on the &#x201C;goodness&#x201D; of the word vectors. We really want these two distributions to be close to each other. Observing <span class="math inline">\(H = P_{ij}log(Q_{ij})\)</span>, when <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> are close to each other, <span class="math inline">\(H\)</span> is small, and when <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span> are far apart, <span class="math inline">\(H\)</span> is larger. Our end goal is the minimization of <span class="math inline">\(J\)</span>, so the smaller <span class="math inline">\(H\)</span> is is better. This is term is the cross-entropy between distributions <span class="math inline">\(P\)</span> and <span class="math inline">\(Q\)</span>.</li>
+</ul>
 <blockquote>
-<p>To begin, cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events. Furthermore, for the measure to be bounded it requires that the model distribution Q be properly normalized. This presents a computational bottleneck. A natural choice would be a least squares objective in which normalization factors in Q and P are discarded</p>
+<p>Cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events.</p>
 </blockquote>
-<p>Continuing down the cross-entropy route doesn&#x2019;t work because of the normalization terms for probability distributions. We just discard these normalization terms, and turn the loss into a weighted least squares function.</p>
-<p><span class="math display">\[ \hat{J} = \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} (\hat{P}_{ij} - \hat{Q}_{ij})^2 \]</span></p>
-<p>Where <span class="math inline">\(\hat{Q}_{ij} = e^{u_j^T v_i}\)</span> and <span class="math inline">\(\hat{P}_{ij} = X_{ij}\)</span> are un-normalized probability distributions. The problem with this is that <span class="math inline">\(X_{ij}\)</span> takes on very large values for common words in the vocabulary, like &#x201C;the&#x201D;, &#x201C;of&#x201D;, etc. GloVe accounts for this is by taking the log counts. The new objective function then becomes:</p>
-<p><span class="math display">\[ \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} X_{ij} (u_j^T v_i - log(X_{ij}))^2 \]</span></p>
-<p>We still end up with the normalization factor, <span class="math inline">\(X_{ij}\)</span> which can still suffer from huge values from common words. To deal with this, a weighting function, <span class="math inline">\(f(X)\)</span>, is introduced to cap large values.</p>
-<p><span class="math display">\[ \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2 \]</span></p>
+<p>See <a href="#appendix">Appendix</a> for more</p>
+<p>The problem here is that cross-entropy requires normalized versions of <span class="math inline">\(Q_{ij}\)</span> and <span class="math inline">\(P_{ij}\)</span> which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe&#x2019;s approach to this is dropping the normalization terms completely, so we end up with <span class="math inline">\(\hat{P}\)</span> and <span class="math inline">\(\hat{Q}\)</span>. Cross-entropy loss now becomes useless, so we change <span class="math inline">\(H = P_{ij}log(Q_{ij})\)</span> to squared error, <span class="math inline">\((\hat{P}_{ij} - \hat{Q}_{ij})^2\)</span>.</p>
+<p><span class="math display">\[
+\hat{J} = \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} (\hat{P}_{ij} - \hat{Q}_{ij})^2
+\]</span></p>
+<p>Now we have squared error, weighted by the number of co-occurrences of words <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. There&#x2019;s one last problem with this, which is that some co-occurrence counts can be massive. This will affect both the weights, <span class="math inline">\(X_i\)</span>, and <span class="math inline">\(\hat{P_{ij}} = X_{ij}\)</span>. To deal with this explosion in the least squared term, we take <span class="math inline">\(log(hat{P})\)</span> and <span class="math inline">\(log(hat{Q})\)</span>) and to deal with the explosion of weights, we introduce a function, <span class="math inline">\(f\)</span> that caps the co-occurrence count weight. We&#x2019;ll apply this weight to each target-context paid, <span class="math inline">\(X_{ij}\)</span> as opposed to only <span class="math inline">\(X_i\)</span>.</p>
+<p>This will <em>heavily</em> favor common words, like &#x201C;the&#x201D;, &#x201C;and&#x201D;, &#x201C;of&#x201D;, etc. We introduce a function, <span class="math inline">\(f\)</span>, to cap the co-occurrence weighting. The new objective function then becomes:</p>
+<p><span class="math display">\[
+\hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2
+\]</span></p>
+<p>This is the loss function that the GloVe model minimizes.</p>
 <h3 id="glove-in-python">GloVe in Python</h3>
-<p>Similar to word2vec, we can use the <code>gensim</code> package to load pretrained GloVe models and manipulate them in a similar way.</p>
+<p>Similar to word2vec, we&#x2019;ll use the <code>gensim</code> package to load a pre-trained GloVe model.</p>
 <pre class="text language-text language-python" data-role="codeBlock" data-info="python"><span class="token keyword">import</span> gensim<span class="token punctuation">.</span>downloader <span class="token keyword">as</span> api
 
 <span class="token comment"># Download pretrained GloVe model from:</span>
@@ -499,12 +476,22 @@ glove <span class="token operator">=</span> glove_model<span class="token punctu
 </ul>
 <hr>
 <h2 id="appendix">Appendix</h2>
+<p><strong>Objective Function:</strong> Recall that an objective or loss function, <span class="math inline">\(J(\theta)\)</span>, is a way of determining the goodness of a model. We alter the parameters of this function, <span class="math inline">\(\theta\)</span>, to find the best fit for the model.</p>
 <h3 id="from-word2vec-to-glove-math">From Word2vec to GloVe - Math</h3>
 <p>Naive Softmax function: <span class="math display">\[ Q_{ij} = \frac{e^{u_j^T v_i}}{\sum_{w=1}^W e^{u_w^T v_i}} \]</span> The bottleneck to the naive softmax function is that the calculation of <span class="math inline">\(\sum_{w=1}^W e^{u_w^T v_i}\)</span> requires iteration over the entire vocabulary.</p>
 <p>Summing negative log of <span class="math inline">\(Q_{ij}\)</span> to get the global loss: <span class="math display">\[J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) \]</span></p>
 <p><span class="math display">\[ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) \]</span> The term: <span class="math inline">\(\sum_{j = 1}^{W} P_{ij}log(Q_{ij})\)</span> is the cross-entropy of <span class="math inline">\(P_{ij}\)</span> and <span class="math inline">\(Q_{ij}\)</span>.</p>
 <h3 id="code">Code</h3>
-<pre class="text language-text language-python" data-role="codeBlock" data-info="Python"><span class="token comment"># find the 3 most similar words to the vector &quot;vec&quot;</span>
+<pre class="text language-text language-python" data-role="codeBlock" data-info="Python"><span class="token comment"># some word2vec examples</span>
+dog_vec <span class="token operator">=</span> wv<span class="token punctuation">[</span><span class="token string">&quot;dog&quot;</span><span class="token punctuation">]</span> <span class="token comment"># &quot;dog&quot; embedding</span>
+
+<span class="token comment"># Distances from each word in animal_list to the word animal</span>
+animal_list <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">&quot;dog&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;cat&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;mouse&quot;</span><span class="token punctuation">,</span> <span class="token string">&quot;hamster&quot;</span><span class="token punctuation">]</span>
+animal_similarity <span class="token operator">=</span> wv<span class="token punctuation">.</span>distances<span class="token punctuation">(</span><span class="token string">&quot;animal&quot;</span><span class="token punctuation">,</span> animal_list<span class="token punctuation">)</span>
+<span class="token builtin">list</span><span class="token punctuation">(</span><span class="token builtin">zip</span><span class="token punctuation">(</span>animal_list<span class="token punctuation">,</span> animal_similarity<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+
+<span class="token comment"># find the 3 most similar words to the vector &quot;vec&quot;</span>
 <span class="token keyword">def</span> <span class="token function">find_most_similar</span> <span class="token punctuation">(</span>vec<span class="token punctuation">,</span> words <span class="token operator">=</span> <span class="token boolean">None</span><span class="token punctuation">)</span> <span class="token punctuation">:</span>
     <span class="token comment"># vec: resulting vector from word Arithmetic</span>
     <span class="token comment"># words: list of words that comprise vec</span>
@@ -528,7 +515,18 @@ glove <span class="token operator">=</span> glove_model<span class="token punctu
         _ <span class="token operator">=</span> plt<span class="token punctuation">.</span>annotate<span class="token punctuation">(</span>label<span class="token punctuation">,</span> <span class="token punctuation">(</span>point<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> point<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span></pre>
 <hr>
 <h2 id="resources">Resources</h2>
-<p>Small <a href="https://www.aclweb.org/anthology/Q15-1016">review</a> of GloVe and word2vec <a href="https://www.aclweb.org/anthology/D15-1036">Evaluating</a> unsupervised word embeddings Stanford NLP coursenotes on <a href="http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes02-wordvecs2.pdf">GloVe</a> Stanford NLP coursenotes on <a href="http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes01-wordvecs1.pdf">word2vec</a> <a href="https://nlp.stanford.edu/pubs/glove.pdf">GloVe</a> <a href="http://web.stanford.edu/class/cs224n/index.html#coursework">Stanford NLP coursenotes</a> <a href="https://radimrehurek.com/gensim/models/word2vec.html">Gensim Models</a> <a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/word2vec/word2vec_basic.py">Word2vec in Tensorflow</a> Atom <a href="https://shd101wyy.github.io/markdown-preview-enhanced/#/">markdown docs</a>.</p>
+<ul>
+<li>Small <a href="https://www.aclweb.org/anthology/Q15-1016">review</a> of GloVe and word2vec</li>
+<li><a href="https://www.aclweb.org/anthology/D15-1036">Evaluating</a> unsupervised word embeddings</li>
+<li>Stanford NLP coursenotes on <a href="http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes02-wordvecs2.pdf">GloVe</a></li>
+<li>Stanford NLP coursenotes on <a href="http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes01-wordvecs1.pdf">word2vec</a></li>
+<li><a href="https://nlp.stanford.edu/pubs/glove.pdf">GloVe</a></li>
+<li><a href="http://web.stanford.edu/class/cs224n/index.html#coursework">Stanford NLP coursenotes</a></li>
+<li><a href="https://radimrehurek.com/gensim/models/word2vec.html">Gensim Models</a></li>
+<li><a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/word2vec/word2vec_basic.py">Word2vec in Tensorflow</a></li>
+<li><a href="https://machinelearningmastery.com/develop-word-embeddings-python-gensim/">GloVe Blog post</a></li>
+<li>Atom <a href="https://shd101wyy.github.io/markdown-preview-enhanced/#/">markdown docs</a>.</li>
+</ul>
 
       </div>
       
