@@ -14,12 +14,12 @@ math: true
 #fontsize: 10pt
 #geometry: margin=0.75in
 
-#markdown:
-#  path: 2019-08-12-word2vec_GFM.md
-#  ignore_from_front_matter: true
-#  absolute_image_path: false
-#export_on_save:
-#  markdown: true
+markdown:
+  path: 2019-08-12-word2vec_GFM.md
+  ignore_from_front_matter: true
+  absolute_image_path: false
+export_on_save:
+  markdown: true
 
 ---
 
