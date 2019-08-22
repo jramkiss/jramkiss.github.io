@@ -27,18 +27,13 @@ permalink: pretty
 social_sites:
   #twitter: jekyllrb
   github:  jramkiss
-  #dribbble: jekyll
-  #facebook: jekyll
-  #flickr: jekyll
-  #instagram: jekyll
-  #linkedin: jekyll
-  #pinterest: jekyll
-  #youtube: jekyll
-  #googleplus: +jekyll
+
 
 # Build settings
-#markdown: CommonMarkGhPages #kramdown
-theme: minima
+markdown: CommonMarkGhPages #kramdown
+
+theme: jekyll-theme-cayman
+
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

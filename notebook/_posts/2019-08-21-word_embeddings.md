@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Word Vectors Decomposed - Word2Vec and GloVe"
-date: 2019-08-20
+date: 2019-08-21
 category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
