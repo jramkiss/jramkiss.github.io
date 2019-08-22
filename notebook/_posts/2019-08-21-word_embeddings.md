@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Word Vectors Decomposed - Word2Vec and GloVe"
-date: August 2019 # 2019-08-21
+date: 2019-08-21
 category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
@@ -39,7 +39,7 @@ The [word2vec](https://arxiv.org/pdf/1310.4546.pdf) model typically refers to an
 
 ### Overview
 
-Although this post will primarily focus on the skip-gram model, both models are single layer neural networks whose weights we learn. This weight matrix will then contain the word vectors for all of our words. The objective function tries to simultaneously (1) maximize the probability that an observed word appears in the context of it's target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.  
+Although this post will primarily focus on the skip-gram model, both models are single layer neural networks whose weights we learn. This weight matrix will then contain the word vectors for all of our words. The objective function tries to simultaneously (1) maximize the probability that an observed word appears in the context of it's target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.
 
 If you're still unsure about neural network weights and the weight matrix, I recommend reading [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html)
 
@@ -48,7 +48,7 @@ If you're still unsure about neural network weights and the weight matrix, I rec
 
 The idea behind the skip-gram model is we take a word in an input sequence as the "target" or "center" word, and predict the words around it. 'Around' is determined by a pre-specified window size, $m$. In the figure below, we have a window size of 2, the input word is "banking" and its context words are "turning", "into", "crises" and "as". **We want to quantify the probability that each word in the window appears in the context of the target word.**
 
-<br/>    
+<br/>
 
 | ![Figure1](../../assets/word2vec_viz.png) |
 |:--:|
@@ -70,7 +70,7 @@ $$
 p(w_{t+j} | w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
 $$
 
-Where:  
+Where:
 
 -   $W$ is the size of the vocabulary
 -   $c$ and $o$ are indices of the words in the vocabulary at sequence positions $t$ and $j$ respectively
@@ -138,7 +138,7 @@ To summarize, this loss function is trying to maximize the probability that word
 
 Instead of training our own word2vec model, we'll use a pre-trained model to visualize word embeddings. We'll use Google's News dataset model, which can be downloaded [here](https://code.google.com/archive/p/word2vec/). The model is 1.5Gb, and is trained on a vocabulary of 3 million words, with embedding vectors of length 300. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
 
-We'll use the `gensim` Python package to load and explore the model. If you don't have it installed, run `pip install gensim` in your command line.  
+We'll use the `gensim` Python package to load and explore the model. If you don't have it installed, run `pip install gensim` in your command line.
 
 ```python
 import gensim
@@ -147,7 +147,7 @@ import gensim
 model_path = "GoogleNews-vectors-negative300.bin"
 
 # Load Google's pre-trained Word2Vec model.
-model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)  
+model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)
 
 # extract word vectors from the model
 wv = model.wv
@@ -205,7 +205,7 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
 
 ---
 
-## GloVe  
+## GloVe
 
 GloVe (Global Vectors) is another architecture for producing word embeddings. It improves on some key downsides of the skip-gram model. The main downside of the skip-gram is the loss of corpus statistics due to capturing information one window at a time. To solve this, GloVe incorporates word co-occurrence counts to capture global information about context.
 
@@ -219,7 +219,7 @@ The skip-gram model uses negative sampling to bypass the bottleneck of naive sof
 
 ### Deep Dive
 
-#### The Co-Occurrence Matrix  
+#### The Co-Occurrence Matrix
 
 The co-occurrence matrix, $X$, is generated from the corpus and vocabulary. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Then the probability of word $j$ occurring in the context of word $i$ is $P(i | j) = \frac{X_{ij}}{X_i}$.
 
@@ -235,7 +235,7 @@ Since words $i$ and $j$ appear $X_{ij}$ times in the corpus, we don't need to it
 
 $$ J = - \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} log Q_{ij} $$
 
-Re-arranging some terms, we can come up with this:  
+Re-arranging some terms, we can come up with this:
 
 $$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
 
