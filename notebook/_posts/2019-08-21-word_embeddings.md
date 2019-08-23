@@ -50,23 +50,23 @@ The idea behind the skip-gram model is we take a word in an input sequence as th
 
 <br/>
 
--> ![Figure1](/assets/word2vec_viz.png) <-
--> Figure 1: Taken from Stanford's NLP course, shows the skip gram prediction of "banking" with window size 2. <-
+![Figure1](/assets/word2vec_viz.png)
+Figure 1: Taken from Stanford's NLP course, shows the skip gram prediction of "banking" with window size 2.
  <br/>
 
 Before we start to build the objective function discussed above, here's some useful notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We'll call this input sequence the *corpus*, and all its unique words the *vocabulary*. Each word in the vocabulary will have 2 vector representations, $u_o$ for context and $v_c$ for target.
 In figure 1, $u_{turning}$ is the vector representation of "turning" as a context word, and $v_{banking}$ is the vector representation of "banking" as a target word.
 
-We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of target word $w_t$. This might seem weird, but the probability is based on the vector representations of each word. Every time we encounter a word in context of a target word, we alter their vector representations to be "closer". Referring to the example above, $p(turning | banking)$ > $p(problems | banking)$, so the vectors for "turning" and "banking" will be updated to be closer than "problems" and "banking". We can now define a function that describes this. $\theta$ is a placeholder representing all the vector representations.
+We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of target word $w_t$. This might seem weird, but the probability is based on the vector representations of each word. Every time we encounter a word in context of a target word, we alter their vector representations to be "closer". Referring to the example above, $p(turning \lvert banking)$ > $p(problems \lvert banking)$, so the vectors for "turning" and "banking" will be updated to be closer than "problems" and "banking". We can now define a function that describes this. $\theta$ is a placeholder representing all the vector representations.
 
 $$
-J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} | w_t; \theta))
+J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} \lvert w_t; \theta))
 $$
 
-The only problem here is we have no idea how to find $p(w_{t+j} | w_t; \theta)$. We'll start with using the softmax function. This will calculate the probability of a word vector, $u_o$, co-occurring with a target word vector, $v_c$. It essentially means "how similar is context word $u_o$ to target word $v_c$, relative to all other context words in the vocabulary". The measure of similarity between two words is measured by the dot product $u_o^T v_c$.
+The only problem here is we have no idea how to find $p(w_{t+j} \lvert w_t; \theta)$. We'll start with using the softmax function. This will calculate the probability of a word vector, $u_o$, co-occurring with a target word vector, $v_c$. It essentially means "how similar is context word $u_o$ to target word $v_c$, relative to all other context words in the vocabulary". The measure of similarity between two words is measured by the dot product $u_o^T v_c$.
 
 $$
-p(w_{t+j} | w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
+p(w_{t+j} \lvert w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
 $$
 
 Where:
@@ -82,7 +82,7 @@ Although we now have a way of quantifying the probability a word appears in the 
 
 Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample $k$ words and determine the probability that these words **do not** co-occur with the target word.The intuition behind this is that a good model should be able to differentiate between data and noise.
 
-To incorporate negative sampling, the objective function needs to be altered by replacing $p(w_{t+j} | w_t)$ with:
+To incorporate negative sampling, the objective function needs to be altered by replacing $p(w_{t+j} \lvert w_t)$ with:
 
 $$
 log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]
@@ -220,7 +220,7 @@ The skip-gram model uses negative sampling to bypass the bottleneck of naive sof
 
 #### The Co-Occurrence Matrix
 
-The co-occurrence matrix, $X$, is generated from the corpus and vocabulary. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Then the probability of word $j$ occurring in the context of word $i$ is $P(i | j) = \frac{X_{ij}}{X_i}$.
+The co-occurrence matrix, $X$, is generated from the corpus and vocabulary. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Then the probability of word $j$ occurring in the context of word $i$ is $P(i \lvert j) = \frac{X_{ij}}{X_i}$.
 
 Two main advantages of computing the co-occurrence matrix is that it contains all statistical information about the corpus and only needs to be computed once. We will see how it's used in the next section.
 
