@@ -50,7 +50,7 @@ The idea behind the skip-gram model is we take a word in an input sequence as th
 
 <br/>
 
-|![Figure1](assets/word2vec_viz.png)|
+|![Figure1](/assets/word2vec_viz.png)|
 |:--:|
 |Figure 1: Taken from Stanford's NLP course, shows the skip gram prediction of "banking" with window size 2.|
  <br/>
@@ -201,7 +201,7 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
 ```
 
-![](/assets/word2vec_pca.png)
+![word2vec PCA](/assets/word2vec_pca.png)
 
 ---
 
@@ -280,6 +280,10 @@ glove = glove_model.wv
 
 del glove_model
 ```
+
+#### GloVe Visualizations
+
+![GloVe PCA](/assets/glove_pca.png)
 
 ---
 
