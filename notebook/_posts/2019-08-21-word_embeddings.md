@@ -201,7 +201,7 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
 ```
 
-![word2vec PCA](/assets/word2vec_pca.png)
+![](/assets/word2vec_pca.png)
 
 ---
 
@@ -283,7 +283,7 @@ del glove_model
 
 #### GloVe Visualizations
 
-![GloVe PCA](/assets/glove_pca.png)
+![](/assets/glove_pca.png)
 
 ---
 
