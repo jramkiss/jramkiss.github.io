@@ -50,9 +50,9 @@ The idea behind the skip-gram model is we take a word in an input sequence as th
 
 <br/>
 
-| ![Figure1](assets/word2vec_viz.png) |
+|![Figure1](assets/word2vec_viz.png)|
 |:--:|
-| Figure 1: Taken from Stanford's NLP course, shows the skip gram prediction of "banking" with window size 2.|
+|Figure 1: Taken from Stanford's NLP course, shows the skip gram prediction of "banking" with window size 2.|
  <br/>
 
 Before we start to build the objective function discussed above, here's some useful notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We'll call this input sequence the *corpus*, and all its unique words the *vocabulary*. Each word in the vocabulary will have 2 vector representations, $u_o$ for context and $v_c$ for target.
