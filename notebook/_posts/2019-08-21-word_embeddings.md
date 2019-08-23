@@ -5,7 +5,7 @@ date: 2019-08-21
 category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
-math: true
+mathjax: true
 ---
 
 This post will explain the math and intuition behind [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and fasttext.
@@ -50,7 +50,7 @@ The idea behind the skip-gram model is we take a word in an input sequence as th
 
 <br/>
 
-| ![Figure1](../../assets/word2vec_viz.png) |
+| ![Figure1](assets/word2vec_viz.png) |
 |:--:|
 | Figure 1: Taken from Stanford's NLP course, shows the skip gram prediction of "banking" with window size 2.|
  <br/>
@@ -201,7 +201,7 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
 ```
 
-![](../../assets/word2vec_pca.png)
+![](/assets/word2vec_pca.png)
 
 ---
 
