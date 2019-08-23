@@ -78,6 +78,8 @@ Where:
 
 Although we now have a way of quantifying the probability a word appears in the context of another, the $\sum_{w=1}^W e^{u_w^T v_c}$ requires us to iterate over all words in the vocabulary. To deal with this, we must approximate the softmax probability. One way of doing this is negative sampling.
 
+<br/>
+
 #### Negative Sampling Loss
 
 Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample $k$ words and determine the probability that these words **do not** co-occur with the target word.The intuition behind this is that a good model should be able to differentiate between data and noise.
@@ -91,6 +93,8 @@ $$
 Where $\sigma(.)$ is the [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function).
 
 > Thus the task is to distinguish the target word $w_t$ from draws from the noise distribution $P_n(w)$ using logistic regression, where there are $k$ negative samples for each data sample.
+
+<br/>
 
 **New Objective Function**
 
@@ -132,6 +136,8 @@ To summarize, this loss function is trying to maximize the probability that word
 -   Iterate through every word in the whole corpus
 -   Predict surrounding words (context words) using word vectors
 -   Update the word vectors based on the loss function
+
+<br/>
 
 ### Word2vec in Python
 
