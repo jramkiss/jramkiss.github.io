@@ -23,15 +23,11 @@ group :jekyll_plugins do
    gem 'jekyll-seo-tag'
 end
 
-
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-
 # HTML Proofer
-gem "html-proofer"
+#gem "html-proofer"
 
 # Add sitemap
-gem 'jekyll-sitemap'
+#gem 'jekyll-sitemap'
 
 # Add travis-CI
-gem 'travis'
+#gem 'travis'
