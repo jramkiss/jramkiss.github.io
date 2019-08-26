@@ -20,9 +20,12 @@ This post will explain the math and intuition behind [word2vec](https://papers.n
   - [Overview](#overview-1)
   - [Deep Dive](#deep-dive-1)
 - [Fasttext](#fasttext)
+  - [Overview](#overview-2)
+  - [Deep Dive](#deep-dive-2)
 - [GloVe VS Word2vec VS Fasttext](#glove-vs-word2vec-vs-fasttext)
   - [Word Embeddings in Python](#word-embeddings-in-python)
   - [Word2vec](#word2vec-1)
+  - [GloVe](#glove-1)
 - [Conclusion](#conclusion)
 - [Appendix](#appendix)
   - [From Word2vec to GloVe - Math](#from-word2vec-to-glove-math)
@@ -207,16 +210,43 @@ This is the loss function that the GloVe model minimizes.
 
 ## Fasttext
 
+Fasttext is a library for learning word embeddings.
+Like word2vec, Fasttext refers to the implementation of an algorithm, as opposed to an algorithm itself. It was introduced by Facebook AI Research in 2016 and publication and source code can be found [here](https://github.com/facebookresearch/fastText).
+
+- Can learn supervised and unsupervised embeddings
+- Functionality for text classification in addition to word embeddings
+
+### Overview
+The roots of the underlying algorithm come from the [skip-gram model](#deep-dive), where the idea is to predict context words given a target word. A noteable shortcoming of the original skip-gram model is that it groups each word as one unit, ignoring the substructure of words, and causing poor performance on out-of-vocabulary words. To incorporate subword information, Fasttext treats each word as a sum of n-grams.
+
+### Deep Dive
+
+Before starting, we'll take a step back to quantifying how similar two word vectors are. Both GloVe and word2vec do this using dot products, however we can think of the similarity more generally as an arbitrary function, $s(u_j, v_c)$.
+
+Fasttext uses a different similarity measure, where each word is represented as a sum of smaller words of length n, n-grams. To help the model learn prefixes and suffixes, we append "<" to the front and ">" to the back of each word. Then for n=3, the n-grams of "where" are:
+
+    <where> = [<wh, whe, her, ere, re>]
+
+Appending "<" and ">" also helps with the problem of sub-words being actual words. We have no way of determining the difference between the subword "her" and the full-word "her", and there definitely should be a difference. Since we added the special characters around each word, the tri-gram "her" is now different from the sequence "\<her>".
+
+More formally, suppose we have all n-grams in the vocabulary, $G$, each represented by a vector, $\boldsymbol{z}_g$. We can refer to all the n-grams of some word, $w$, by $G_w$. Then $w$ can be represented as a sum of all n-grams. The new similarity function becomes:
+
+
+$$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
+
 ---
 
 ## GloVe VS Word2vec VS Fasttext
 
 ### Word Embeddings in Python
+
+Instead of training our own models, we'll use a pre-trained GloVe and word2vec models to visualize word embeddings. We'll use the `gensim` Python package to load and explore the model. If you don't have it installed, run `pip install gensim` in your command line.
+
+
 ### Word2vec
 
-Instead of training our own word2vec model, we'll use a pre-trained model to visualize word embeddings. We'll use Google's News dataset model, which can be downloaded [here](https://code.google.com/archive/p/word2vec/). The model is 1.5Gb, and is trained on a vocabulary of 3 million words, with embedding vectors of length 300. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
+For word2vec, we'll use Google's News dataset model, which can be downloaded [here](https://code.google.com/archive/p/word2vec/). The model has been trained on news articles with a vocabulary of 3 million words and embedding vectors of length 300. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
 
-We'll use the `gensim` Python package to load and explore the model. If you don't have it installed, run `pip install gensim` in your command line.
 
 ```python
 import gensim
@@ -233,6 +263,22 @@ wv = model.wv
 # remove model from env
 del model
 ```
+
+### GloVe
+
+Similar to word2vec, we'll use the `gensim` package to load a pre-trained GloVe model. `gensim` provides a method `gensim.downloader` where we can download pre-trained models. The model used here is the glove-wiki-gigaword-100 model, more pre-trained GloVe models can be found [here](https://nlp.stanford.edu/projects/glove/).
+
+```python
+import gensim.downloader as api
+
+# Download pretrained GloVe model
+glove_model = api.load("glove-wiki-gigaword-100")
+glove = glove_model.wv
+
+del glove_model
+```
+
+#### Word Arithmatic Comparison
 
 Now we have vector representations for all words in the vocabulary in `wv` and can start to do word math. We'll add and subtract some word vectors, then see what the closest word to the resulting vector is. Publications and blog posts have exhausted the "king" - "man" + "woman" = "queen" example, so I'll present some new ones.
 
@@ -264,20 +310,6 @@ find_most_similar(wv["doctor"] - wv["woman"] + wv["man"],
 
 This is a different results from the original query! Biases in the training data are captured and expressed by the model. I won't go into detail about this here. Instead the take away should be that the order of arithmetic for word vectors matters a great deal.
 
-#### GloVe
-
-Similar to word2vec, we'll use the `gensim` package to load a pre-trained GloVe model.
-
-```python
-import gensim.downloader as api
-
-# Download pretrained GloVe model from:
-# https://nlp.stanford.edu/projects/glove/
-glove_model = api.load("glove-wiki-gigaword-100")
-glove = glove_model.wv
-
-del glove_model
-```
 
 #### Visualizing Embeddings
 
@@ -293,9 +325,7 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
 ```
 
-![](/assets/word2vec_pca.png)
-
-![](/assets/glove_pca.png)
+![](/assets/word2vec_embedding.png) ![](/assets/glove_embedding.png)
 
 
 ## Conclusion
