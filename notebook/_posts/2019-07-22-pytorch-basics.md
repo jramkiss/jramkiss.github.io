@@ -6,6 +6,7 @@ category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
+excerpt: This post is about PyTorch
 ---
 
 This notebook is targeted at Python programmers who want to get started in

@@ -6,6 +6,7 @@ category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
 mathjax: true
+excerpt: This post is about word embeddings. It explains word2vec, GloVe and fasttext in detail and shows how to use pre-trained models for each algorithm in Python using `gensim`. 
 ---
 
 This post will explain the math and intuition behind [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and fasttext.
@@ -418,4 +419,7 @@ def plot_embeds(word_list, word_embeddings = None, figsize = (10,10)) :
 - [Gensim Models](https://radimrehurek.com/gensim/models/word2vec.html)
 - [Word2vec in Tensorflow](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
 - [GloVe Blog post](https://machinelearningmastery.com/develop-word-embeddings-python-gensim/)
+
+
 - Atom [markdown docs](https://shd101wyy.github.io/markdown-preview-enhanced/#/).
+- Jekyll [cheatsheet](https://devhints.io/jekyll).
