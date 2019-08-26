@@ -25,20 +25,14 @@ permalink: pretty
 
 # Social settings
 social_sites:
-  #twitter: jekyllrb
   github:  jramkiss
-  #dribbble: jekyll
-  #facebook: jekyll
-  #flickr: jekyll
-  #instagram: jekyll
-  #linkedin: jekyll
-  #pinterest: jekyll
-  #youtube: jekyll
-  #googleplus: +jekyll
+
 
 # Build settings
 #markdown: CommonMarkGhPages #kramdown
+
 theme: minima
+
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
@@ -48,15 +42,9 @@ plugins:
 # Highlighter settings
 highlighter: rouge
 
-# Disqus
-#disqus:
-#  shortname: jramkiss-github-io-1
-
-# Google analytics
-#google_analytics: UA-106021948-1
-
 # Publish future
 future: true
+
 # If you want to link only specific pages in your header, uncomment
 # this and add the path to the pages in order as they should show up
 #header_pages:
