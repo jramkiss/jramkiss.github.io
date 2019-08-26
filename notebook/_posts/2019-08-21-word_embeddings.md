@@ -22,6 +22,7 @@ This post will explain the math and intuition behind [word2vec](https://papers.n
 - [Fasttext](#fasttext)
   - [Overview](#overview-2)
   - [Deep Dive](#deep-dive-2)
+- [Open Questions](#open-questions)
 - [GloVe VS Word2vec VS Fasttext](#glove-vs-word2vec-vs-fasttext)
   - [Word Embeddings in Python](#word-embeddings-in-python)
   - [Word2vec](#word2vec-1)
@@ -210,29 +211,43 @@ This is the loss function that the GloVe model minimizes.
 
 ## Fasttext
 
-Fasttext is a library for learning word embeddings.
-Like word2vec, Fasttext refers to the implementation of an algorithm, as opposed to an algorithm itself. It was introduced by Facebook AI Research in 2016 and publication and source code can be found [here](https://github.com/facebookresearch/fastText).
+Fasttext is a library for learning word embeddings that was introduced by Facebook AI Research in 2016 and publication and source code can be found [here](https://github.com/facebookresearch/fastText).
 
 - Can learn supervised and unsupervised embeddings
 - Functionality for text classification in addition to word embeddings
 
 ### Overview
-The roots of the underlying algorithm come from the [skip-gram model](#deep-dive), where the idea is to predict context words given a target word. A noteable shortcoming of the original skip-gram model is that it groups each word as one unit, ignoring the substructure of words, and causing poor performance on out-of-vocabulary words. To incorporate subword information, Fasttext treats each word as a sum of n-grams.
+
+The roots of the underlying algorithm come from the [skip-gram model](#deep-dive), where the idea is to predict context words given a target word. The shortcoming of the original skip-gram model that fasttext improves is that it groups each word as one unit, ignoring the substructure of words (morphological structure), and causing poor performance on out-of-vocabulary words. To incorporate subword information, Fasttext treats each word as a sum of n-grams.
 
 ### Deep Dive
 
 Before starting, we'll take a step back to quantifying how similar two word vectors are. Both GloVe and word2vec do this using dot products, however we can think of the similarity more generally as an arbitrary function, $s(u_j, v_c)$.
 
-Fasttext uses a different similarity measure, where each word is represented as a sum of smaller words of length n, n-grams. To help the model learn prefixes and suffixes, we append "<" to the front and ">" to the back of each word. Then for n=3, the n-grams of "where" are:
+Fasttext uses a different similarity measure, where each word is represented as a sum of smaller words of length n called n-grams. To help the model learn prefixes and suffixes, we append "<" to the front and ">" to the back of each word. Then for n=3, the n-grams of "where" are:
 
     <where> = [<wh, whe, her, ere, re>]
 
-Appending "<" and ">" also helps with the problem of sub-words being actual words. We have no way of determining the difference between the subword "her" and the full-word "her", and there definitely should be a difference. Since we added the special characters around each word, the tri-gram "her" is now different from the sequence "\<her>".
+We have no way of determining the difference between the subword "her" and the full-word "her" (there definitely should be a difference). Appending the special characters around each word helps with this, as the tri-gram "her" is now different from the sequence "\<her>".
 
 More formally, suppose we have all n-grams in the vocabulary, $G$, each represented by a vector, $\boldsymbol{z}_g$. We can refer to all the n-grams of some word, $w$, by $G_w$. Then $w$ can be represented as a sum of all n-grams. The new similarity function becomes:
 
 
 $$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
+
+
+---
+
+## Open Questions
+
+- **Fasttext** doesn't account for positional arrangement of sub-words. Are there any examples of words with the same subwords in different context that contribute to the word differently?
+
+- We can introduce this scoring function to **GloVe** as well. Has this been done?
+
+- In **word2vec**, do we do any downsampling of frequent words before training? Not referring to negative sampling
+
+- Do we do downsampling of frequent words in **fasttext**? [This post](https://towardsdatascience.com/fasttext-under-the-hood-11efc57b2b3) talked about it, but I didn't see anything in the paper, might be in the source code.
+
 
 ---
 
