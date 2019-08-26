@@ -11,9 +11,9 @@ This is where I document my exploration of machine learning and statistics.
   {% for post in site.categories.notebook %}
 
     <li>
-        <span>{{ post.date | date_to_string }}</span> » <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }} </a>
+        <span> {{ post.date | date_to_string }} </span> - <a href="{{ post.url }}" title="{{post.title}}"> {{ post.title }} </a>
     </li>
-    &nbsp; {{ post.excerpt }}
+      &nbsp; {{ post.excerpt }}
     <br>
 
   {% endfor %}
