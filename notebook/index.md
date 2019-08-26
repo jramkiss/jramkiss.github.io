@@ -13,7 +13,7 @@ This is where I document my exploration of machine learning and statistics.
     <li>
         <span> {{ post.date | date: "%B, %Y" }} </span> - <a href="{{ post.url }}" title="{{post.title}}"> {{ post.title }} </a>
         <br>
-        &nbsp; <span> {{ post.excerpt }} </span>
+        <blockquote> {{ post.excerpt }} </blockquote>
 
     </li>
 
