@@ -47,7 +47,7 @@ Typically when we say [word2vec](https://arxiv.org/pdf/1310.4546.pdf), we are re
 
 This inversion of predicting context / target words between CBOW and skip-gram might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation (useful for smaller datasets). Skip-gram on the other hand treats each context word - target word pair as a new observation, and tends to do better on larger data sets.
 
-Although this post will primarily focus on the skip-gram model, both models are single layer neural networks whose weights we learn. Each row in this weight matrix is the word vectors for all of our words. **The model learns by simultaneously: (1) maximizing the probability that an observed word appears in the context of it's target word and (2) minimizing the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.**
+Although this post will primarily focus on the skip-gram model, both models are single layer neural networks whose weights we learn. Each row in this weight matrix is the word vectors for all of our words. **The model learns by simultaneously: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary doesn't appear in the context of the target word.**
 
 If you're still unsure about neural network weights and the weight matrix, I recommend reading [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html)
 
@@ -153,11 +153,9 @@ To summarize, this loss function is trying to maximize the probability that word
 
 ### Overview
 
-GloVe (Global Vectors) is another architecture for producing word embeddings. It improves on a key downside of the skip-gram model, which is the loss of corpus statistics due to capturing information one window at a time. To solve this, GloVe uses word co-occurrence counts to capture global information about the corpus.
+GloVe (Global Vectors) is another architecture for learning word embeddings. It improves on a key downside of the skip-gram model, which is the loss of corpus statistics due to capturing information one window at a time. To solve this, GloVe uses word co-occurrence counts to capture global information about the corpus. **GloVe learns word embeddings by minimizing the difference between word vector dot products and their log co-occurrence counts.**
 
 > On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.
-
-The skip-gram model uses negative sampling to bypass softmax's bottleneck of having to iterate over the entire vocabulary. GloVe takes a different approach by changing the problem from classification to regression. **GloVe learns by minimizing the difference between word vector dot product and their log co-occurrence counts.**
 
 ### Deep Dive
 
@@ -197,7 +195,7 @@ $$
 \hat{J} = \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} (\hat{P}_{ij} - \hat{Q}_{ij})^2
 $$
 
-Now we have squared error, weighted by the number of co-occurrences of words $i$ and $j$. There's one last problem with this, which is that some co-occurrence counts can be massive. This will affect both the weights, $X_i$, and $\hat{P_{ij}} = X_{ij}$. To deal with this explosion in the squared term, we take $log(hat{P})$ and $log(hat{Q})$) and to deal with the explosion of weights, we introduce a function, $f$ that caps the co-occurrence count weight. We'll apply $f$ to each target-context pair, $X_{ij}$ as opposed to only $X_i$. The new loss function becomes: 
+Now we have squared error, weighted by the number of co-occurrences of words $i$ and $j$. There's one last problem with this, which is that some co-occurrence counts can be massive. This will affect both the weights, $X_i$, and $\hat{P_{ij}} = X_{ij}$. To deal with this explosion in the squared term, we take $log(hat{P})$ and $log(hat{Q})$) and to deal with the explosion of weights, we introduce a function, $f$ that caps the co-occurrence count weight. We'll apply $f$ to each target-context pair, $X_{ij}$ as opposed to only $X_i$. The new loss function becomes:
 
 $$
 \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2
@@ -218,7 +216,7 @@ Fasttext is a library for learning word embeddings that was introduced by Facebo
 
 ### Overview
 
-The roots of the underlying algorithm come from the [skip-gram model](#deep-dive), where the idea is to predict context words given a target word. The shortcoming of the original skip-gram model that fasttext improves is that it groups each word as one unit, ignoring the substructure of words (morphological structure), and causing poor performance on out-of-vocabulary words. To incorporate subword information, Fasttext treats each word as a sum of n-grams.
+The roots of the underlying algorithm come from the [skip-gram model](#deep-dive). Fasttext improves on the skip-gram (and CBOW) by incorporating subword information (morphological structure) into the model. This helps with out-of-vocabulary prediction. **Fasttext learns word embeddings the same way as word2vec, but treats each word as a sum of n-grams instead of one unit.**
 
 ### Deep Dive
 
