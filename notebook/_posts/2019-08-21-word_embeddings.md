@@ -181,7 +181,7 @@ Below is the co-occurrence matrix for the corpus containing:
 
 ![](/assets/cooccurrence_matrix.png)
 
-#### GloVe from Softmax
+#### From Softmax to GloVe
 
 We can find global loss using the softmax function, $Q_{ij}$, by summing over all target-context word pairs.
 
