@@ -28,6 +28,7 @@ This post will explain the math and intuition behind [word2vec](https://papers.n
   - [Word Embeddings in Python](#word-embeddings-in-python)
   - [Word2vec](#word2vec-1)
   - [GloVe](#glove-1)
+  - [Fasttext](#fasttext-1)
 - [Conclusion](#conclusion)
 - [Appendix](#appendix)
   - [From Word2vec to GloVe - Math](#from-word2vec-to-glove-math)
@@ -209,14 +210,15 @@ See [Appendix](#appendix) for more
 
 ## Fasttext
 
-Fasttext is a library for learning word embeddings that was introduced by Facebook AI Research in 2016 and publication and source code can be found [here](https://github.com/facebookresearch/fastText).
-
-- Can learn supervised and unsupervised embeddings
-- Functionality for text classification in addition to word embeddings
-
 ### Overview
 
-The roots of the underlying algorithm come from the [skip-gram model](#deep-dive). Fasttext improves on the skip-gram (and CBOW) by incorporating subword information (morphological structure) into the model. This helps with out-of-vocabulary prediction. **Fasttext learns word embeddings the same way as word2vec, but treats each word as a sum of n-grams instead of one unit.**
+[Fasttext](https://github.com/facebookresearch/fastText) is a powerful library for learning word embeddings that was introduced by Facebook in 2016. The package offers text classification as well. Its roots come from the [word2vec](#deep-dive) models.
+
+Word2vec trains a unique vector for each word, ignoring important word sub-structure (morphological structure) and making out-of-vocabulary prediction nearly impossible. Fasttext attempts to solve this by treating each word as a sum of its subwords. These subwords can be defined in any way, however the simplest form is a character n-gram. Then the vector for each word is simply the sum of each of its n-grams.
+
+**Fasttext learns word embeddings the same way as word2vec, but treats each word as a sum of n-grams instead of one unit.**
+
+> This is especially significant for morphologically rich languages (German, Turkish) in which a single word can have a large number of morphological forms, each of which might occur rarely, thus making it hard to train good word embeddings.
 
 ### Deep Dive
 
@@ -290,6 +292,8 @@ glove = glove_model.wv
 
 del glove_model
 ```
+
+### Fasttext
 
 #### Word Arithmatic Comparison
 
@@ -416,7 +420,7 @@ def plot_embeds(word_list, word_embeddings = None, figsize = (10,10)) :
 - [Gensim Models](https://radimrehurek.com/gensim/models/word2vec.html)
 - [Word2vec in Tensorflow](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
 - [GloVe Blog post](https://machinelearningmastery.com/develop-word-embeddings-python-gensim/)
-
+- [Fasttext paper](https://arxiv.org/pdf/1607.04606.pdf)
 
 - Atom [markdown docs](https://shd101wyy.github.io/markdown-preview-enhanced/#/).
 - Jekyll [cheatsheet](https://devhints.io/jekyll).
