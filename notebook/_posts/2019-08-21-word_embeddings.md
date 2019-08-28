@@ -9,7 +9,17 @@ mathjax: true
 excerpt: This post is about word embeddings. It explains word2vec, GloVe and fasttext in detail and shows how to use pre-trained models for each algorithm in Python using `gensim`.
 ---
 
-This post will explain the math and intuition behind [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and fasttext. Both GloVe and fasttext were built to improve on word2vec, so we provide a strong foundational understanding of the intuition behind word2vec, then build on it with GloVe and fasttext.
+
+Accurately representing words as vectors is challenging, but necessary. Consider the following sentences:
+
+- The garden is pretty
+- The garden is pretty ugly
+
+How can a vector represent "pretty", when it means different things in different contexts?
+
+This post will explain 3 breakthrough algorithms for learning word vectors (embeddings), and provide code examples for getting started with pre-trained models in Python. We'll start with [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), which is the oldest of the 3, then explore ways of dealing with its shortcomings in [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and [fasttext](https://arxiv.org/pdf/1607.04606.pdf).
+
+Why use pre-trained models? - Pre-trained models are great because we don't need a ton of resources to use powerful algorithms. Some of the models used here were trained by Google and Facebook on hundreds of millions of words. Pretty much impossible on a laptop CPU.
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=3 orderedList=false} -->
 <!-- code_chunk_output -->
@@ -55,7 +65,7 @@ If you're still unsure about neural network weights and the weight matrix, I rec
 
 ### Deep Dive
 
-The main idea behind the skip-gram model is we take a word in an input sequence as the target word, and predict its context words. Context is simply defined as the $m$ words on either side of the target word. In figure 1 below, the window size is 2, the input word is "into" and its context words are "problems", "turning", "banking" and "crises". We want the probability that each word in the window appears in the context of the target word.
+The main idea behind the skip-gram model is we take a word in an input sequence as the target word, and predict its context words. The context of a word is the $m$ words surrounding it. In figure 1, the window size is 2, input word is "into" and context words are "problems", "turning", "banking" and "crises".
 
 <br/>
 
@@ -63,16 +73,19 @@ The main idea behind the skip-gram model is we take a word in an input sequence 
 Figure 1: The skip gram prediction of target word "into" with window size 2. Taken from Stanford's NLP course, shows
  <br/>
 
-Before we start to build the objective function, let's formalize some notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We'll call this input sequence the *corpus*, and all its unique words the *vocabulary*. Each word in the vocabulary will have 2 vector representations, $u_o$ for context and $v_c$ for target.
+Before we start, let's formalize some notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We'll call this input sequence the *corpus*, and all its unique words the *vocabulary*. Each word in the vocabulary will have 2 vector representations, $u_o$ for context and $v_c$ for target.
 In figure 1, $u_{turning}$ is the vector representation of "turning" as a context word, and $v_{banking}$ is the vector representation of "banking" as a target word.
 
-We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of the target word $w_t$. This is a bit weird at first, but the probability is based on the vector representations of each word. Every time we encounter a word in context of a target word, we alter their vector representations to be "closer". Let's forget about word vectors to see the intuition: "turning" is more likely to be in the context of "into" than "crises" is, so the vectors for "turning" and "into" should be to be closer than "crises" and "into". The function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations.
+We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of the target word $w_t$. We'll refer to this probability as $p(w_{t+j} \lvert w_t; \theta)$.  
+This may seem weird, but the probability is based on the vector representations of each word. When we encounter a word in the context of another, we alter their vector representations to be "closer". So the more we see words in each other's context, the close their vectors are. Now back to word vectors, the function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations.
+
+> To see the intuition, we can forget about vectors: "turning" is more likely to be in the context of "into" than "crises" is (I can think of a million sentences with "turning into", but not that many with "crises into" or "into crises"). So the vectors for "turning" and "into" should be to be closer than "crises" and "into".
 
 $$
 J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} \lvert w_t; \theta))
 $$
 
-The only problem here is we have no idea how to find $p(w_{t+j} \lvert w_t; \theta)$. We'll start with using the softmax function. It essentially calculates how similar a context word, $u_o$, is to target word $v_c$, relative to all other context words in the vocabulary. The measure of similarity between two words is measured by the dot product $u_o^T v_c$, a larger dot product means more similar words.
+The only problem here is we have no idea how to find $p(w_{t+j} \lvert w_t; \theta)$. We'll start with using the softmax function. This essentially calculates how similar a context word, $u_o$, is to target word $v_c$, relative to all other context words in the vocabulary. The measure of similarity between two words is measured by the dot product $u_o^T v_c$, and a larger dot product means more similar words.
 
 $$
 p(w_{t+j} \lvert w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
@@ -137,8 +150,6 @@ Finally, we have to specify a distribution for negative sampling, $P(w) = U(w)^{
 
 To summarize, this loss function is trying to maximize the probability that word $o$ appears in the context of word $c$, while minimizing the probability that a randomly selected word from the vocabulary does not appear in the context of word $c$. We use the gradient of this loss function to iteratively update the word vectors, $u_o$ and $v_c$ and eventually get our word embeddings.
 
-> SGNS seeks to represent each word w in $V_W$ and each context c in VC as d-dimensional vectors w andc, such that words that are “similar” to each other will have similar vector representations. It does so by trying to maximize a function of the product w ·c for (w, c) pairs that occur in D, and minimize it for negative examples: (w, cN ) pairs that do not necessarily occur in D. The negative examples are created by stochastically corrupting observed (w, c) pairs from D – hence the name “negative sampling”. For each observation of (w,c), SGNS draws k contexts from the empirical unigram distribution P (c) = #(c).
-
 
 **Summary of Word2Vec**
 
@@ -154,7 +165,7 @@ To summarize, this loss function is trying to maximize the probability that word
 
 ### Overview
 
-GloVe (Global Vectors) is another architecture for learning word embeddings. It improves on a key downside of the skip-gram model, which is the loss of corpus statistics due to capturing information one window at a time. To solve this, GloVe uses word co-occurrence counts to capture global information about the corpus. **GloVe learns word embeddings by minimizing the difference between word vector dot products and their log co-occurrence counts.**
+GloVe (Global Vectors) is another architecture for learning word embeddings that improves on the skip-gram model by incorporating corpus statistics. Since the skip-gram model looks at each window independently, it loses corpus statistics. Instead, GloVe uses word co-occurrence counts to capture global information about the corpus. **GloVe learns word embeddings by minimizing the difference between word vector dot products and their log co-occurrence counts.**
 
 > On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.
 
