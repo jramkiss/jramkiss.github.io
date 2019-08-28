@@ -52,20 +52,18 @@ Why use pre-trained models? - Pre-trained models are great because we don't need
 
 ### Overview
 
-Typically when we say [word2vec](https://arxiv.org/pdf/1310.4546.pdf), we are referring to one of two models for learning word vectors; the continuous bag-of-words (CBOW) or the skip-gram model. They are very similar, CBOW accepts context words as input and predicts the target word whereas the skip-gram accepts a target word as input and predicts a context word.
+[Word2vec](https://arxiv.org/pdf/1310.4546.pdf) really refers to one of two models for learning word vectors; the continuous bag-of-words (CBOW) or the skip-gram model. They are very similar, CBOW accepts context words as input and predicts the target word whereas the skip-gram accepts a target word as input and predicts a context word.
 
-[Original paper](https://arxiv.org/pdf/1301.3781.pdf)
+> This inversion of predicting context / target words between CBOW and skip-gram might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation (useful for smaller datasets). Skip-gram on the other hand treats each context word - target word pair as a new observation, and tends to do better on larger data sets.
 
-This inversion of predicting context / target words between CBOW and skip-gram might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation (useful for smaller datasets). Skip-gram on the other hand treats each context word - target word pair as a new observation, and tends to do better on larger data sets.
+Although we will primarily focus on the skip-gram, both models are single layer neural networks that accept one-hot encoded vectors as input. We learn the weights of the hidden layer, and each row of this weight matrix is a word vector. **The model learns by simultaneously: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary doesn't appear in the context of the target word.**
 
-Although this post will primarily focus on the skip-gram model, both models are single layer neural networks whose weights we learn. Each row in this weight matrix is the word vectors for all of our words. **The model learns by simultaneously: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary doesn't appear in the context of the target word.**
-
-If you're still unsure about neural network weights and the weight matrix, I recommend reading [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html)
+If you're still unsure about neural network weights and the weight matrix, I recommend reading [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html).
 
 
 ### Deep Dive
 
-The main idea behind the skip-gram model is we take a word in an input sequence as the target word, and predict its context words. The context of a word is the $m$ words surrounding it. In figure 1, the window size is 2, input word is "into" and context words are "problems", "turning", "banking" and "crises".
+The main idea behind the skip-gram model is we take a word in an input sequence as the target word, and predict its context words. The context of a word is the $m$ words surrounding it. In figure 1, the window size is 2, the target word ("into") is in red and its context words ("problems", "turning", "banking", "crises") are in blue.
 
 <br/>
 
@@ -175,9 +173,13 @@ GloVe (Global Vectors) is another architecture for learning word embeddings that
 
 The co-occurrence matrix, $X$, is generated from the corpus and vocabulary. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Then the probability of word $j$ occurring in the context of word $i$ is $P(i \lvert j) = \frac{X_{ij}}{X_i}$.
 
-Two main advantages of computing the co-occurrence matrix is that it contains all statistical information about the corpus and only needs to be computed once. We will see how it's used in the next section.
+Below is the co-occurrence matrix for the corpus containing:
 
-> ** INSERT PICTURE OF CO-OCCURRENCE MATRIX **
+- "I like deep learning."
+- "I like NLP."
+- "I enjoy flying."
+
+![](/assets/cooccurrence_matrix.png)
 
 #### GloVe from Softmax
 
