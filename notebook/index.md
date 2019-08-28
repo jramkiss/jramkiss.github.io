@@ -5,7 +5,7 @@ description: Notes of JR
 permalink: /posts/
 ---
 
-This is where I document my exploration of machine learning and statistics.
+Exploring in machine learning and statistics. 
 
 <ul>
   {% for post in site.categories.notebook %}
