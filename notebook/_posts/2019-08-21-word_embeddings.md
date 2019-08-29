@@ -34,8 +34,7 @@ Why use pre-trained models? - Pre-trained models are great because we don't need
   - [Overview](#overview-2)
   - [Deep Dive](#deep-dive-2)
 - [Open Questions](#open-questions)
-- [GloVe VS Word2vec VS Fasttext](#glove-vs-word2vec-vs-fasttext)
-  - [Word Embeddings in Python](#word-embeddings-in-python)
+- [Word Embeddings in Python](#word-embeddings-in-python)
   - [Word2vec](#word2vec-1)
   - [GloVe](#glove-1)
   - [Fasttext](#fasttext-1)
@@ -264,37 +263,40 @@ $$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
 
 ---
 
-## GloVe VS Word2vec VS Fasttext
+## Word Embeddings in Python
 
-### Word Embeddings in Python
+Instead of training our own models, we'll use pre-trained models to visualize word embeddings from the 3 different algorithms. We'll use the `gensim` Python package to load and explore each model. If you don't have it installed, run `pip install gensim` in your command line.
 
-Instead of training our own models, we'll use a pre-trained GloVe and word2vec models to visualize word embeddings. We'll use the `gensim` Python package to load and explore the model. If you don't have it installed, run `pip install gensim` in your command line.
-
-
-### Word2vec
-
-For word2vec, we'll use Google's News dataset model, which can be downloaded [here](https://code.google.com/archive/p/word2vec/). The model has been trained on news articles with a vocabulary of 3 million words and embedding vectors of length 300. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
-
+There are many ways to use pre-trained embeddings; you can find each model  online, download and load into Python one by one, or you can just use Gensim's provided datasets and models. They can be accessed with `gensim.downloader`, and to see everything available either look [here](https://github.com/RaRe-Technologies/gensim-data), or run `python -m gensim.downloader --info` in your command line. We'll use `gensim.downloader`. Here are the imports that we'll use:
 
 ```python
 import gensim
+import gensim.downloader as api
 
-# Download model and save it to current directory, or update the model_path
-model_path = "GoogleNews-vectors-negative300.bin"
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
 
-# Load Google's pre-trained Word2Vec model.
-model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)
+# if you're using a Jupyter notebook (with a Mac)
+%config InlineBackend.figure_format='retina'
+```
 
-# extract word vectors from the model
-wv = model.wv
+### Word2vec
 
-# remove model from env
-del model
+For word2vec, we'll use Google's News dataset model, which can be downloaded [here](https://code.google.com/archive/p/word2vec/). The model has been trained on news articles and has a vocabulary of 3 million words with 300 dimensional embedding vectors. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
+
+```Python
+word2vec_model_path = "word2vec-google-news-300"
+word2vec_model = api.load(word2vec_model_path)
+w2v = word2vec_model.wv
+
+del word2vec_model
+
+print(api.info(word2vec_model_path))
 ```
 
 ### GloVe
 
-Similar to word2vec, we'll use the `gensim` package to load a pre-trained GloVe model. `gensim` provides a method `gensim.downloader` where we can download pre-trained models. The model used here is the glove-wiki-gigaword-100 model, more pre-trained GloVe models can be found [here](https://nlp.stanford.edu/projects/glove/).
+`gensim` provides a method, `gensim.downloader`, where we can download pre-trained models. The model used here is the glove-wiki-gigaword-100 model, more pre-trained GloVe models can be found [here](https://nlp.stanford.edu/projects/glove/).
 
 ```python
 import gensim.downloader as api
@@ -307,6 +309,8 @@ del glove_model
 ```
 
 ### Fasttext
+
+Fasttext provides pre-trained models on their Github. We'll use the [wiki-en model](https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md) here, however there are many other languages available.
 
 #### Word Arithmatic Comparison
 
