@@ -10,7 +10,7 @@ excerpt: This post is about word embeddings. It explains word2vec, GloVe and fas
 ---
 
 
-Accurately representing words as vectors is challenging, but necessary. Consider the following sentences:
+Accurately representing words as vectors is a challenging, but necessary task in deep learning. Consider the following sentences:
 
 - The garden is pretty
 - The garden is pretty ugly
@@ -265,9 +265,11 @@ $$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
 
 ## Word Embeddings in Python
 
-Instead of training our own models, we'll use pre-trained models to visualize word embeddings from the 3 different algorithms. We'll use the `gensim` Python package to load and explore each model. If you don't have it installed, run `pip install gensim` in your command line.
+Now let's explore word embeddings using pre-trained models in the `gensim` Python package. If you don't have it installed, run `pip install gensim` in your command line. Gensim offers pre-trained models from their `gensim.downloader` method. A full list of the models available can be found [here](https://github.com/RaRe-Technologies/gensim-data), or by running `python -m gensim.downloader --info` in your command line.
 
-There are many ways to use pre-trained embeddings; you can find each model  online, download and load into Python one by one, or you can just use Gensim's provided datasets and models. They can be accessed with `gensim.downloader`, and to see everything available either look [here](https://github.com/RaRe-Technologies/gensim-data), or run `python -m gensim.downloader --info` in your command line. We'll use `gensim.downloader`. Here are the imports that we'll use:
+
+I provided some functions in the [Appendix](#appendix) for plotting and finding most similar words that are built on top of `Gensim` method. Here're the imports we'll need:
+
 
 ```python
 import gensim
@@ -276,33 +278,34 @@ import gensim.downloader as api
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-# if you're using a Jupyter notebook (with a Mac)
+# clearer images if you're using a Jupyter notebook
 %config InlineBackend.figure_format='retina'
 ```
 
 ### Word2vec
 
-For word2vec, we'll use Google's News dataset model, which can be downloaded [here](https://code.google.com/archive/p/word2vec/). The model has been trained on news articles and has a vocabulary of 3 million words with 300 dimensional embedding vectors. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
+For word2vec, we'll use Google's News dataset model, trained on news articles with a vocabulary of 3 million words and 300 dimensional embedding vectors. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
 
 ```Python
 word2vec_model_path = "word2vec-google-news-300"
+print(api.info(word2vec_model_path))
+
 word2vec_model = api.load(word2vec_model_path)
 w2v = word2vec_model.wv
 
+# remove from env
 del word2vec_model
-
-print(api.info(word2vec_model_path))
 ```
 
 ### GloVe
 
-`gensim` provides a method, `gensim.downloader`, where we can download pre-trained models. The model used here is the glove-wiki-gigaword-100 model, more pre-trained GloVe models can be found [here](https://nlp.stanford.edu/projects/glove/).
+The glove-wiki-gigaword-300 model used here is trained on 6B tokens from W ikipedia 2014 and the Gigaword dataset, other pre-trained GloVe models can be downloaded [from Stanford](https://nlp.stanford.edu/projects/glove/) or [from Gensim](https://github.com/RaRe-Technologies/gensim-data/releases/download/glove-wiki-gigaword-100).
 
 ```python
-import gensim.downloader as api
+glove_model_path = "glove-wiki-gigaword-300"
+print(api.info(glove_model_path))
 
-# Download pretrained GloVe model
-glove_model = api.load("glove-wiki-gigaword-100")
+glove_model = api.load(glove_model_path)
 glove = glove_model.wv
 
 del glove_model
@@ -311,6 +314,7 @@ del glove_model
 ### Fasttext
 
 Fasttext provides pre-trained models on their Github. We'll use the [wiki-en model](https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md) here, however there are many other languages available.
+
 
 #### Word Arithmatic Comparison
 
@@ -359,7 +363,8 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
 ```
 
-![](/assets/word2vec_embedding.png) ![](/assets/glove_embedding.png)
+![](/assets/word2vec_embedding.png)
+![](/assets/glove_embedding.png)
 
 
 ## Conclusion
