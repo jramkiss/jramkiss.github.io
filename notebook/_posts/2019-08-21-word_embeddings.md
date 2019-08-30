@@ -399,7 +399,13 @@ Wrapping up, there are some key differences between word2vec (skip-gram), GloVe 
 
 Both word2vec and GloVe can be used as frameworks for learning general similarities in text without considering what each token is made of. This makes them useful for tasks like find similar movies given a sequence of movies watched by users. Fasttext on the other hand is more robust for translation tasks, where the likelihood of encountering an out-of-vocabulary is higher.
 
+<br/>
+
+
 ---
+
+
+<br/>
 
 ## Appendix
 
