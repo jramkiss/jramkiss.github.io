@@ -1,29 +1,25 @@
 ---
 layout: post
 title: "Word Vectors Decomposed - Word2Vec and GloVe"
-date: August 2019
+date: 2019-08-21
 category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
-math: true
-#output:
-#  pdf_document:
-#    highlight: kate
-#    fontfamily: libertinus
-#    linkcolor: blue
-#fontsize: 10pt
-#geometry: margin=0.75in
-
-markdown:
-  path: 2019-08-12-word2vec_GFM.md
-  ignore_from_front_matter: true
-  absolute_image_path: false
-export_on_save:
-  markdown: true
-
+mathjax: true
+excerpt: This post is about word embeddings. It explains word2vec, GloVe and fasttext in detail and shows how to use pre-trained models for each algorithm in Python using `gensim`.
 ---
 
-This post will explain the math and intuition behind [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and fasttext.
+
+Accurately representing words as vectors is a challenging, but necessary task in deep learning. Consider the following sentences:
+
+- The garden is pretty
+- The garden is pretty ugly
+
+How can a vector represent "pretty", when it means different things in different contexts?
+
+This post will explain 3 breakthrough algorithms for learning word vectors (embeddings), and provide code examples for getting started with pre-trained models in Python. We'll start with [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), which is the oldest of the 3, then explore ways of dealing with its shortcomings in [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and [fasttext](https://arxiv.org/pdf/1607.04606.pdf).
+
+Why use pre-trained models? - Pre-trained models are great because we don't need a ton of resources to use powerful algorithms. Some of the models used here were trained by Google and Facebook on hundreds of millions of words. Pretty much impossible on a laptop CPU.
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=3 orderedList=false} -->
 <!-- code_chunk_output -->
@@ -31,13 +27,18 @@ This post will explain the math and intuition behind [word2vec](https://papers.n
 - [Word2Vec](#word2vec)
   - [Overview](#overview)
   - [Deep Dive](#deep-dive)
-  - [Word2vec in Python](#word2vec-in-python)
 - [GloVe](#glove)
   - [Overview](#overview-1)
   - [Deep Dive](#deep-dive-1)
-  - [GloVe in Python](#glove-in-python)
 - [Fasttext](#fasttext)
-- [GloVe VS Word2vec VS Fasttext](#glove-vs-word2vec-vs-fasttext)
+  - [Overview](#overview-2)
+  - [Deep Dive](#deep-dive-2)
+- [Open Questions](#open-questions)
+- [Word Embeddings in Python](#word-embeddings-in-python)
+  - [Word2vec](#word2vec-1)
+  - [GloVe](#glove-1)
+  - [Fasttext](#fasttext-1)
+- [Conclusion](#conclusion)
 - [Appendix](#appendix)
   - [From Word2vec to GloVe - Math](#from-word2vec-to-glove-math)
   - [Code](#code)
@@ -48,41 +49,43 @@ This post will explain the math and intuition behind [word2vec](https://papers.n
 
 ## Word2Vec
 
-The [word2vec](https://arxiv.org/pdf/1310.4546.pdf) model typically refers to an implementation of one of two models, the continuous bag-of-words (CBOW) or the skip-gram model. They are very similar, CBOW accepts context words as input and predicts the target word and skip-gram accepts the target word as input and predicts a context word. This inversion might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation, which is useful for smaller datasets. Skip-gram on the other hand treats each context-target pair as a new observation, and tends to do better on larger data sets.
-
-[Original paper](https://arxiv.org/pdf/1301.3781.pdf)
-
 ### Overview
 
-Although this post will primarily focus on the skip-gram model, both models are single layer neural networks whose weights we learn. This weight matrix will then contain the word vectors for all of our words. The objective function tries to simultaneously (1) maximize the probability that an observed word appears in the context of it's target word and (2) minimize the probability that a randomly selected word from the vocabulary appears as a context word for the given target word.
+[Word2vec](https://arxiv.org/pdf/1310.4546.pdf) really refers to one of two models for learning word vectors; the continuous bag-of-words (CBOW) or the skip-gram model. They are very similar, CBOW accepts context words as input and predicts the target word whereas the skip-gram accepts a target word as input and predicts a context word.
 
-If you're still unsure about neural network weights and the weight matrix, I recommend reading [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html)
+> This inversion of predicting context / target words between CBOW and skip-gram might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation (useful for smaller datasets). Skip-gram on the other hand treats each context word - target word pair as a new observation, and tends to do better on larger data sets.
+
+Although we will primarily focus on the skip-gram, both models are single layer neural networks that accept one-hot encoded vectors as input. We learn the weights of the hidden layer, and each row of this weight matrix is a word vector. **The model learns by simultaneously: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary doesn't appear in the context of the target word.**
+
+If you're still unsure about neural network weights and the weight matrix, I recommend reading [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html).
 
 
 ### Deep Dive
 
-The idea behind the skip-gram model is we take a word in an input sequence as the "target" or "center" word, and predict the words around it. 'Around' is determined by a pre-specified window size, $m$. In the figure below, we have a window size of 2, the input word is "banking" and its context words are "turning", "into", "crises" and "as". **We want to quantify the probability that each word in the window appears in the context of the target word.**
+The main idea behind the skip-gram model is we take a word in an input sequence as the target word, and predict its context words. The context of a word is the $m$ words surrounding it. In figure 1, the window size is 2, the target word ("into") is in red and its context words ("problems", "turning", "banking", "crises") are in blue.
 
 <br/>
 
-| ![Figure1](../../assets/word2vec_viz.png) |
-|:--:|
-| Figure 1: Taken from Stanford's NLP course, shows the skip gram prediction of "banking" with window size 2.|
+![Figure1](/assets/word2vec_viz.png)
+Figure 1: The skip gram prediction of target word "into" with window size 2. Taken from Stanford's NLP course, shows
  <br/>
 
-Before we start to build the objective function discussed above, here's some useful notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We'll call this input sequence the *corpus*, and all its unique words the *vocabulary*. Each word in the vocabulary will have 2 vector representations, $u_o$ for context and $v_c$ for target.
+Before we start, let's formalize some notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We'll call this input sequence the *corpus*, and all its unique words the *vocabulary*. Each word in the vocabulary will have 2 vector representations, $u_o$ for context and $v_c$ for target.
 In figure 1, $u_{turning}$ is the vector representation of "turning" as a context word, and $v_{banking}$ is the vector representation of "banking" as a target word.
 
-We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of target word $w_t$. This might seem weird, but the probability is based on the vector representations of each word. Every time we encounter a word in context of a target word, we alter their vector representations to be "closer". Referring to the example above, $p(turning | banking)$ > $p(problems | banking)$, so the vectors for "turning" and "banking" will be updated to be closer than "problems" and "banking". We can now define a function that describes this. $\theta$ is a placeholder representing all the vector representations.
+We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of the target word $w_t$. We'll refer to this probability as $p(w_{t+j} \lvert w_t; \theta)$.  
+This may seem weird, but the probability is based on the vector representations of each word. When we encounter a word in the context of another, we alter their vector representations to be "closer". So the more we see words in each other's context, the close their vectors are. Now back to word vectors, the function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations.
+
+> To see the intuition, we can forget about vectors: "turning" is more likely to be in the context of "into" than "crises" is (I can think of a million sentences with "turning into", but not that many with "crises into" or "into crises"). So the vectors for "turning" and "into" should be to be closer than "crises" and "into".
 
 $$
-J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} | w_t; \theta))
+J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} \lvert w_t; \theta))
 $$
 
-The only problem here is we have no idea how to find $p(w_{t+j} | w_t; \theta)$. We'll start with using the softmax function. This will calculate the probability of a word vector, $u_o$, co-occurring with a target word vector, $v_c$. It essentially means "how similar is context word $u_o$ to target word $v_c$, relative to all other context words in the vocabulary". The measure of similarity between two words is measured by the dot product $u_o^T v_c$.
+The only problem here is we have no idea how to find $p(w_{t+j} \lvert w_t; \theta)$. We'll start with using the softmax function. This essentially calculates how similar a context word, $u_o$, is to target word $v_c$, relative to all other context words in the vocabulary. The measure of similarity between two words is measured by the dot product $u_o^T v_c$, and a larger dot product means more similar words.
 
 $$
-p(w_{t+j} | w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
+p(w_{t+j} \lvert w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}
 $$
 
 Where:
@@ -92,13 +95,15 @@ Where:
 -   $u_o = word2vec(w_{t+j})$
 -   $v_c = word2vec(w_t)$
 
-Although we now have a way of quantifying the probability a word appears in the context of another, the $\sum_{w=1}^W e^{u_w^T v_c}$ requires us to iterate over all words in the vocabulary. To deal with this, we must approximate the softmax probability. One way of doing this is negative sampling.
+Although we now have a way of quantifying the probability a word appears in the context of another, the $\sum_{w=1}^W e^{u_w^T v_c}$ term requires us to iterate over all words in the vocabulary. To deal with this, we must approximate the softmax probability. One way of doing this is called negative sampling.
+
+<br/>
 
 #### Negative Sampling Loss
 
-Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample $k$ words and determine the probability that these words **do not** co-occur with the target word.The intuition behind this is that a good model should be able to differentiate between data and noise.
+Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample $k$ words and determine the probability that these words **do not** co-occur with the target word. The intuition behind this is that a good model should be able to differentiate between data and noise.
 
-To incorporate negative sampling, the objective function needs to be altered by replacing $p(w_{t+j} | w_t)$ with:
+To incorporate negative sampling, the objective function needs to be altered by replacing $p(w_{t+j} \lvert w_t)$ with:
 
 $$
 log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]
@@ -107,6 +112,8 @@ $$
 Where $\sigma(.)$ is the [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function).
 
 > Thus the task is to distinguish the target word $w_t$ from draws from the noise distribution $P_n(w)$ using logistic regression, where there are $k$ negative samples for each data sample.
+
+<br/>
 
 **New Objective Function**
 
@@ -126,9 +133,9 @@ Let's look each component of $J_t(\theta)$ and try to convince ourselves this ma
 
 **The first part,** $log(\sigma(u_o^Tv_c))$, can be interpreted as the log probability of the target and context words co-occurring. We want the model to find $u_o$ and $v_c$ to maximize this probability.
 
-**The second part,**, $\sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]$, is where the "sampling" in negative sampling happens. Let's break this up more to make it clearer. It'll come in handy to note that $\sigma(-x) = 1 - \sigma(x)$.
+**The second part,** $\sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]$, is where the negative sampling happens. Let's break this up more to make it clearer. It'll come in handy to note that $\sigma(-x) = 1 - \sigma(x)$.
 
-We can first drop the $E_{j \sim P(w)}$ term, since we already know we will be sampling words from some distribution, $P(w)$:
+We can first drop the $E_{j \sim P(w)}$ term, since we already know we will be sampling words from some distribution, $P(w)$. We end up with:
 
 $$
 \sum_{i = 1}^{k} log(\sigma(-u_j^T v_c)) = \sum_{i = 1}^{k} log(1 - \sigma(u_j^T v_c))
@@ -136,11 +143,9 @@ $$
 
 Now this is easier to read, we're taking the log of 1 minus the probability that the sampled word, $j$, appears in the context of the target word $c$. This is just log of the *probability that $j$ does **not** appear in the context of the target word* $c$. Since $j$ is randomly drawn out of ~$10^6$ words, there's a very small chance it appears in the context of $c$, so this probability should be high. We do this for each of the $k$ sampled words.
 
-Finally, we have to specify a distribution for negative sampling, $P(w) = U(w)^{3/4}/Z$. Here, $U(w)$ is the unigram distribution and is raised to the $\frac{3}{4}$th power to sample rarer words in the vocabulary. $Z$ is just a normalization term.
+Finally, we have to specify a distribution for negative sampling, $P(w) = U(w)^{3/4}/Z$. Here, $U(w)$ is the count of each word in the corpus (unigram distribution) and is raised to the $\frac{3}{4}$th power to sample rarer words in the vocabulary. $Z$ is just a normalization term to turn $P(w)$ into a probability distribution.
 
-To summarize, this loss function is trying to maximize the probability that word $o$ appears in the context of word $c$, while minimizing the probability that a randomly selected word from the vocabulary appears in the context of word $c$. We use the gradient of this loss function to update the word vectors, $u_o$ and $v_c$ to get our word embeddings.
-
-> SGNS seeks to represent each word w in $V_W$ and each context c in VC as d-dimensional vectors w andc, such that words that are “similar” to each other will have similar vector representations. It does so by trying to maximize a function of the product w ·c for (w, c) pairs that occur in D, and minimize it for negative examples: (w, cN ) pairs that do not necessarily occur in D. The negative examples are created by stochastically corrupting observed (w, c) pairs from D – hence the name “negative sampling”. For each observation of (w,c), SGNS draws k contexts from the empirical unigram distribution P (c) = #(c).
+To summarize, this loss function is trying to maximize the probability that word $o$ appears in the context of word $c$, while minimizing the probability that a randomly selected word from the vocabulary does not appear in the context of word $c$. We use the gradient of this loss function to iteratively update the word vectors, $u_o$ and $v_c$ and eventually get our word embeddings.
 
 
 **Summary of Word2Vec**
@@ -149,104 +154,39 @@ To summarize, this loss function is trying to maximize the probability that word
 -   Predict surrounding words (context words) using word vectors
 -   Update the word vectors based on the loss function
 
-### Word2vec in Python
-
-Instead of training our own word2vec model, we'll use a pre-trained model to visualize word embeddings. We'll use Google's News dataset model, which can be downloaded [here](https://code.google.com/archive/p/word2vec/). The model is 1.5Gb, and is trained on a vocabulary of 3 million words, with embedding vectors of length 300. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
-
-We'll use the `gensim` Python package to load and explore the model. If you don't have it installed, run `pip install gensim` in your command line.
-
-```python
-import gensim
-
-# Download model and save it to current directory, or update the model_path
-model_path = "GoogleNews-vectors-negative300.bin"
-
-# Load Google's pre-trained Word2Vec model.
-model = gensim.models.KeyedVectors.load_word2vec_format(model_path, binary=True)
-
-# extract word vectors from the model
-wv = model.wv
-
-# remove model from env
-del model
-```
-
-Now we have vector representations for all words in the vocabulary in `wv` and can start to do word math. We'll add and subtract some word vectors, then see what the closest word to the resulting vector is. Publications and blog posts have exhausted the "king" - "man" + "woman" = "queen" example, so I'll present some new ones.
-
-Results generated by the `find_most_similar` function are of the form (word, cosine similarity), where "word" is the closest word to the vector parsed into the function. Cosine similarity values closer to 1 means the vectors (words) are more similar. The function definition can be found in the appendix.
-
-Start with: `doctor - man + woman`
-
-```python
-find_most_similar(wv["doctor"] - wv["man"] + wv["woman"],
-                  ["man", "doctor", "woman"])
-```
-```
-[('gynecologist', 0.7276507616043091),
- ('nurse', 0.6698512434959412),
- ('physician', 0.6674120426177979)]
-```
-
-Interesting, what about if we make a subtle change to `doctor - woman + man`?
-
-```python
-find_most_similar(wv["doctor"] - wv["woman"] + wv["man"],
-                  ["man", "doctor", "woman"])
-```
-```
-[('physician', 0.6823904514312744),
- ('surgeon', 0.5908077359199524),
- ('dentist', 0.570309042930603)]
-```
-
-This is a different results from the original query! Biases in the training data are captured and expressed by the model. I won't go into detail about this here. Instead the take away should be that the order of arithmetic for word vectors matters a great deal.
-
-
-#### Visualizing word2vec Embeddings
-
-To wrap up word2vec, lets look at how the model clusters different words. I've compiled words from different walks of life to see if word2vec was able to unravel their semantic similarities. These words are parsed through word2vec, then the first 2 principal components are plotted. Some expected similarities are seen here, however we lose a lot of information from reducing the dimension from 300 to 2.
-
-
-```python
-# Embedding that makes sense
-plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
-            ["boy", "girl", "man", "woman"] +                    # humans
-            ["grown", "adult", "young", "baby"] +                # age
-            ["german", "english", "spanish", "french"] +         # languages
-            ["mathematics", "physics", "biology", "chemistry"])  # natural sciences
-```
-
-![](../../assets/word2vec_pca.png)
+<br/>
 
 ---
 
 ## GloVe
 
-GloVe (Global Vectors) is another architecture for producing word embeddings. It improves on some key downsides of the skip-gram model. The main downside of the skip-gram is the loss of corpus statistics due to capturing information one window at a time. To solve this, GloVe incorporates word co-occurrence counts to capture global information about context.
-
-> On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.
-
->  GloVe, for Global Vectors, because the global corpus statistics are captured directly by the model.
-
 ### Overview
 
-The skip-gram model uses negative sampling to bypass the bottleneck of naive softmax loss. GloVe takes a different approach to this by changing the problem from classification to regression. For each pair of word vectors, GloVe tries to minimize the difference between their dot product and log co-occurrence count.
+GloVe (Global Vectors) is another architecture for learning word embeddings that improves on the skip-gram model by incorporating corpus statistics. Since the skip-gram model looks at each window independently, it loses corpus statistics. Instead, GloVe uses word co-occurrence counts to capture global information about the corpus. **GloVe learns word embeddings by minimizing the difference between word vector dot products and their log co-occurrence counts.**
+
+> On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.
 
 ### Deep Dive
 
 #### The Co-Occurrence Matrix
 
-The co-occurrence matrix, $X$, is generated from the corpus and vocabulary. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Then the probability of word $j$ occurring in the context of word $i$ is $P(i | j) = \frac{X_{ij}}{X_i}$.
+The co-occurrence matrix, $X$, is generated from the corpus and vocabulary. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Then the probability of word $j$ occurring in the context of word $i$ is $P(i \lvert j) = \frac{X_{ij}}{X_i}$.
 
-Two main advantages of computing the co-occurrence matrix is that it contains all statistical information about the corpus and only needs to be computed once. We will see how it's used in the next section.
+Below is the co-occurrence matrix for the corpus containing:
 
-#### Deriving GloVe from Softmax
+- "I like deep learning."
+- "I like NLP."
+- "I enjoy flying."
 
-We can use the softmax function, $Q_{ij}$, to find the global loss by summing over all target-context word pairs.
+![](/assets/cooccurrence_matrix.png)
+
+#### From Softmax to GloVe
+
+We can find global loss using the softmax function, $Q_{ij}$, by summing over all target-context word pairs.
 
 $$J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) $$
 
-Since words $i$ and $j$ appear $X_{ij}$ times in the corpus, we don't need to iterate over all windows in the corpus, but can iterate over the vocabulary instead.
+Since words $i$ and $j$ appear $X_{ij}$ times in the corpus, we don't need to iterate over all windows in the corpus, but can iterate over the vocabulary and multiply by the co-occurrence count.
 
 $$ J = - \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} log Q_{ij} $$
 
@@ -262,17 +202,13 @@ $$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
 
 > Cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events.
 
-See [Appendix](#appendix) for more
-
-The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ and $P_{ij}$ which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe's approach to this is dropping the normalization terms completely, so we end up with $\hat{P}$ and $\hat{Q}$. Cross-entropy loss now becomes useless, so we change $H = P_{ij}log(Q_{ij})$ to squared error, $(\hat{P}_{ij} - \hat{Q}_{ij})^2$.
+The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ and $P_{ij}$ which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe's approach to this is dropping the normalization terms completely, so we end up with $\hat{P}$ and $\hat{Q}$. The cross-entropy function is now useless, so we change $H = P_{ij}log(Q_{ij})$ to a squared error function, $(\hat{P}_{ij} - \hat{Q}_{ij})^2$.
 
 $$
 \hat{J} = \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} (\hat{P}_{ij} - \hat{Q}_{ij})^2
 $$
 
-Now we have squared error, weighted by the number of co-occurrences of words $i$ and $j$. There's one last problem with this, which is that some co-occurrence counts can be massive. This will affect both the weights, $X_i$, and $\hat{P_{ij}} = X_{ij}$. To deal with this explosion in the least squared term, we take $log(hat{P})$ and $log(hat{Q})$) and to deal with the explosion of weights, we introduce a function, $f$ that caps the co-occurrence count weight. We'll apply this weight to each target-context paid, $X_{ij}$ as opposed to only $X_i$.
-
-This will *heavily* favor common words, like "the", "and", "of", etc. We introduce a function, $f$, to cap the co-occurrence weighting. The new objective function then becomes:
+Now we have squared error, weighted by the number of co-occurrences of words $i$ and $j$. There's one last problem with this, which is that some co-occurrence counts can be massive. This will affect both the weights, $X_i$, and $\hat{P_{ij}} = X_{ij}$. To deal with this explosion in the squared term, we take $log(hat{P})$ and $log(hat{Q})$) and to deal with the explosion of weights, we introduce a function, $f$ that caps the co-occurrence count weight. We'll apply $f$ to each target-context pair, $X_{ij}$ as opposed to only $X_i$. The new loss function becomes:
 
 $$
 \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2
@@ -280,33 +216,215 @@ $$
 
 This is the loss function that the GloVe model minimizes.
 
-
-### GloVe in Python
-
-Similar to word2vec, we'll use the `gensim` package to load a pre-trained GloVe model.
-
-```python
-import gensim.downloader as api
-
-# Download pretrained GloVe model from:
-# https://nlp.stanford.edu/projects/glove/
-glove_model = api.load("glove-wiki-gigaword-100")
-glove = glove_model.wv
-
-del glove_model
-```
+See [Appendix](#appendix) for more
 
 ---
 
 ## Fasttext
 
+### Overview
+
+[Fasttext](https://github.com/facebookresearch/fastText) is a powerful library for learning word embeddings that was introduced by Facebook in 2016. The package offers text classification as well. Its roots come from the [word2vec](#deep-dive) models.
+
+Word2vec trains a unique vector for each word, ignoring important word sub-structure (morphological structure) and making out-of-vocabulary prediction nearly impossible. Fasttext attempts to solve this by treating each word as a sum of its subwords. These subwords can be defined in any way, however the simplest form is a character n-gram. Then the vector for each word is simply the sum of each of its n-grams.
+
+**Fasttext learns word embeddings the same way as word2vec, but treats each word as a sum of n-grams instead of one unit.**
+
+> This is especially significant for morphologically rich languages (German, Turkish) in which a single word can have a large number of morphological forms, each of which might occur rarely, thus making it hard to train good word embeddings.
+
+### Deep Dive
+
+Before starting, we'll take a step back to quantifying how similar two word vectors are. Both GloVe and word2vec do this using dot products, however we can think of the similarity more generally as an arbitrary function, $s(u_j, v_c)$.
+
+Fasttext uses a different similarity measure, where each word is represented as a sum of smaller words of length n called n-grams. To help the model learn prefixes and suffixes, we append "<" to the front and ">" to the back of each word. Then for n=3, the n-grams of "where" are:
+
+    <where> = [<wh, whe, her, ere, re>]
+
+We have no way of determining the difference between the subword "her" and the full-word "her" (there definitely should be a difference). Appending the special characters around each word helps with this, as the tri-gram "her" is now different from the sequence "\<her>".
+
+More formally, suppose we have all n-grams in the vocabulary, $G$, each represented by a vector, $\boldsymbol{z}_g$. We can refer to all the n-grams of some word, $w$, by $G_w$. Then $w$ can be represented as a sum of all n-grams. The new similarity function becomes:
+
+
+$$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
+
+
 ---
 
-## GloVe VS Word2vec VS Fasttext
+## Open Questions
+
+- **Fasttext** doesn't account for positional arrangement of sub-words. Are there any examples of words with the same subwords in different context that contribute to the word differently?
+
+- We can introduce this scoring function to **GloVe** as well. Has this been done?
+
+- In **word2vec**, do we do any downsampling of frequent words before training? Not referring to negative sampling
+
+- Do we do downsampling of frequent words in **fasttext**? [This post](https://towardsdatascience.com/fasttext-under-the-hood-11efc57b2b3) talked about it, but I didn't see anything in the paper, might be in the source code.
+
+
+---
+
+## Word Embeddings in Python
+
+Now let's explore word embeddings using pre-trained models in the `gensim` Python package. If you don't have it installed, run `pip install gensim` in your command line. Gensim offers pre-trained models from their `gensim.downloader` method and each model used here embeds words in a 300-dimensional space. A full list of the models available can be found [here](https://github.com/RaRe-Technologies/gensim-data), or by running `python -m gensim.downloader --info` in your command line.
+
+
+I provided some functions in the [Appendix](#appendix) for plotting and finding most similar words that are built on top of `Gensim` method. Here're the imports we'll need:
+
+
+```python
+import gensim
+import gensim.downloader as api
+
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+
+# clearer images if you're using a Jupyter notebook
+%config InlineBackend.figure_format='retina'
+```
+
+### Word2vec
+
+For word2vec, we'll use Google's News dataset model, trained on news articles with a vocabulary of 3 million words and 300 dimensional embedding vectors. [This repo](https://github.com/chrisjmccormick/inspect_word2vec) has an in-depth analysis of the words in the model.
+
+```Python
+word2vec_model_path = "word2vec-google-news-300"
+print(api.info(word2vec_model_path))
+
+word2vec_model = api.load(word2vec_model_path)
+w2v = word2vec_model.wv
+
+# remove from env
+del word2vec_model
+```
+
+### GloVe
+
+The glove-wiki-gigaword-300 model used here is trained on 6B tokens from W ikipedia 2014 and the Gigaword dataset, other pre-trained GloVe models can be downloaded [from Stanford](https://nlp.stanford.edu/projects/glove/) or [from Gensim](https://github.com/RaRe-Technologies/gensim-data/releases/download/glove-wiki-gigaword-100).
+
+```python
+glove_model_path = "glove-wiki-gigaword-300"
+print(api.info(glove_model_path))
+
+glove_model = api.load(glove_model_path)
+glove = glove_model.wv
+
+del glove_model
+```
+
+### Fasttext
+
+Fasttext provides pre-trained models on for multiple languages, which can be used in different ways (through the command line, downloading the model, through `gensim`, etc.). We'll use the English model provided by `Gensim` which is trained on wikipedia 2017 and news data, but you can go through [their Github](https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md) to see more.
+
+
+#### Word Comparison
+
+Now we have vector representations for all words in the vocabulary in `wv` and can compare the different models. We'll add and subtract some word vectors, then see what the closest word to the resulting vector is. Papers and blog posts have exhausted the "king" - "man" + "woman" = "queen" example, so I'll present some new ones.
+
+Results generated by the `find_most_similar` function are of the form (word, cosine similarity), where the each word is the closest to the one parsed into the function. Cosine similarity values closer to 1 means the vectors (words) are more similar. The function definition can be found in the [Appendix](#appendix).
+
+Start with: `doctor - man + woman`
+
+```python
+print ("word2vec: Doctor - Man + Woman")
+find_most_similar(w2v["doctor"] - w2v["man"] + w2v["woman"], w2v,
+                  ["man", "doctor", "woman"])
+
+print ("GloVe: Doctor - Man + Woman")
+find_most_similar(glove["doctor"] - glove["man"] + glove["woman"], glove,
+                  ["man", "doctor", "woman"])
+
+print ("fasttext: Doctor - Man + Woman")
+find_most_similar(fasttext["doctor"] - fasttext["man"] + fasttext["woman"], fasttext,
+                  ["man", "doctor", "woman"])
+```
+
+```
+ word2vec: Doctor - Man + Woman
+ [('gynecologist', 0.7276507616043091),
+  ('nurse', 0.6698512434959412),
+  ('physician', 0.6674120426177979)]  
+
+ GloVe: Doctor - Man + Woman
+ [('physician', 0.6203880906105042),
+  ('nurse', 0.6161285638809204),
+  ('doctors', 0.6017279624938965)]  
+
+ fasttext: Doctor - Man + Woman
+ [('gynecologist', 0.6874127388000488),
+  ('nurse-midwife', 0.6773605346679688),
+  ('physician', 0.6561880111694336)]
+```
+
+Interesting, what about if we make a subtle change to `doctor - woman + man`?
+
+```python
+print ("word2vec: Doctor - Woman + Man")
+find_most_similar(w2v["doctor"] - w2v["woman"] + w2v["man"], w2v,
+                  ["man", "doctors", "doctor", "woman"])
+
+print ("GloVe: Doctor - Woman + Man")
+find_most_similar(glove["doctor"] - glove["woman"] + glove["man"], glove,
+                  ["man", "doctors", "doctor", "woman", "dr."])
+
+print ("fasttext: Doctor - Woman + Man")
+find_most_similar(fasttext["doctor"] - fasttext["woman"] + fasttext["man"], fasttext,
+                  ["man", "doctors", "doctor", "woman", "dr."])
+```
+
+```
+word2vec: Doctor - Woman + Man
+[('physician', 0.6823904514312744),
+ ('surgeon', 0.5908077359199524),
+ ('dentist', 0.570309042930603)]  
+
+GloVe: Doctor - Woman + Man  
+[('physician', 0.5128607153892517),
+ ('he', 0.4661550223827362),
+ ('brother', 0.46356332302093506)]  
+
+fasttext: Doctor - Woman + Man
+[('physician', 0.6969557404518127),
+ ('docter', 0.6826808452606201),
+ ('non-doctor', 0.6698156595230103)]
+```
+
+This is a different results from the original results. Biases in the training data are expressed by the model. Also interestingly, there are some misspelled words in fasttext. This is because of the difference in learning methods.
+
+
+#### Visualizing Embeddings
+
+For the sake of completeness, I plotted words from different walks of life to see the algorithms were able to unravel their semantic similarities/differences. The first 2 principal components of each word vector are plotted. Some expected similarities are seen here, however we lose a lot of information from reducing the dimension from 300 to 2.
+
+
+```python
+plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
+            ["boy", "girl", "man", "woman"] +                    # humans
+            ["grown", "adult", "young", "baby"] +                # age
+            ["german", "english", "spanish", "french"] +         # languages
+            ["mathematics", "physics", "biology", "chemistry"],  # natural sciences
+            w2v,
+            title = "word2vec Embedding")
+# run this again, but changing w2v to glove and fasttext
+```
+
+![](/assets/word2vec_embedding.png)
+![](/assets/glove_embedding.png)
+![](/assets/fasttext_embedding.png)
+
+
+
+## Conclusion
+
+Wrapping up, there are some key differences between word2vec (skip-gram), GloVe and fasttext. The skip-gram iterates over the corpus predicting context words given a target word. GloVe builds on this by incorporating global corpus statistics using word co-occurrences. The results are similar to word2vec. Fasttext also builds on word2vec by breaking each word into a sum of its sub-words. It learns vectors for each subword, then combines them for prediction. This allows out-of-vocabulary prediction, but introuces the risk of misspelled words.
+
+Both word2vec and GloVe can be used as frameworks for learning general similarities in text without considering what each token is made of. This makes them useful for tasks like find similar movies given a sequence of movies watched by users. Fasttext on the other hand is more robust for translation tasks, where the likelihood of encountering an out-of-vocabulary is higher.
+
 - Which is more robust?
 - Which is more efficient?
 - What does word2vec capture than GloVe doesn't?
--
+- How does word2vec calculate word embbeddings?
+- How does GloVe calculate word embeddings?
+- How does fasttetxt calculate word embeddings?
 
 ---
 
@@ -374,4 +492,7 @@ def plot_embeds(word_list, word_embeddings = None, figsize = (10,10)) :
 - [Gensim Models](https://radimrehurek.com/gensim/models/word2vec.html)
 - [Word2vec in Tensorflow](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
 - [GloVe Blog post](https://machinelearningmastery.com/develop-word-embeddings-python-gensim/)
+- [Fasttext paper](https://arxiv.org/pdf/1607.04606.pdf)
+
 - Atom [markdown docs](https://shd101wyy.github.io/markdown-preview-enhanced/#/).
+- Jekyll [cheatsheet](https://devhints.io/jekyll).

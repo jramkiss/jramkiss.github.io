@@ -33,14 +33,12 @@ Why use pre-trained models? - Pre-trained models are great because we don't need
 - [Fasttext](#fasttext)
   - [Overview](#overview-2)
   - [Deep Dive](#deep-dive-2)
-- [Open Questions](#open-questions)
 - [Word Embeddings in Python](#word-embeddings-in-python)
   - [Word2vec](#word2vec-1)
   - [GloVe](#glove-1)
   - [Fasttext](#fasttext-1)
 - [Conclusion](#conclusion)
 - [Appendix](#appendix)
-  - [From Word2vec to GloVe - Math](#from-word2vec-to-glove-math)
   - [Code](#code)
 - [Resources](#resources)
 
@@ -247,18 +245,7 @@ More formally, suppose we have all n-grams in the vocabulary, $G$, each represen
 
 $$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
 
-
----
-
-## Open Questions
-
-- **Fasttext** doesn't account for positional arrangement of sub-words. Are there any examples of words with the same subwords in different context that contribute to the word differently?
-
-- We can introduce this scoring function to **GloVe** as well. Has this been done?
-
-- In **word2vec**, do we do any downsampling of frequent words before training? Not referring to negative sampling
-
-- Do we do downsampling of frequent words in **fasttext**? [This post](https://towardsdatascience.com/fasttext-under-the-hood-11efc57b2b3) talked about it, but I didn't see anything in the paper, might be in the source code.
+We learn the embeddings of each character n-gram, then each word embedding is a sum of its n-gram vectors.
 
 
 ---
@@ -415,31 +402,13 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
 
 ## Conclusion
 
-- Which is more robust?
-- Which is more efficient?
-- What does word2vec capture than GloVe doesn't?
-- How does word2vec calculate word embbeddings?
-- How does GloVe calculate word embeddings?
-- How does fasttetxt calculate word embeddings?
+Wrapping up, there are some key differences between word2vec (skip-gram), GloVe and fasttext. The skip-gram iterates over the corpus predicting context words given a target word. GloVe builds on this by incorporating global corpus statistics using word co-occurrences. The results are similar to word2vec. Fasttext also builds on word2vec by breaking each word into a sum of its sub-words. It learns vectors for each subword, then combines them for prediction. This allows out-of-vocabulary prediction, but introuces the risk of misspelled words.
+
+Both word2vec and GloVe can be used as frameworks for learning general similarities in text without considering what each token is made of. This makes them useful for tasks like find similar movies given a sequence of movies watched by users. Fasttext on the other hand is more robust for translation tasks, where the likelihood of encountering an out-of-vocabulary is higher.
 
 ---
 
 ## Appendix
-
-**Objective Function:**
-Recall that an objective or loss function, $J(\theta)$, is a way of determining the goodness of a model. We alter the parameters of this function, $\theta$, to find the best fit for the model.
-
-### From Word2vec to GloVe - Math
-
-Naive Softmax function:
-$$ Q_{ij} = \frac{e^{u_j^T v_i}}{\sum_{w=1}^W e^{u_w^T v_i}} $$
-The bottleneck to the naive softmax function is that the calculation of $\sum_{w=1}^W e^{u_w^T v_i}$ requires iteration over the entire vocabulary.
-
-Summing negative log of $Q_{ij}$ to get the global loss:
-$$J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) $$
-
-$$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
-The term: $\sum_{j = 1}^{W} P_{ij}log(Q_{ij})$ is the cross-entropy of $P_{ij}$ and $Q_{ij}$.
 
 ### Code
 ```Python
