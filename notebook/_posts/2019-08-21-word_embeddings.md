@@ -10,12 +10,12 @@ excerpt: This post is about word embeddings. It explains word2vec, GloVe and fas
 ---
 
 
-Accurately representing words as vectors is a challenging, but necessary task in deep learning. Consider the following sentences:
+Accurately representing words as vectors is a challenging, but necessary task in machine learning. Consider the following sentences:
 
 - The garden is pretty
 - The garden is pretty ugly
 
-How can a vector represent "pretty", when it means different things in different contexts?
+How can we accurately represent "pretty" with a single vector, when it means different things in different contexts?
 
 This post will explain 3 breakthrough algorithms for learning word vectors (embeddings), and provide code examples for getting started with pre-trained models in Python. We'll start with [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), which is the oldest of the 3, then explore ways of dealing with its shortcomings in [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and [fasttext](https://arxiv.org/pdf/1607.04606.pdf).
 
