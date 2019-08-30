@@ -222,11 +222,9 @@ See [Appendix](#appendix) for more
 
 ### Overview
 
-[Fasttext](https://github.com/facebookresearch/fastText) is a powerful library for learning word embeddings that was introduced by Facebook in 2016. The package offers text classification as well. Its roots come from the [word2vec](#deep-dive) models.
+[Fasttext](https://github.com/facebookresearch/fastText) is a powerful library for learning word embeddings that was introduced by Facebook in 2016. Its roots come from the [word2vec](#deep-dive) models.
 
-Word2vec trains a unique vector for each word, ignoring important word sub-structure (morphological structure) and making out-of-vocabulary prediction nearly impossible. Fasttext attempts to solve this by treating each word as a sum of its subwords. These subwords can be defined in any way, however the simplest form is a character n-gram. Then the vector for each word is simply the sum of each of its n-grams.
-
-**Fasttext learns word embeddings the same way as word2vec, but treats each word as a sum of n-grams instead of one unit.**
+Word2vec trains a unique vector for each word, ignoring important word sub-structure (morphological structure) and making out-of-vocabulary prediction nearly impossible. Fasttext attempts to solve this by treating each word as a sum of its subwords. These subwords can be defined in any way, however the simplest form is a character n-gram. Then the vector for each word is simply the sum of each of its n-grams. **Fasttext learns word embeddings for each subword, then treats each word as a sum of its subwords.**
 
 > This is especially significant for morphologically rich languages (German, Turkish) in which a single word can have a large number of morphological forms, each of which might occur rarely, thus making it hard to train good word embeddings.
 
@@ -234,7 +232,7 @@ Word2vec trains a unique vector for each word, ignoring important word sub-struc
 
 Before starting, we'll take a step back to quantifying how similar two word vectors are. Both GloVe and word2vec do this using dot products, however we can think of the similarity more generally as an arbitrary function, $s(u_j, v_c)$.
 
-Fasttext uses a different similarity measure, where each word is represented as a sum of smaller words of length n called n-grams. To help the model learn prefixes and suffixes, we append "<" to the front and ">" to the back of each word. Then for n=3, the n-grams of "where" are:
+Fasttext redefines this similarity measure, and represents words as a sum of smaller words, each of length n called n-grams. To help the model learn prefixes and suffixes, we append "<" to the front and ">" to the back of each word. Then for n=3, the n-grams of "where" are:
 
     <where> = [<wh, whe, her, ere, re>]
 
