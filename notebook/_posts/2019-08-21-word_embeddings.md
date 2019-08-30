@@ -144,15 +144,11 @@ Finally, we have to specify a distribution for negative sampling, $P(w) = U(w)^{
 To summarize, this loss function is trying to maximize the probability that word $o$ appears in the context of word $c$, while minimizing the probability that a randomly selected word from the vocabulary does not appear in the context of word $c$. We use the gradient of this loss function to iteratively update the word vectors, $u_o$ and $v_c$ and eventually get our word embeddings.
 
 
-**Summary of Word2Vec**
-
--   Iterate through every word in the whole corpus
--   Predict surrounding words (context words) using word vectors
--   Update the word vectors based on the loss function
-
 <br/>
 
 ---
+
+<br/>  
 
 ## GloVe
 
@@ -212,7 +208,9 @@ $$
 
 This is the loss function that the GloVe model minimizes.
 
+<br/>  
 ---
+<br/>  
 
 ## Fasttext
 
@@ -241,8 +239,12 @@ $$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
 
 We learn the embeddings of each character n-gram, then each word embedding is a sum of its n-gram vectors.
 
+<br/>  
 
 ---
+
+<br/>
+
 
 ## Word Embeddings in Python
 
