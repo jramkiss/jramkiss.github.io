@@ -39,8 +39,6 @@ Why use pre-trained models? - Pre-trained models are great because we don't need
   - [Fasttext](#fasttext-1)
 - [Conclusion](#conclusion)
 - [Appendix](#appendix)
-  - [Code](#code)
-- [Resources](#resources)
 
 <!-- /code_chunk_output -->
 
@@ -72,7 +70,7 @@ Before we start, let's formalize some notation. We have an input sequence of wor
 In figure 1, $u_{turning}$ is the vector representation of "turning" as a context word, and $v_{banking}$ is the vector representation of "banking" as a target word.
 
 We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of the target word $w_t$. We'll refer to this probability as $p(w_{t+j} \lvert w_t; \theta)$.  
-This may seem weird, but the probability is based on the vector representations of each word. When we encounter a word in the context of another, we alter their vector representations to be "closer". So the more we see words in each other's context, the close their vectors are. Now back to word vectors, the function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations.
+This may seem weird, but the probability is based on the vector representations of each word. When we encounter a word in the context of another, we alter their vector representations to be "closer". So the more we see words in each other's context, the closer their vectors are. The function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations.
 
 > To see the intuition, we can forget about vectors: "turning" is more likely to be in the context of "into" than "crises" is (I can think of a million sentences with "turning into", but not that many with "crises into" or "into crises"). So the vectors for "turning" and "into" should be to be closer than "crises" and "into".
 
@@ -214,8 +212,6 @@ $$
 
 This is the loss function that the GloVe model minimizes.
 
-See [Appendix](#appendix) for more
-
 ---
 
 ## Fasttext
@@ -251,9 +247,6 @@ We learn the embeddings of each character n-gram, then each word embedding is a 
 ## Word Embeddings in Python
 
 Now let's explore word embeddings using pre-trained models in the `gensim` Python package. If you don't have it installed, run `pip install gensim` in your command line. Gensim offers pre-trained models from their `gensim.downloader` method and each model used here embeds words in a 300-dimensional space. A full list of the models available can be found [here](https://github.com/RaRe-Technologies/gensim-data), or by running `python -m gensim.downloader --info` in your command line.
-
-
-I provided some functions in the [Appendix](#appendix) for plotting and finding most similar words that are built on top of `Gensim` method. Here're the imports we'll need:
 
 
 ```python
@@ -408,19 +401,25 @@ Both word2vec and GloVe can be used as frameworks for learning general similarit
 
 ## Appendix
 
-### Code
+#### Code
 ```Python
-# some word2vec examples
-dog_vec = wv["dog"] # "dog" embedding
-
-# Distances from each word in animal_list to the word animal
-animal_list = ["dog", "cat", "mouse", "hamster"]
-animal_similarity = wv.distances("animal", animal_list)
-list(zip(animal_list, animal_similarity))
-
-
 # find the 3 most similar words to the vector "vec"
-def find_most_similar (vec, words = None) :
+def plot_embeds(word_list, wv, title = None, word_embeddings = None, figsize = (12,7)) :
+    # pca on the embedding
+    pca = PCA(n_components=2)
+    X = pca.fit_transform(wv[word_list])
+
+    ax = plt.figure(figsize=figsize)
+    ax.subplots()
+    _ = plt.scatter(X[:,0], X[:,1])
+    for label, point in list(zip(word_list, X)):
+        _ = plt.annotate(label, (point[0] - 0.075, point[1] + 0.075))
+    # Turn off tick labels
+    plt.title(title)
+    plt.xticks([])
+    plt.yticks([])
+
+def find_most_similar (vec, wv, words = None) :
     # vec: resulting vector from word Arithmetic
     # words: list of words that comprise vec
     s = wv.similar_by_vector(vec, topn = 10)
@@ -430,32 +429,6 @@ def find_most_similar (vec, words = None) :
     else :
       return (s[:3])
     return (word_sim)
-
-def plot_embeds(word_list, word_embeddings = None, figsize = (10,10)) :
-    # pca on the embedding
-    pca = PCA(n_components=2)
-    X = pca.fit_transform(wv[word_list])
-
-    ax = plt.figure(figsize=figsize)
-    ax.subplots()
-    _ = plt.scatter(X[:,0], X[:,1])
-    for label, point in list(zip(word_list, X)):
-        _ = plt.annotate(label, (point[0], point[1]))
 ```
 
 ---
-
-## Resources
-- Small [review](https://www.aclweb.org/anthology/Q15-1016) of GloVe and word2vec
-- [Evaluating](https://www.aclweb.org/anthology/D15-1036) unsupervised word embeddings
-- Stanford NLP coursenotes on [GloVe](http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes02-wordvecs2.pdf)
-- Stanford NLP coursenotes on [word2vec](http://web.stanford.edu/class/cs224n/readings/cs224n-2019-notes01-wordvecs1.pdf)
-- [GloVe](https://nlp.stanford.edu/pubs/glove.pdf)
-- [Stanford NLP coursenotes](http://web.stanford.edu/class/cs224n/index.html#coursework)
-- [Gensim Models](https://radimrehurek.com/gensim/models/word2vec.html)
-- [Word2vec in Tensorflow](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/tutorials/word2vec/word2vec_basic.py)
-- [GloVe Blog post](https://machinelearningmastery.com/develop-word-embeddings-python-gensim/)
-- [Fasttext paper](https://arxiv.org/pdf/1607.04606.pdf)
-
-- Atom [markdown docs](https://shd101wyy.github.io/markdown-preview-enhanced/#/).
-- Jekyll [cheatsheet](https://devhints.io/jekyll).
