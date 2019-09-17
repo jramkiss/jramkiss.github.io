@@ -2,7 +2,7 @@
 #layout: post
 title: "First Steps With PyTorch"
 date: 2019-07-22
-category: notebook
+#category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
