@@ -6,7 +6,7 @@ category: notebook
 comments: true
 author: "Jonathan Ramkissoon"
 mathjax: true
-excerpt: This post is about word embeddings. It explains word2vec, GloVe and fasttext in detail and shows how to use pre-trained models for each algorithm in Python using `gensim`.
+excerpt: This post explains the word2vec, GloVe and fasttext algorithms in detail and shows how to use pre-trained models for each in Python's  gensim package.
 ---
 
 
