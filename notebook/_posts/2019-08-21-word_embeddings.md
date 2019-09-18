@@ -51,7 +51,7 @@ Why use pre-trained models? - Pre-trained models are great because we don't need
 
 > This inversion of predicting context / target words between CBOW and skip-gram might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation (useful for smaller datasets). Skip-gram on the other hand treats each context word - target word pair as a new observation, and tends to do better on larger data sets.
 
-Although we will primarily focus on the skip-gram, both models are single layer neural networks that accept one-hot encoded vectors as input. We learn the weights of the hidden layer, and each row of this weight matrix is a word vector. **The model learns by simultaneously: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary doesn't appear in the context of the target word.**
+Although we will primarily focus on the skip-gram, both models are single layer neural networks that accept one-hot encoded vectors as input. We learn the weights of the hidden layer, and each row of this weight matrix is a word vector. **The model learns by simultaneously: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary appears in the context of the target word.**
 
 If you're still unsure about neural network weights and the weight matrix, I recommend reading [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html).
 
