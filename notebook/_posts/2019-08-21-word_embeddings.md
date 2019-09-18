@@ -143,6 +143,7 @@ Finally, we have to specify a distribution for negative sampling, $P(w) = U(w)^{
 
 To summarize, this loss function is trying to maximize the probability that word $o$ appears in the context of word $c$, while minimizing the probability that a randomly selected word from the vocabulary does not appear in the context of word $c$. We use the gradient of this loss function to iteratively update the word vectors, $u_o$ and $v_c$ and eventually get our word embeddings.
 
+[Here](http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/) is a *great* tutorial on the skip-gram model!
 
 <br/>
 
