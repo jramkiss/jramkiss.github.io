@@ -2,9 +2,9 @@
 title:       Jramkiss Blog
 email:       ramkissoon.jonathan@hotmail.com
 author:      Jonathan Ramkissoon
-description: "This is a test of a website 12345678"
+description: "Personal Website"
 baseurl:     ""
-url:         "http://tempsite.com"
+url:         "https://jramkiss.github.io"
 date_format: "%b %-d, %Y"
 header_pages:
  - about.md
@@ -12,10 +12,12 @@ header_pages:
 
 # Google services
 google_verification:
+
 # Use either direct GA implementation or set up GTM account
 # - using both will skew your data (leave blank to not use at all)
 google_analytics:
 google_tag_manager:
+
 # Bing services
 bing_verification:
 
@@ -47,7 +49,7 @@ facebook_appid:
 facebook_comments_number: 10
 
 # Social icons
-github_username: 
+github_username:
 reddit_username:
 bitbucket_username:
 stackoverflow_id:
