@@ -1,8 +1,8 @@
 # Site settings
-title:       Jramkiss Blog
+title:       Jonathan Ramkissoon
 email:       ramkissoon.jonathan@hotmail.com
 author:      Jonathan Ramkissoon
-description: "Personal Website"
+description: "Documentation of ranodm ML exploration"
 baseurl:     ""
 url:         "https://jramkiss.github.io"
 date_format: "%b %-d, %Y"
@@ -31,7 +31,7 @@ enable_mathjax: true
 extended_fonts: false
 enable_anchorjs: false
 # Preview image for social media aka og:image and twitter:image
-post_preview_image: true
+post_preview_image: false
 
 # Facebook Page integration
 # (for instant articles and other stuff)

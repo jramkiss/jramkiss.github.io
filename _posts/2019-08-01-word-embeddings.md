@@ -71,7 +71,8 @@ In figure 1, $u_{turning}$ is the vector representation of "turning" as a contex
 We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of the target word $w_t$. We'll refer to this probability as $p(w_{t+j} \lvert w_t; \theta)$.  
 This may seem weird, but the probability is based on the vector representations of each word. When we encounter a word in the context of another, we alter their vector representations to be "closer". So the more we see words in each other's context, the closer their vectors are. The function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations.
 
-> To see the intuition, we can forget about vectors: "turning" is more likely to be in the context of "into" than "crises" is (I can think of a million sentences with "turning into", but not that many with "crises into" or "into crises"). So the vectors for "turning" and "into" should be to be closer than "crises" and "into".
+> To see the intuition, we can forget about vectors: "turning" is more likely to be in the context of "into" than "crises" is (I can think of a million sentences with "turning into", but not that many with "crises into" or "into crises"). So the vectors for "turning" and "into" should be to be closer than "crises" and "into".  
+
 
 $$
 J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} \lvert w_t; \theta))
