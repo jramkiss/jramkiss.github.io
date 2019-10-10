@@ -11,12 +11,12 @@ summary: This post explains the word2vec, GloVe and fasttext algorithms in detai
 
 Accurately representing words as vectors is a challenging, but necessary task in machine learning. Consider the following sentences:
 
-- Jon is on the right
-- Jon is right
+- The garden is pretty
+- The garden is beautiful
 
-How can we accurately represent "right" with a single vector, when it means different things in different contexts?
+As humans we know that "pretty" and "beautiful" are similar, but how can we learn vector representations these words so that they are "close" together? If this can be done, we can start to tackle bigger challenges, such as understanding customer reviews, using news data to trade stocks and even summarize books and articles.
 
-This post will explain 3 breakthrough algorithms for learning word embeddings, and provide code examples for getting started with pre-trained models in Python. We'll start with [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), which is the oldest of the 3, then explore ways of dealing with its shortcomings in [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and [fasttext](https://arxiv.org/pdf/1607.04606.pdf).
+This post will explain 3 breakthrough algorithms for learning these word vectors (also called word embeddings), and provide code examples for getting started with pre-trained models in Python. We'll start with [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), which is the oldest of the 3, then explore ways of dealing with its shortcomings in [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and [fasttext](https://arxiv.org/pdf/1607.04606.pdf).
 
 Why use pre-trained models? - Pre-trained models are great because we don't need a ton of resources to use powerful algorithms. Some of the models used here were trained by Google and Facebook on hundreds of millions of words. Pretty much impossible on a laptop CPU.
 
@@ -46,11 +46,10 @@ Why use pre-trained models? - Pre-trained models are great because we don't need
 
 ### Overview
 
-[Word2vec](https://arxiv.org/pdf/1310.4546.pdf) really refers to one of two models for learning word vectors; the continuous bag-of-words (CBOW) or the skip-gram model. They are very similar, CBOW accepts context words as input and predicts the target word whereas the skip-gram accepts a target word as input and predicts a context word.
+[Word2vec](https://arxiv.org/pdf/1310.4546.pdf) really refers to two models for learning word vectors; the continuous bag-of-words (CBOW) and the skip-gram model. They are very similar, CBOW accepts context words as input and predicts a target word whereas the skip-gram accepts a target word as input and predicts a context word.
 
-> This inversion of predicting context / target words between CBOW and skip-gram might seem arbitrary, but it turns out that CBOW smoothes over distributional information by treating an entire context as one observation (useful for smaller datasets). Skip-gram on the other hand treats each context word - target word pair as a new observation, and tends to do better on larger data sets.
 
-Although we will primarily focus on the skip-gram, both models are single layer neural networks that accept one-hot encoded vectors as input. We learn the weights of the hidden layer, and each row of this weight matrix is a word vector. **The model learns by simultaneously: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary appears in the context of the target word.**
+Although we will primarily focus on the skip-gram, both models are single layer neural networks that accept one-hot encoded vectors as input. We learn the weights of the hidden layer, and each row of this weight matrix is a word vector. The algorithm forces word vectors closer to each other every time words appear in each other's context, regardless of position in the context window. **It does this by: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary appears in the context of the target word.**
 
 If you're still unsure about neural network weights and the weight matrix, I recommend reading [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html).
 
@@ -69,9 +68,7 @@ Before we start, let's formalize some notation. We have an input sequence of wor
 In figure 1, $u_{turning}$ is the vector representation of "turning" as a context word, and $v_{banking}$ is the vector representation of "banking" as a target word.
 
 We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of the target word $w_t$. We'll refer to this probability as $p(w_{t+j} \lvert w_t; \theta)$.  
-This may seem weird, but the probability is based on the vector representations of each word. When we encounter a word in the context of another, we alter their vector representations to be "closer". So the more we see words in each other's context, the closer their vectors are. The function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations.
-
-> To see the intuition, we can forget about vectors: "turning" is more likely to be in the context of "into" than "crises" is (I can think of a million sentences with "turning into", but not that many with "crises into" or "into crises"). So the vectors for "turning" and "into" should be to be closer than "crises" and "into".  
+This may seem weird, but the probability is based on the vector representations of each word. When we encounter a word in the context of another, we alter their vector representations to be "closer". So the more we see words in each other's context, the closer their vectors are. The function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations. We minimize $-J(\theta)$ in order to find the optimal parameters that will maximize $p(w_{t+j} \lvert w_t; \theta)$.
 
 
 $$
@@ -91,7 +88,7 @@ Where:
 -   $u_o = word2vec(w_{t+j})$
 -   $v_c = word2vec(w_t)$
 
-Although we now have a way of quantifying the probability a word appears in the context of another, the $\sum_{w=1}^W e^{u_w^T v_c}$ term requires us to iterate over all words in the vocabulary. To deal with this, we must approximate the softmax probability. One way of doing this is called negative sampling.
+Although we now have a way of quantifying the probability a word appears in the context of another, the $\sum_{w=1}^W e^{u_w^T v_c}$ term requires us to iterate over all words in the vocabulary, making it computationally inefficient. To deal with this, we must approximate the softmax probability. One way of doing this is called negative sampling.
 
 <br/>
 
@@ -107,11 +104,9 @@ $$
 
 Where $\sigma(.)$ is the [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function).
 
-> Thus the task is to distinguish the target word $w_t$ from draws from the noise distribution $P_n(w)$ using logistic regression, where there are $k$ negative samples for each data sample.
-
 <br/>
 
-**New Objective Function**
+The new objective function becomes:
 
 $$
 J(\theta) = \frac{-1}{T} \sum_{t=1}^{T}J_t(\theta)
@@ -125,7 +120,7 @@ $$
 P(w) = U(w)^{3/4}/Z
 $$
 
-Let's look each component of $J_t(\theta)$ and try to convince ourselves this makes sense.
+Let's look each component of and try to convince ourselves this makes sense.
 
 **The first part,** $log(\sigma(u_o^Tv_c))$, can be interpreted as the log probability of the target and context words co-occurring. We want the model to find $u_o$ and $v_c$ to maximize this probability.
 
@@ -156,8 +151,6 @@ To summarize, this loss function is trying to maximize the probability that word
 ### Overview
 
 GloVe (Global Vectors) is another architecture for learning word embeddings that improves on the skip-gram model by incorporating corpus statistics. Since the skip-gram model looks at each window independently, it loses corpus statistics. Instead, GloVe uses word co-occurrence counts to capture global information about the corpus. **GloVe learns word embeddings by minimizing the difference between word vector dot products and their log co-occurrence counts.**
-
-> On the other hand, methods that rely solely on co-occurrence counts (eg: SVD on the co-occurrence matrix) fail to capture rich relationships between words. GloVe tries to incorporate the advantages of both the skip-gram model and count-based models.
 
 ### Deep Dive
 
@@ -195,7 +188,7 @@ $$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
 
 > Cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events.
 
-The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ and $P_{ij}$ which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe's approach to this is dropping the normalization terms completely, so we end up with $\hat{P}$ and $\hat{Q}$. The cross-entropy function is now useless, so we change $H = P_{ij}log(Q_{ij})$ to a squared error function, $(\hat{P}_{ij} - \hat{Q}_{ij})^2$.
+The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ and $P_{ij}$ which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe's approach to this is dropping the normalization terms completely, so we end up with $\hat{P}$ and $\hat{Q}$, which are unnormalized distributions. The cross-entropy function is now useless, so we change our objective function to be a squared error function, $(\hat{P}_{ij} - \hat{Q}_{ij})^2$.
 
 $$
 \hat{J} = \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} (\hat{P}_{ij} - \hat{Q}_{ij})^2
@@ -219,7 +212,7 @@ This is the loss function that the GloVe model minimizes.
 
 [Fasttext](https://github.com/facebookresearch/fastText) is a powerful library for learning word embeddings that was introduced by Facebook in 2016. Its roots come from the [word2vec](#deep-dive) models.
 
-Word2vec trains a unique vector for each word, ignoring important word sub-structure (morphological structure) and making out-of-vocabulary prediction nearly impossible. Fasttext attempts to solve this by treating each word as a sum of its subwords. These subwords can be defined in any way, however the simplest form is a character n-gram. Then the vector for each word is simply the sum of each of its n-grams. **Fasttext learns word embeddings for each subword, then treats each word as a sum of its subwords.**
+Word2vec trains a unique vector for each word, ignoring important word sub-structure (morphological structure) and making out-of-vocabulary prediction impossible. Fasttext attempts to solve this by treating each word as a sum of its subwords. These subwords can be defined in any way, however the simplest form is a character n-gram. A vector representation is associated with each n-gram, then the vector for each word is simply the sum of each of its n-grams. **Fasttext learns word embeddings for each subword, then treats each word as a sum of its subwords.**
 
 > This is especially significant for morphologically rich languages (German, Turkish) in which a single word can have a large number of morphological forms, each of which might occur rarely, thus making it hard to train good word embeddings.
 
