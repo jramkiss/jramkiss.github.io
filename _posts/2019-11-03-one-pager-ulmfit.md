@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: _post
 title: "One-Page Wonder: ULMFiT"
 date: 2019-11-01 19:22
 comments: true
@@ -25,7 +25,11 @@ Usually in practical NLP tasks, the target data varies slightly from the data th
 
 ###### Variable Length Backpropagation Through Time
 
-Backpropagation through time (BPTT) is the algorithm used to update the weights of an RNN. Errors are calculated and accumulated for each token in the sequence and backpropagated (update network weights) when we've reached a pre-specified number of tokens. The problem here is that we show the model the same sequence every epoch. In Variable Length BPTT, we randomize the number of tokens to be processed before backpropagating. The actual length is sampled from a normal distribution, who's mean is $x$ with 0.95 probability and $\frac{x}{2}$ otherwise.
+Backpropagation through time (BPTT) is the algorithm used to update the weights of an RNN. Errors are calculated and accumulated for each token in the sequence and backpropagated (update network weights) when we've reached a pre-specified number of tokens. The problem here is that we show the model the same sequence every epoch. In Variable Length BPTT, we randomize the number of tokens to be processed before backpropagating. The actual length is sampled from a normal distribution, with a mean of $x$ with 0.95 probability and $\frac{x}{2}$ otherwise.
+
+###### Dropout
+
+
 
 #### Building the Classifier
 
