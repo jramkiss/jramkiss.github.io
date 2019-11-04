@@ -25,7 +25,7 @@ Usually in practical NLP tasks, the target data varies slightly from the data th
 
 #### Variable Length Backpropagation Through Time
 
-Backpropagation through time (BPTT) is the algorithm used to update the weights of an vanilla RNN. Each sequence is truncated by a parameter indicating how many tokens to be backpropagated. 
+Backpropagation through time (BPTT) is the algorithm used to update the weights of an vanilla RNN. Each sequence is truncated by a parameter indicating how many tokens to be backpropagated.
 
 ## Building the Classifier
 
