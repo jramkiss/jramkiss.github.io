@@ -17,15 +17,15 @@ To set the scene for the rest of this article, lets assume that the task is to b
 
 This is the most expensive training stage, where we teach a model about the general structure of language eg: a sentence has a subject-verb-object. In ULMFiT, the model architecture used is an AWD-LSTM (think regular LSTM with dropout on steroids) and the data used is from Wikipedia articles. Embeddings for each word in the corpus are learnt in this stage.
 
-**How is this done?**
+For every token in the sentence, the output of the model is a vector containing the probability that every word in the vocabulary appears as the next word in the sentence. So the model output for the 3rd word in the sentence is a vector of probabilities that for the 4th word.
 
 Below is a quick overview of some tricks implemented by the AWD-LSTM to improve accuracy and efficiency:
 
-###### Variable Length Backpropagation Through Time
+##### Variable Length Backpropagation Through Time
 
 Backpropagation through time (BPTT) is the algorithm used to update the weights of an RNN. Errors are calculated and accumulated for each token in the sequence and backpropagated (update network weights) when we've reached a pre-specified number of tokens. The problem here is that we show the model the same sequence every epoch. In Variable Length BPTT, we randomize the number of tokens to be processed before backpropagating. The actual length is sampled from a normal distribution, with a mean of $x$ with 0.95 probability and $\frac{x}{2}$ otherwise.
 
-###### Dropout
+##### Dropout
 
 TODO
 
@@ -36,9 +36,9 @@ Usually in practical NLP tasks, the target data varies slightly from the data th
 
 The process of fine-tuning models is delicate and often leads to overfitting when datasets were small and even catastrophic forgetting, where the model forgets everything it's previously learnt.
 
-###### Freezing
+##### Freezing
 
-###### Learning Rate Schedule
+##### Learning Rate Schedule
 
 
 
