@@ -1,5 +1,5 @@
 ---
-layout: _post
+layout: post
 title: "One-Page Wonder: ULMFiT"
 date: 2019-11-01 19:22
 comments: true
