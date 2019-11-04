@@ -19,9 +19,7 @@ This is the most expensive training stage, where we teach a model about the gene
 
 **How is this done?**
 
-#### Fine-Tuning Language Model on Target Data
-
-Usually in practical NLP tasks, the target data varies slightly from the data the LM was trained on. For this reason, we need to expose the LM to our target data so it can learn its structure and any new words that weren't in the general data. In our example task, the structure of poems is distinctly different from Wikipedia.
+Below is a quick overview of some tricks implemented by the AWD-LSTM to improve accuracy and efficiency:
 
 ###### Variable Length Backpropagation Through Time
 
@@ -29,10 +27,24 @@ Backpropagation through time (BPTT) is the algorithm used to update the weights 
 
 ###### Dropout
 
+TODO
+
+
+#### Fine-Tuning Language Model on Target Data
+
+Usually in practical NLP tasks, the target data varies slightly from the data the LM was trained on. For this reason, we need to expose the LM to our target data so it can learn its structure and any new words that weren't in the general data. In our example task, the structure of poems is distinctly different from Wikipedia.
+
+The process of fine-tuning models is delicate and often leads to overfitting when datasets were small and even catastrophic forgetting, where the model forgets everything it's previously learnt.
+
+###### Freezing
+
+###### Learning Rate Schedule
+
 
 
 #### Building the Classifier
 
+The last stage in training a ULMFiT model is to build the actual classifier. We already have a model that understands general language and domain-specific language (poetry in this case)
 
 
 ## Resources
