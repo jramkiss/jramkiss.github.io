@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "One-Page Wonder: ULMFiT"
-date: 2019-11-05 19:22
+date: 2019-11-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
