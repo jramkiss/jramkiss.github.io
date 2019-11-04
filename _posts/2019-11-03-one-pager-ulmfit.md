@@ -9,8 +9,8 @@ summary: All the information you need to know to understand ULMFiT without spend
 ---
 
 # Overview
-
 To set the scene for the rest of this article, lets assume that the task is to build a classifier that can determine whether poems are happy or sad.
+
 
 # Stages in Training a ULMFiT Model
 ## Training Language Model on General Data
@@ -25,7 +25,7 @@ Usually in practical NLP tasks, the target data varies slightly from the data th
 
 #### Variable Length Backpropagation Through Time
 
-Backpropagation through time (BPTT) is the algorithm used to update the weights of an vanilla RNN. Each sequence is truncated by a parameter indicating how many tokens to be backpropagated.
+Backpropagation through time (BPTT) is the algorithm used to update the weights of an vanilla RNN. It works by calculating and accumulating errors for each item in a sequence, then updating the network weights. This is very computationally expensive, as sequences can be thousands of items long, meaning we have thousands of computations before we update weights. Complex co-adaptions can also be formed. In Variable Length BPTT, each sequence is truncated by a parameter indicating how many tokens to be backpropagated.
 
 ## Building the Classifier
 
