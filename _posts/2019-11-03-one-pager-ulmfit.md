@@ -8,14 +8,18 @@ math: true
 summary: All the information you need to know to understand ULMFiT without spending 1 week on it
 ---
 
-## Overview
+#### Note to the Reader
+I'll assume that you have some prior exposure to ULMFiT, and possibly have already implemented it on a task. If not, [this](https://nbviewer.jupyter.org/github/fastai/course-v3/blob/master/nbs/dl1/lesson3-imdb.ipynb) notebook walks through how to use the model.
+
 To set the scene for the rest of this article, lets assume that the task is to build a classifier that can determine whether poems are happy or sad.
+
+ULMFiT stands for Universal Language Model Fine Tuning, and is a method that efficiently utilizes transfer learning for NLP tasks.
 
 
 ## Stages in Training a ULMFiT Model
 #### Training Language Model on General Data
 
-This is the most expensive training stage, where we teach a model about the general structure of language eg: a sentence has a subject-verb-object. In ULMFiT, the model architecture used is an AWD-LSTM (think regular LSTM with dropout on steroids) and the data used is from Wikipedia articles. Embeddings for each word in the corpus are learnt in this stage.
+This is the most expensive training stage, where we teach a model about the general structure of language eg: a sentence has a subject-verb-object. In ULMFiT, the model architecture used is an AWD-LSTM (think regular LSTM with regularization on steroids) and the data used is from Wikipedia articles. Embeddings for each word in the corpus are learnt in this stage.
 
 For every token in the sentence, the output of the model is a vector containing the probability that every word in the vocabulary appears as the next word in the sentence. So the model output for the 3rd word in the sentence is a vector of probabilities that for the 4th word.
 
@@ -37,6 +41,8 @@ Usually in practical NLP tasks, the target data varies slightly from the data th
 The process of fine-tuning models is delicate and often leads to overfitting when datasets were small and even catastrophic forgetting, where the model forgets everything it's previously learnt.
 
 ##### Freezing
+
+The original model is trained on 240k unique tokens, meaning the size of the embedding and decoding matrices is $(240000, 400)$. To deal with resource (memory and computational power) constraints, ULMFiT alters the size of these matrices to be the vocabulary of the target data (or up to a pre-specified amount). The process of changing the size of the embedding matrix presents difficulties when we start to fine tune, as part of our embedding matrix is untrained. If we start to train the whole model, we risk catastrophic forgetting, where our LSTM's lose all the information the learned in step 1. Instead, we freeze all the LSTM weights and fit the model for one cycle, only updating the embedding and decoding layers. Then we unfreeze the model weights and continue training. 
 
 ##### Learning Rate Schedule
 
