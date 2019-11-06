@@ -42,18 +42,28 @@ The process of fine-tuning models is delicate and often leads to overfitting whe
 
 ##### Freezing
 
-The original model is trained on 240k unique tokens, meaning the size of the embedding and decoding matrices is $(240000, 400)$. To deal with resource (memory and computational power) constraints, ULMFiT alters the size of these matrices to be the vocabulary of the target data (or up to a pre-specified amount). The process of changing the size of the embedding matrix presents difficulties when we start to fine tune, as part of our embedding matrix is untrained. If we start to train the whole model, we risk catastrophic forgetting, where our LSTM's lose all the information the learned in step 1. Instead, we freeze all the LSTM weights and fit the model for one cycle, only updating the embedding and decoding layers. Then we unfreeze the model weights and continue training. 
+The original model is trained on 240k unique tokens, meaning the size of the embedding and decoding matrices is $(240000, 400)$. To deal with resource (memory and computational power) constraints, ULMFiT alters the size of these matrices to be the vocabulary of the target data (or up to a pre-specified amount). The process of changing the size of the embedding matrix presents difficulties when we start to fine tune, as part of our embedding matrix is untrained. If we start to train the whole model, we risk catastrophic forgetting, where our LSTM's lose all the information the learned in step 1. Instead, we freeze all the LSTM weights and fit the model for one cycle, only updating the embedding and decoding layers. Then we unfreeze the model weights and continue training.
 
-##### Learning Rate Schedule
+##### Slanted Triangular Learning Rates
 
+The learning rate starts off large to quickly converge to a suitable region, then decays slowly to fine-tune the weights.
 
+##### Discriminative Fine-Tuning
+
+The AWD-LSTM contains 3 stacked LSTMs, capturing more specific information about the language at each layer. The difference in processes can be addressed by using different learning rates for each LSTM.
 
 #### Building the Classifier
 
 The last stage in training a ULMFiT model is to build the actual classifier. We already have a model that understands general language and domain-specific language (poetry in this case)
 
+##### Concat Pooling
+
+##### Linear Decoder
+
+##### Gradual Unfreezing 
 
 ## Resources
+- [ULMFiT Original Paper](https://arxiv.org/abs/1801.06146)
 - [Understanding AWD-LSTM](https://yashuseth.blog/2018/09/12/awd-lstm-explanation-understanding-language-model/)
 - [ULMFiT State of the Art in Text Analysis](https://humboldt-wi.github.io/blog/research/information_systems_1819/group4_ulmfit/)
 - [Introduction to Backpropagation Through Time](https://machinelearningmastery.com/gentle-introduction-backpropagation-time/)
