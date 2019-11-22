@@ -14,7 +14,7 @@ Accurately representing words as vectors is a challenging, but necessary task in
 - The garden is pretty
 - The garden is beautiful
 
-As humans we know that "pretty" and "beautiful" are similar, but how can we learn vector representations these words so that they are "close" together? If this can be done, we can start to tackle bigger challenges, such as understanding customer reviews, using news data to trade stocks and even summarize books and articles.
+As humans we know that "pretty" and "beautiful" are similar, but how can we learn vector representations of these words so that they are "close" together? If this can be done, we can start to tackle bigger challenges, such as understanding customer reviews, using news data to trade stocks, and even summarize books and articles.
 
 This post will explain 3 breakthrough algorithms for learning these word vectors (also called word embeddings), and provide code examples for getting started with pre-trained models in Python. We'll start with [word2vec](https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf), which is the oldest of the 3, then explore ways of dealing with its shortcomings in [GloVe](https://nlp.stanford.edu/pubs/glove.pdf) and [fasttext](https://arxiv.org/pdf/1607.04606.pdf).
 
@@ -61,7 +61,7 @@ The main idea behind the skip-gram model is that we take a word in an input sequ
 <br/>
 
 ![Figure1](/assets/word2vec_viz.png)
-Figure 1: The skip gram prediction of target word "into" with window size 2. Taken from Stanford's NLP course, shows
+Figure 1: The skip gram prediction of target word "into" with window size 2. Taken from Stanford's NLP course
  <br/>
 
 Before we start, let's formalize some notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We'll call this input sequence the *corpus*, and all its unique words the *vocabulary*. Each word in the vocabulary will have 2 vector representations, $u_o$ for context and $v_c$ for target.
@@ -188,7 +188,7 @@ $$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
 
 > Cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events.
 
-The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ and $P_{ij}$ which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe's approach to this is dropping the normalization terms completely, so we end up with $\hat{P}$ and $\hat{Q}$, which are unnormalized distributions. The cross-entropy function is now useless, so we change our objective function to be a squared error function, $(\hat{P}_{ij} - \hat{Q}_{ij})^2$.
+The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ and $P_{ij}$ which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe's approach to this is dropping the normalization terms completely, so we end up with $\hat{P}$ and $\hat{Q}$, which are unnormalized distributions. The cross-entropy function is now useless, so we change our objective function to be a squared error function.
 
 $$
 \hat{J} = \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} (\hat{P}_{ij} - \hat{Q}_{ij})^2
@@ -220,7 +220,7 @@ Word2vec trains a unique vector for each word, ignoring important word sub-struc
 
 Before starting, we'll take a step back to quantifying how similar two word vectors are. Both GloVe and word2vec do this using dot products, however we can think of the similarity more generally as an arbitrary function, $s(u_j, v_c)$.
 
-Fasttext redefines this similarity measure, and represents words as a sum of smaller words, each of length n called n-grams. To help the model learn prefixes and suffixes, we append "<" to the front and ">" to the back of each word. Then for n=3, the n-grams of "where" are:
+Fasttext redefines this similarity measure, and represents words as a sum of smaller words, each of length $n$, called n-grams. To help the model learn prefixes and suffixes, we append "<" to the front and ">" to the back of each word. Then for n=3, the n-grams of "where" are:
 
     <where> = [<wh, whe, her, ere, re>]
 
@@ -273,7 +273,7 @@ del word2vec_model
 
 ### GloVe
 
-The glove-wiki-gigaword-300 model used here is trained on 6B tokens from W ikipedia 2014 and the Gigaword dataset, other pre-trained GloVe models can be downloaded [from Stanford](https://nlp.stanford.edu/projects/glove/) or [from Gensim](https://github.com/RaRe-Technologies/gensim-data/releases/download/glove-wiki-gigaword-100).
+The glove-wiki-gigaword-300 model used here is trained on 6B tokens from Wikipedia 2014 and the Gigaword dataset, other pre-trained GloVe models can be downloaded [from Stanford](https://nlp.stanford.edu/projects/glove/) or [from Gensim](https://github.com/RaRe-Technologies/gensim-data/releases/download/glove-wiki-gigaword-100).
 
 ```python
 glove_model_path = "glove-wiki-gigaword-300"
@@ -362,7 +362,7 @@ fasttext: Doctor - Woman + Man
  ('non-doctor', 0.6698156595230103)]
 ```
 
-This is a different results from the original results. Biases in the training data are expressed by the model. Also interestingly, there are some misspelled words in fasttext. This is because of the difference in learning methods.
+This is a different result from the original results. Biases in the training data are expressed by the model. Also interestingly, there are some misspelled words in fasttext. This is because of the difference in learning methods.
 
 
 #### Visualizing Embeddings
@@ -389,9 +389,9 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
 
 ## Conclusion
 
-Wrapping up, there are some key differences between word2vec (skip-gram), GloVe and fasttext. The skip-gram iterates over the corpus predicting context words given a target word. GloVe builds on this by incorporating global corpus statistics using word co-occurrences. The results are similar to word2vec. Fasttext also builds on word2vec by breaking each word into a sum of its sub-words. It learns vectors for each subword, then combines them for prediction. This allows out-of-vocabulary prediction, but introuces the risk of misspelled words.
+Wrapping up, there are some key differences between word2vec (skip-gram), GloVe and fasttext. The skip-gram iterates over the corpus predicting context words given a target word. GloVe builds on this by incorporating global corpus statistics using word co-occurrences. The results are similar to word2vec. Fasttext also builds on word2vec by breaking each word into a sum of its sub-words. It learns vectors for each subword, then combines them for prediction. This allows out-of-vocabulary prediction, but introduces the risk of misspelled words.
 
-Both word2vec and GloVe can be used as frameworks for learning general similarities in text without considering what each token is made of. This makes them useful for tasks like find similar movies given a sequence of movies watched by users. Fasttext on the other hand is more robust for translation tasks, where the likelihood of encountering an out-of-vocabulary is higher.
+Both word2vec and GloVe can be used as frameworks for learning general similarities in text without considering what each token is made of. This makes them useful for tasks like finding similar movies given a sequence of movies watched by users. Fasttext on the other hand is more robust for translation tasks, where the likelihood of encountering an out-of-vocabulary word is higher.
 
 <br/>
 
