@@ -9,11 +9,9 @@ summary: All the information you need to know to understand ULMFiT without spend
 ---
 
 #### Note to the Reader
-I'll assume that you have some prior exposure to ULMFiT, and possibly have already implemented it on a task. If not, [this](https://nbviewer.jupyter.org/github/fastai/course-v3/blob/master/nbs/dl1/lesson3-imdb.ipynb) notebook walks through how to use the model.
+I'll assume that you have some prior exposure to ULMFiT, and possibly have already implemented it on a task. If not, [this](https://nbviewer.jupyter.org/github/fastai/course-v3/blob/master/nbs/dl1/lesson3-imdb.ipynb) notebook walks through how to use the model. The value add from this post is for the practitioner who has just started to dive into the inner workings of ULMFiT.
 
 To set the scene for the rest of this article, lets assume that the task is to build a classifier that can determine whether poems are happy or sad.
-
-ULMFiT stands for Universal Language Model Fine Tuning, and is a method that efficiently utilizes transfer learning for NLP tasks.
 
 
 ## Stages in Training a ULMFiT Model
@@ -21,9 +19,9 @@ ULMFiT stands for Universal Language Model Fine Tuning, and is a method that eff
 
 This is the most expensive training stage, where we teach a model about the general structure of language eg: a sentence has a subject-verb-object. In ULMFiT, the model architecture used is an AWD-LSTM (think regular LSTM with regularization on steroids) and the data used is from Wikipedia articles. Embeddings for each word in the corpus are learnt in this stage.
 
-For every token in the sentence, the output of the model is a vector containing the probability that every word in the vocabulary appears as the next word in the sentence. So the model output for the 3rd word in the sentence is a vector of probabilities that for the 4th word.
+For every token in the sentence, the output of the model is a vector containing the probability that every word in the vocabulary appears as the next word in the sentence.
 
-Below is a quick overview of some tricks implemented by the AWD-LSTM to improve accuracy and efficiency:
+Below is a quick overview of some tricks adopted by ULMFiT to improve accuracy and efficiency.
 
 ##### Variable Length Backpropagation Through Time
 
@@ -60,7 +58,7 @@ The last stage in training a ULMFiT model is to build the actual classifier. We 
 
 ##### Linear Decoder
 
-##### Gradual Unfreezing 
+##### Gradual Unfreezing
 
 ## Resources
 - [ULMFiT Original Paper](https://arxiv.org/abs/1801.06146)
