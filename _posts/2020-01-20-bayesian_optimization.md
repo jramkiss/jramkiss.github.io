@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Bayesian Optimization Test With nbdev"
-date: 2020-01-20
+date: 2020-01-20 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
