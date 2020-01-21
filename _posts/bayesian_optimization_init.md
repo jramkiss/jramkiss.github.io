@@ -1,17 +1,16 @@
 ---
 layout: post
-title: "Bayesian Optimization Test With nbdev"
-date: 2020-01-20 19:22
+title: "Bayesian Optimization Test With `nbdev`"
+date: 2020-01-21 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: A tutorial and walkthrough of Bayesian optimization, while testing Jupyter notebook blog post rendering with nbdev.
+summary: Testing out Bayesian optimization and converting jupyter notebooks into markdown with nbdev.
 ---
 
+## Bayesian Optimization
 
-# Bayesian Optimization
-
-Code taken from [this](http://krasserm.github.io/2018/03/21/bayesian-optimization/) blog post.
+Code is based on this blog post: [here](http://krasserm.github.io/2018/03/21/bayesian-optimization/)
 
 ```python
 import numpy as np
@@ -94,7 +93,7 @@ plt.legend();
 ```
 
 
-![](/_posts/bayesian_optimization_init_files/output_4_0.png)
+![](/assets/output_4_0.png)
 
 
 The goal is to find the global minima of the function above (on the left?). The next step is to define the acquisition function, which we use as expected improvement.
@@ -160,10 +159,10 @@ def propose_location(acquisition, X_sample, Y_sample, gpr, bounds, n_restarts=25
 
     # Find the best optimum by starting from n_restart different random points.
     for x0 in np.random.uniform(bounds[:, 0], bounds[:, 1], size=(n_restarts, dim)):
-        res = minimize(min_obj, x0=x0, bounds=bounds, method='L-BFGS-B')
+        res = minimize(min_obj, x0=x0, bounds=bounds, method='L-BFGS-B')        
         if res.fun < min_val:
             min_val = res.fun[0]
-            min_x = res.x
+            min_x = res.x           
 
     return min_x.reshape(-1, 1)
 ```
@@ -212,7 +211,7 @@ for i in range(n_iter):
 ```
 
 
-![png](/_posts/bayesian_optimization_init_files/output_10_0.png)
+![png](/assets/output_10_0.png)
 
 
 ```python
@@ -220,7 +219,7 @@ plot_convergence(X_sample, Y_sample)
 ```
 
 
-![png](/_posts/bayesian_optimization_init_files/output_11_0.png)
+![png](/assets/output_11_0.png)
 
 
 # Bayesian Optimization with sklearn
@@ -267,7 +266,7 @@ plot_approximation(gpr, X, Y, r.x_iters, -r.func_vals, show_legend=True)
 
 
 
-![png](/_posts/bayesian_optimization_init_files/output_13_2.png)
+![png](/assets/output_13_2.png)
 
 
 ```python
@@ -275,4 +274,4 @@ plot_convergence(np.array(r.x_iters), -r.func_vals)
 ```
 
 
-![png](/_posts/bayesian_optimization_init_files/output_14_0.png)
+![png](/assets/output_14_0.png)
