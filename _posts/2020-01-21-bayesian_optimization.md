@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Bayesian Optimization Test With `nbdev`"
+title: "Bayesian Optimization Test With nbdev"
 date: 2020-01-21 19:22
 comments: true
 author: "Jonathan Ramkissoon"
@@ -159,10 +159,10 @@ def propose_location(acquisition, X_sample, Y_sample, gpr, bounds, n_restarts=25
 
     # Find the best optimum by starting from n_restart different random points.
     for x0 in np.random.uniform(bounds[:, 0], bounds[:, 1], size=(n_restarts, dim)):
-        res = minimize(min_obj, x0=x0, bounds=bounds, method='L-BFGS-B')        
+        res = minimize(min_obj, x0=x0, bounds=bounds, method='L-BFGS-B')
         if res.fun < min_val:
             min_val = res.fun[0]
-            min_x = res.x           
+            min_x = res.x
 
     return min_x.reshape(-1, 1)
 ```
