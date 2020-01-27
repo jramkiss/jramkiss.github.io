@@ -24,3 +24,7 @@ math: true
 
 ## Deep Learning
 - Deep Learning Book: [here](https://www.deeplearningbook.org)
+
+
+## Resources
+- Five Minute Statistics: [here](https://stephens999.github.io/fiveMinuteStats/index.html#hidden_markov_models)
