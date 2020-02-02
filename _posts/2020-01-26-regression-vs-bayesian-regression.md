@@ -20,7 +20,7 @@ $$ \epsilon \sim N(0, \sigma^{2}) $$
 
 ### Bayesian Regression
 
-To make the model Bayesian, we have to put priors on the parameters, $\beta$ and $\sigma$.
+To make the model Bayesian, we have to put priors on the parameters, $\beta$ and $\sigma$. 
 
 ## Todo
 - Write down formulations in a simple way.
