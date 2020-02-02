@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Regression VS Bayesian Regression"
-date: 2020-01-01 19:22
+date: 2019-12-12 19:23
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
