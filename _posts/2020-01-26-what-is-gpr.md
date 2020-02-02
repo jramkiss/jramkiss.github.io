@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Why Gaussian Process Regression?"
-date: 2020-11-01 19:22
+date: 2020-01-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
