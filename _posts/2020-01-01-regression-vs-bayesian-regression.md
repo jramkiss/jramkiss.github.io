@@ -59,9 +59,10 @@ print("Intercept: %f" % reg.intercept_)
 print("Coefficient of Determination: %f" % reg.score(x, y))
 ```
 
-
+![](/assets/linear_regression_fit.png)
 <!-- plots for regression fit -->
 
+It looks like there's a difference in the effect of terrain ruggedness on GDP for African and non-African countries. We can also calculate the gradients of each of these slopes from the model and compare them. The problem here is we'll be comparing two numbers, with no understanding of how confident the model is in these numbers.
 
 ```python
 # backout the slopes of lines for nations in and out of Africa
