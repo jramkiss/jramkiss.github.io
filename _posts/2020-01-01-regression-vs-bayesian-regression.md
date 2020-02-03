@@ -46,7 +46,12 @@ df["cont_africa_x_rugged"] = df["cont_africa"] * df["rugged"]
 
 In the model below, $X$ is our data and $y$ is the response. Ordinary linear regression uses maximum likelihood to recover _point estimates_ for model parameters $(\beta, \sigma)$. What this means is that in the end, our model is summarized by a handful of numbers, each an estimate of a parameter.
 
-$$ y = \beta_0 + X_1\beta_1 + X_2\beta_2 + X_3\beta_3 + \epsilon $$
+$$
+\begin{equation}
+y = \beta_0 + X_1\beta_1 + X_2\beta_2 + X_3\beta_3 + \epsilon
+\tag{1}
+\end{equation}
+$$
 
 $$ \beta = (\beta_0, \beta_1, \beta_2, \beta_3) $$
 
@@ -81,17 +86,30 @@ Are we confident in these numbers? What if the model didn't have enough data and
 
 ### Bayesian Regression
 
+
 To make the ordinary linear regression model Bayesian, all we really have to do is specify priors for the parameters, $(\beta$, $\sigma$). However, to capture the essence of Bayesian methodology, let's think of the problem in a completely different way.
 
-We have a model for our data, $ y = \beta_0 + X_1\beta_1 + X_2\beta_2 + X_3\beta_3 + \epsilon $, that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. Because $\epsilon$ is Normally distributed, $y$ is also Normally distributed under this model. So we can write down a distribution for $y$ and interpret it as the probability that the data came from our model.
+We have a model for our data (1), that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. Because $\epsilon$ is Normally distributed, $y$ is also Normally distributed under this model. So we can write down a distribution for $y$ and interpret it as the probability that the data came from our model.
 
-$$ p(y | \beta, \sigma) \sim N (X\beta, \sigma^2) $$
+$$
+\begin{equation}
+p(y | \beta, \sigma) \sim N (X\beta, \sigma^2)
+\tag{2}
+\end{equation}
+$$
 
 We're interested in estimating values for $\beta$ so that we can plug them back into our model. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't really know anything about $\beta$... which is fine, but we do know that $\sigma$ can't be less than 0 because it is a standard deviation. The encoding of this knowledge before we start estimation is referred to as _prior specification_.
 
 Since we don't know much about $\beta$, we'll use an uninformative (flat) prior. For $\sigma$ we'll use $U(0, 10)$, which ensures positive values.
 
-Now we can start estimation of the parameters. 
+$$ p(\beta) \sim N(0, 5) $$
+
+$$ p(\sigma) \sim U(0, 10) $$
+
+Now we want to get the distribution $ p(\beta | y, \sigma) $, which is proportional to the likelihood (2) times the priors. This is called the posterior formulation, and it is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior.
+
+We'll use [Pyro](http://pyro.ai) for the geography and GDP problem. Pyro offers numerous ways of doing posterior inference.
+
 
 
 ## Todo
