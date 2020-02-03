@@ -8,6 +8,8 @@ math: true
 summary: A motivating example on the power of Bayesian regression over simple linear regression.
 ---
 
+The notebook containing all code and plots for this post can be viewed [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
+
 ## Key Differences
 - Bayesian models provide uncertainty estimates, which are important in determining how our model performs (how robust our model is) under certain parameter values.
 - Under a Bayesian framework, we can encode knowledge about parameters to supplement the model. For example, consider this toy problem: we are trying to find the error in a piece of apparatus that measures the acceleration of objects. We gather data by measuring dropping objects from a height and measuring their acceleration - which should be close to gravity. This "knowledge" about what the acceleration should be can be encoded into a Bayesian model, but cannot be used in a frequentist model.
@@ -16,6 +18,7 @@ summary: A motivating example on the power of Bayesian regression over simple li
 ## Motivating Problem
 
 To apply both regression methods to a real world problem, we'll try to determine the impact of terrain geography on economic growth for nations in Africa and outside of Africa.
+The predictors in this case are: `rugged` - denoting the geography of a country, `cont_africa` - denoting whether or not a country is in Africa and `cont_africa_x_rugged` - an interaction term to help the model. The response is `rgdppc_2000` - log real GDP per capita.
 
 This has been studied [here](https://diegopuga.org/papers/rugged.pdf).
 
@@ -39,12 +42,17 @@ df["cont_africa_x_rugged"] = df["cont_africa"] * df["rugged"]
 <!--![Figure1](/assets/word2vec_viz.png)-->
 
 
-### Simple Linear Regression
-#### Model
+### Ordinary Linear Regression
 
-$$ y = X\beta + \epsilon $$
+In the model below, $X$ is our data and $y$ is the response. Ordinary linear regression uses maximum likelihood to recover _point estimates_ for model parameters $(\beta, \sigma)$. What this means is that in the end, our model is summarized by a handful of numbers, each an estimate of a parameter.
+
+$$ y = \beta_0 + X_1\beta_1 + X_2\beta_2 + X_3\beta_3 + \epsilon $$
+
+$$ \beta = (\beta_0, \beta_1, \beta_2, \beta_3) $$
 
 $$ \epsilon \sim N(0, \sigma^{2}) $$
+
+Here's the code for fitting a linear regression model in Python using `sklearn`.
 
 ```python
 features = ["rugged", "cont_africa_x_rugged", "cont_africa"]
@@ -60,9 +68,8 @@ print("Coefficient of Determination: %f" % reg.score(x, y))
 ```
 
 ![](/assets/linear_regression_fit.png)
-<!-- plots for regression fit -->
 
-It looks like there's a difference in the effect of terrain ruggedness on GDP for African and non-African countries. We can also calculate the gradients of each of these slopes from the model and compare them. The problem here is we'll be comparing two numbers, with no understanding of how confident the model is in these numbers.
+Judging from the regression lines, there's definitely a difference in the effect between African and non-African countries. We can calculate the gradients of each of these slopes and compare them.
 
 ```python
 # backout the slopes of lines for nations in and out of Africa
@@ -70,81 +77,23 @@ print("Slope for African nations: ", coef["rugged"] + coef["cont_africa_x_rugged
 print("Slope for non-African nations: ", coef["rugged"])
 ```
 
+Are we confident in these numbers? What if the model didn't have enough data and its confidence in these parameters estimates was very low? This is where Bayesian methods shine.
+
 ### Bayesian Regression
 
-To make the model Bayesian, we have to put priors on the parameters, $\beta$ and $\sigma$.
+To make the ordinary linear regression model Bayesian, all we really have to do is specify priors for the parameters, $(\beta$, $\sigma$). However, to capture the essence of Bayesian methodology, let's think of the problem in a completely different way.
+
+We have a model for our data, $ y = \beta_0 + X_1\beta_1 + X_2\beta_2 + X_3\beta_3 + \epsilon $, that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. We can re-write this as:
+
+$$ y | \beta, \sigma \sim N (X\beta, \sigma^2) $$
+
+We're interested in estimating values for $\beta$ so that we can use the model.
 
 
-In Bayesian regression, the aim is to quantify uncertainty in our model for different values of our parameters. We do this by learning distributions of the parameters instead of point estimates.
-We start by specifying priors for the parameters, and a likelihood for the data
+In Bayesian regression, the aim is to quantify uncertainty in our model for different values of our parameters. We do this by learning distributions of the parameters instead of point estimates.We start by specifying priors for the parameters, and a likelihood for the data
 
 $posterior \propto priors * likelihood$
 
 ## Todo
 - Write down formulations in a simple way.
 - Mention expressiveness of Bayesian model and lack of expressiveness of the frequentist model.
-
-
-## Appendix
-
-### Simple Linear Regression Example
-
-#### Plotting Data
-```python
-african_nations = df[df["cont_africa"] == 1]
-non_african_nations = df[df["cont_africa"] == 0]
-
-fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 5), sharey=True)
-ax[0].scatter(non_african_nations["rugged"],
-            non_african_nations["rgdppc_2000"])
-ax[0].set(xlabel="Terrain Ruggedness Index",
-          ylabel="log GDP (2000)",
-          title="Non African Nations")
-ax[1].scatter(african_nations["rugged"],
-                african_nations["rgdppc_2000"])
-ax[1].set(xlabel="Terrain Ruggedness Index",
-          ylabel="log GDP (2000)",
-          title="African Nations");
-```
-
-#### Plots for Regression Fit
-```python
-african_nations = df[df["cont_africa"] == 1]
-non_african_nations = df[df["cont_africa"] == 0]
-
-# predict GPD from continent and terrain
-african_gdp = reg.predict(african_nations[features])
-non_african_gdp = reg.predict(non_african_nations[features])
-
-fig, ax = plt.subplots(nrows=1, ncols=3, figsize=(12, 5), sharey=True)
-ax[0].plot(non_african_nations["rugged"],
-           non_african_gdp,
-           color = "orange")
-ax[0].scatter(non_african_nations["rugged"],
-              non_african_nations["rgdppc_2000"])
-ax[0].set(xlabel="Terrain Ruggedness Index",
-          ylabel="predicted log GDP (2000)",
-          title="Non African Nations")
-
-ax[1].plot(african_nations["rugged"],
-           african_gdp,
-           color = "orange")
-ax[1].scatter(african_nations["rugged"],
-              african_nations["rgdppc_2000"],
-              color = "red")
-ax[1].set(xlabel="Terrain Ruggedness Index",
-          ylabel="predicted log GDP (2000)",
-          title="African Nations");
-
-ax[2].scatter(df["rugged"],
-              reg.predict(df[features]),
-              color = "green")
-ax[2].scatter(african_nations["rugged"],
-              african_nations["rgdppc_2000"],
-              color = "red")
-ax[2].scatter(non_african_nations["rugged"],
-              non_african_nations["rgdppc_2000"])
-ax[2].set(xlabel="Terrain Ruggedness Index",
-          ylabel="predicted log GDP (2000)",
-          title="All Nations");
-```
