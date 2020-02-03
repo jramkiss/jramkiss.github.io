@@ -5,6 +5,11 @@ _site
 .jekyll-metadata
 .ipynb_checkpoints
 
+*_files/
+
+# files created from converting notebooks to markdown:
+regression_VS_bayesian_regression.md
+
 # Ignore the config file that's used for gh-pages.
 _config.gh-pages.yml
 

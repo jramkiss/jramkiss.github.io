@@ -19,15 +19,35 @@ To apply both regression methods to a real world problem, we'll try to determine
 
 This has been studied [here](https://diegopuga.org/papers/rugged.pdf).
 
+```python
+DATA_URL = "https://d2hg8soec8ck9v.cloudfront.net/datasets/rugged_data.csv"
+data = pd.read_csv(DATA_URL, encoding="ISO-8859-1")
+
+# we'll only use these features:
+data = data[["cont_africa", "rugged", "rgdppc_2000"]]
+df = df[np.isfinite(df.rgdppc_2000)] # remove NaNs
+df["rgdppc_2000"] = np.log(df["rgdppc_2000"]) # log real GPD per capita
+```
+
+![](regression_VS_bayesian_regression_files/output_2_0.png)
+
+
 ### Simple Linear Regression
 #### Model
 
 $$ y = X\beta + \epsilon $$
+
 $$ \epsilon \sim N(0, \sigma^{2}) $$
 
 ### Bayesian Regression
 
 To make the model Bayesian, we have to put priors on the parameters, $\beta$ and $\sigma$.
+
+
+In Bayesian regression, the aim is to quantify uncertainty in our model for different values of our parameters. We do this by learning distributions of the parameters instead of point estimates.
+We start by specifying priors for the parameters, and a likelihood for the data
+
+$posterior \propto priors * likelihood$
 
 ## Todo
 - Write down formulations in a simple way.
