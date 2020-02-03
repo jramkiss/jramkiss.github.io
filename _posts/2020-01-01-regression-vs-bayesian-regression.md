@@ -83,16 +83,16 @@ Are we confident in these numbers? What if the model didn't have enough data and
 
 To make the ordinary linear regression model Bayesian, all we really have to do is specify priors for the parameters, $(\beta$, $\sigma$). However, to capture the essence of Bayesian methodology, let's think of the problem in a completely different way.
 
-We have a model for our data, $ y = \beta_0 + X_1\beta_1 + X_2\beta_2 + X_3\beta_3 + \epsilon $, that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. We can re-write this as:
+We have a model for our data, $ y = \beta_0 + X_1\beta_1 + X_2\beta_2 + X_3\beta_3 + \epsilon $, that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. Because $\epsilon$ is Normally distributed, $y$ is also Normally distributed under this model. So we can write down a distribution for $y$ and interpret it as the probability that the data came from our model.
 
-$$ y | \beta, \sigma \sim N (X\beta, \sigma^2) $$
+$$ p(y | \beta, \sigma) \sim N (X\beta, \sigma^2) $$
 
-We're interested in estimating values for $\beta$ so that we can use the model.
+We're interested in estimating values for $\beta$ so that we can plug them back into our model. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't really know anything about $\beta$... which is fine, but we do know that $\sigma$ can't be less than 0 because it is a standard deviation. The encoding of this knowledge before we start estimation is referred to as _prior specification_.
 
+Since we don't know much about $\beta$, we'll use an uninformative (flat) prior. For $\sigma$ we'll use $U(0, 10)$, which ensures positive values.
 
-In Bayesian regression, the aim is to quantify uncertainty in our model for different values of our parameters. We do this by learning distributions of the parameters instead of point estimates.We start by specifying priors for the parameters, and a likelihood for the data
+Now we can start estimation of the parameters. 
 
-$posterior \propto priors * likelihood$
 
 ## Todo
 - Write down formulations in a simple way.
