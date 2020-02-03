@@ -106,7 +106,7 @@ $$ p(\beta) \sim N(0, 5) $$
 
 $$ p(\sigma) \sim U(0, 10) $$
 
-Now we want to get the distribution $ p(\beta | y, \sigma) $, which is proportional to the likelihood (2) times the priors. This is called the posterior formulation, and it is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior.
+Now we want to get the distribution $p(\beta  y, \sigma)$, which is proportional to the likelihood (2) times the priors. This is called the posterior formulation, and it is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior.
 
 We'll use [Pyro](http://pyro.ai) for the geography and GDP problem. Pyro offers numerous ways of doing posterior inference.
 
