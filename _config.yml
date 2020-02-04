@@ -2,7 +2,7 @@
 title:       Jonathan Ramkissoon
 email:       ramkissoon.jonathan@hotmail.com
 author:      Jonathan Ramkissoon
-description: "Documentation of ranodm ML exploration"
+description: "Documentation of ML exploration"
 baseurl:     ""
 url:         "https://jramkiss.github.io"
 date_format: "%b %-d, %Y"
@@ -11,7 +11,7 @@ header_pages:
  - contact.html
 
 # Google services
-google_verification: 
+google_verification:
 
 # Use either direct GA implementation or set up GTM account
 # - using both will skew your data (leave blank to not use at all)
