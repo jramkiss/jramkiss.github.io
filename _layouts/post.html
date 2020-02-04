@@ -7,8 +7,8 @@ layout: default
 {% assign minutes = 1 %}
 {% endif %}
 
-<div class="post-header mb2">
-  <h1>{{ page.title }}</h1>
+<div class="post-title mb2">
+  <h5>{{ page.title }}</h5>
   <span class="post-meta">{{ page.date | date: site.date_format }}</span><br>
   {% if page.update_date %}
     <span class="post-meta">{{ site.text.post.updated | default: "Updated" }}: {{ page.update_date | date: site.date_format }}</span><br>
