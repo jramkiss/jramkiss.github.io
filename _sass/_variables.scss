@@ -57,7 +57,7 @@ $link-color: $blue;
 $link-hover-color: darken($blue, 40%);
 
 // Breakpoints
-$breakpoint-md: '(min-width: 52em)';
+$breakpoint-md: '(min-width: 65em)';
 $breakpoint-xl: '(min-width: 96em)';
 
 // Whitespace
@@ -116,7 +116,7 @@ $hljs-chunk: $light-gray;
 $header-border-top: thin solid #f3f3f3;
 $header-color: $dark-gray;
 $header-bg-color: #fafafa;
-$header-font-weight: 300;
+$header-font-weight: 200;
 
 // Nav
 $nav-color: $mid-gray;
