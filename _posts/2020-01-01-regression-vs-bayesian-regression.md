@@ -110,6 +110,50 @@ Now we want to get the distribution $p(\beta  y, \sigma)$, which is proportional
 
 We'll use [Pyro](http://pyro.ai) for the geography and GDP problem. Pyro offers numerous ways of doing posterior inference.
 
+We first have to convert out data into tensors for Pyro.
+
+```python
+tensor_data = torch.tensor(df.values, dtype=torch.float)
+x_data = tensor_data[:, [0, 1, 3]] # "rugged", "cont_africa_x_rugged", "cont_africa"
+y_data = tensor_data[:, 2] # rgdppc_2000
+```
+
+```python
+class BayesianRegression(PyroModule):
+    def __init__(self, in_features, out_features):
+        super().__init__()
+        # specify the linear model
+        self.linear = PyroModule[nn.Linear](in_features, out_features)
+        # specify priors on `weight` and `bias`
+        self.linear.weight = PyroSample(dist.Normal(0., 1.).expand([out_features, in_features]).to_event(2))
+        self.linear.bias = PyroSample(dist.Normal(0., 10.).expand([out_features]).to_event(1))
+
+    def forward(self, x, y=None):
+        sigma = pyro.sample("sigma", dist.Uniform(0., 10.))
+        mean = self.linear(x).squeeze(-1) # prediction
+        # sample from the likelihood distribution
+        obs = pyro.sample("obs", dist.Normal(mean, sigma), obs=y)
+        return mean
+```
+
+We'll use stochastic variational inference to approximate the posterior distribution. SVI minimizes a loss funciton using gradient descent. The loss function used here is Pyro's `Trace_ELBO` loss, and the optimizer is Adam.
+
+```python
+model = BayesianRegression(3, 1)
+auto_guide = AutoDiagonalNormal(model)
+
+svi = SVI(model = model, # bayesian regression class
+          guide = auto_guide, # using auto guide
+          optim = pyro.optim.Adam({"lr": 0.05}),
+          loss=Trace_ELBO())
+```
+
+Now that we've ran the inference loop, we can look at the learned parameters by iterating over the items in Pyro's _param_store_.
+
+```python
+for name, value in pyro.get_param_store().items():
+    print(name, pyro.param(name))
+```
 
 
 ## Todo
