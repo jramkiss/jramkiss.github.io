@@ -108,15 +108,9 @@ $$ p(\sigma) \sim U(0, 10) $$
 
 Now we want to get the distribution $p(\beta  y, \sigma)$, which is proportional to the likelihood (2) times the priors. This is called the posterior formulation, and it is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior.
 
-We'll use [Pyro](http://pyro.ai) for the geography and GDP problem. Pyro offers numerous ways of doing posterior inference.
+We'll use [Pyro](http://pyro.ai) to write the Bayesian model. Since the point of this post is to compare Bayesian regression to Ordinary linear regression, I'll be using Pyro as a tool and will skip over detailed explanation of the code. Luckily Pyro has amazing examples on their docs, and I have a link to my notebook [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
 
-We first have to convert out data into tensors for Pyro.
-
-```python
-tensor_data = torch.tensor(df.values, dtype=torch.float)
-x_data = tensor_data[:, [0, 1, 3]] # "rugged", "cont_africa_x_rugged", "cont_africa"
-y_data = tensor_data[:, 2] # rgdppc_2000
-```
+We start by building a class, `BayesianRegression`, that will specify the regression model and parameter priors when initialized. The `forward` method is used to generate values for the response based on samples from the priors.
 
 ```python
 class BayesianRegression(PyroModule):
@@ -136,7 +130,7 @@ class BayesianRegression(PyroModule):
         return mean
 ```
 
-We'll use stochastic variational inference to approximate the posterior distribution. SVI minimizes a loss funciton using gradient descent. The loss function used here is Pyro's `Trace_ELBO` loss, and the optimizer is Adam.
+For posterior inference, we'll use stochastic variational inference, which approximates the posterior distribution by minimizing ELBO loss (evidence lower bound). The `guide` code below is Pyro's way of allowing us to specify a distribution to model the posterior after, we'll bypass specifying this outselves and use the `AutoDiagonalNormal` function, which does this automatically for us.
 
 ```python
 model = BayesianRegression(3, 1)
@@ -148,6 +142,19 @@ svi = SVI(model = model, # bayesian regression class
           loss=Trace_ELBO())
 ```
 
+Now we can run the inference loop:
+
+```python
+num_iterations = 2500
+# param_store is where Pyro stores all learned parameters of the model
+pyro.clear_param_store()
+for j in range(num_iterations):
+    # calculate the loss and take a gradient step
+    loss = svi.step(x_data, y_data)
+    if j % 250 == 0:
+        print("[iteration %04d] loss: %.4f" % (j + 1, loss / len(data)))
+```
+
 Now that we've ran the inference loop, we can look at the learned parameters by iterating over the items in Pyro's _param_store_.
 
 ```python
@@ -155,7 +162,7 @@ for name, value in pyro.get_param_store().items():
     print(name, pyro.param(name))
 ```
 
-
-## Todo
-- Write down formulations in a simple way.
-- Mention expressiveness of Bayesian model and lack of expressiveness of the frequentist model.
+        AutoDiagonalNormal()
+        AutoDiagonalNormal.loc Parameter containing:
+        tensor([-2.2693, -1.8370, -0.1964,  0.3043,  9.1820])
+        AutoDiagonalNormal.scale tensor([0.0615, 0.1746, 0.0426, 0.0829, 0.0771])
