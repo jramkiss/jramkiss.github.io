@@ -37,18 +37,18 @@ df["rgdppc_2000"] = np.log(df["rgdppc_2000"])
 df["cont_africa_x_rugged"] = df["cont_africa"] * df["rugged"]
 ```
 
-</br>
+&nbsp;
 
 ![](/assets/africa_data_viz.png)
 <!--![Figure1](/assets/word2vec_viz.png)-->
 
-</br>
+&nbsp;
 
 ### Ordinary Linear Regression
 
 In the model below, $X$ is our data and $y$ is the response. Ordinary linear regression uses maximum likelihood to recover _point estimates_ for model parameters $(\beta, \sigma)$. What this means is that in the end, our model is summarized by a handful of numbers, each an estimate of a parameter.
 
-</br>
+&nbsp;
 
 $$
 \begin{equation}
@@ -63,7 +63,7 @@ $$ \epsilon \sim N(0, \sigma^{2}) $$
 
 Here's the code for fitting a linear regression model in Python using `sklearn`.
 
-</br>
+&nbsp;
 
 ```python
 features = ["rugged", "cont_africa_x_rugged", "cont_africa"]
@@ -78,15 +78,15 @@ print("Intercept: %f" % reg.intercept_)
 print("Coefficient of Determination: %f" % reg.score(x, y))
 ```
 
-</br>
+&nbsp;
 
 ![](/assets/linear_regression_fit.png)
 
-</br>
+&nbsp;
 
 Judging from the regression lines, there's definitely a difference in the effect between African and non-African countries. We can calculate the gradients of each of these slopes and compare them.
 
-</br>
+&nbsp;
 
 ```python
 # backout the slopes of lines for nations in and out of Africa
@@ -94,11 +94,11 @@ print("Slope for African nations: ", coef["rugged"] + coef["cont_africa_x_rugged
 print("Slope for non-African nations: ", coef["rugged"])
 ```
 
-</br>
+&nbsp;
 
 Are we confident in these numbers? What if the model didn't have enough data and its confidence in these parameters estimates was very low? This is where Bayesian methods shine.
 
-</br>
+&nbsp;
 
 ### Bayesian Regression
 
@@ -115,7 +115,7 @@ p(y | \beta, \sigma) \sim N (X\beta, \sigma^2)
 \end{equation}
 $$
 
-</br>
+&nbsp;
 
 We're interested in estimating values for $\beta$ so that we can plug them back into our model. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't really know anything about $\beta$... which is fine, but we do know that $\sigma$ can't be less than 0 because it is a standard deviation. The encoding of this knowledge before we start estimation is referred to as _prior specification_.
 
@@ -127,7 +127,7 @@ $$ p(\sigma) \sim U(0, 10) $$
 
 Now we want to get the distribution $p(\beta  y, \sigma)$, which is proportional to the likelihood (2) times the priors. This is called the posterior formulation, and it is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior.
 
-</br>
+&nbsp;
 
 We'll use [Pyro](http://pyro.ai) to write the Bayesian model. Since the point of this post is to compare Bayesian regression to Ordinary linear regression, I'll be using Pyro as a tool and will skip over detailed explanation of the code. Luckily Pyro has amazing examples on their docs, and I have a link to my notebook [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
 
