@@ -14,13 +14,14 @@ The notebook containing all code and plots for this post can be viewed [here](ht
 - Bayesian models provide uncertainty estimates, which are important in determining how our model performs (how robust our model is) under certain parameter values.
 - Under a Bayesian framework, we can encode knowledge about parameters to supplement the model. For example, consider this toy problem: we are trying to find the error in a piece of apparatus that measures the acceleration of objects. We gather data by measuring dropping objects from a height and measuring their acceleration - which should be close to gravity. This "knowledge" about what the acceleration should be can be encoded into a Bayesian model, but cannot be used in a frequentist model.
 
+&nbsp;
 
 ## Motivating Problem
 
 To apply both regression methods to a real world problem, we'll try to determine the impact of terrain geography on economic growth for nations in Africa and outside of Africa.
-The predictors in this case are: `rugged` - denoting the geography of a country, `cont_africa` - denoting whether or not a country is in Africa and `cont_africa_x_rugged` - an interaction term to help the model. The response is `rgdppc_2000` - log real GDP per capita.
+The predictors in this case are: `rugged` - denoting the geography of a country, `cont_africa` - denoting whether or not a country is in Africa and `cont_africa_x_rugged` - an interaction term to help the model. The response is `rgdppc_2000` - log real GDP per capita. This has been studied [here](https://diegopuga.org/papers/rugged.pdf).
 
-This has been studied [here](https://diegopuga.org/papers/rugged.pdf).
+&nbsp;
 
 ```python
 DATA_URL = "https://d2hg8soec8ck9v.cloudfront.net/datasets/rugged_data.csv"
@@ -44,11 +45,9 @@ df["cont_africa_x_rugged"] = df["cont_africa"] * df["rugged"]
 
 &nbsp;
 
-### Ordinary Linear Regression
+## Ordinary Linear Regression
 
 In the model below, $X$ is our data and $y$ is the response. Ordinary linear regression uses maximum likelihood to recover _point estimates_ for model parameters $(\beta, \sigma)$. What this means is that in the end, our model is summarized by a handful of numbers, each an estimate of a parameter.
-
-&nbsp;
 
 $$
 \begin{equation}
@@ -100,7 +99,7 @@ Are we confident in these numbers? What if the model didn't have enough data and
 
 &nbsp;
 
-### Bayesian Regression
+## Bayesian Regression
 
 
 
@@ -114,8 +113,6 @@ p(y | \beta, \sigma) \sim N (X\beta, \sigma^2)
 \tag{2}
 \end{equation}
 $$
-
-&nbsp;
 
 We're interested in estimating values for $\beta$ so that we can plug them back into our model. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't really know anything about $\beta$... which is fine, but we do know that $\sigma$ can't be less than 0 because it is a standard deviation. The encoding of this knowledge before we start estimation is referred to as _prior specification_.
 
@@ -133,7 +130,7 @@ We'll use [Pyro](http://pyro.ai) to write the Bayesian model. Since the point of
 
 We start by building a class, `BayesianRegression`, that will specify the regression model and parameter priors when initialized. The `forward` method is used to generate values for the response based on samples from the priors.
 
-</br>
+&nbsp;
 
 ```python
 class BayesianRegression(PyroModule):
@@ -153,11 +150,11 @@ class BayesianRegression(PyroModule):
         return mean
 ```
 
-</br>
+&nbsp;
 
 For posterior inference, we'll use stochastic variational inference, which approximates the posterior distribution by minimizing ELBO loss (evidence lower bound). The `guide` code below is Pyro's way of allowing us to specify a distribution to model the posterior after, we'll bypass specifying this outselves and use the `AutoDiagonalNormal` function, which does this automatically for us.
 
-</br>
+&nbsp;
 
 ```python
 model = BayesianRegression(3, 1)
