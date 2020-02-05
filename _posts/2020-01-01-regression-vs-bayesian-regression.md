@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Regression VS Bayesian Regression"
+title: "Ordinary Regression VS Bayesian Regression"
 date: 2019-12-12 19:23
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: A motivating example on the power of Bayesian regression over simple linear regression.
+summary: A motivating example on the power of Bayesian regression over ordinary linear regression.
 ---
 
 The notebook containing all code and plots for this post can be viewed [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
@@ -38,13 +38,17 @@ df["cont_africa_x_rugged"] = df["cont_africa"] * df["rugged"]
 ```
 
 
+
 ![](/assets/africa_data_viz.png)
 <!--![Figure1](/assets/word2vec_viz.png)-->
+
 
 
 ### Ordinary Linear Regression
 
 In the model below, $X$ is our data and $y$ is the response. Ordinary linear regression uses maximum likelihood to recover _point estimates_ for model parameters $(\beta, \sigma)$. What this means is that in the end, our model is summarized by a handful of numbers, each an estimate of a parameter.
+
+
 
 $$
 \begin{equation}
@@ -59,6 +63,8 @@ $$ \epsilon \sim N(0, \sigma^{2}) $$
 
 Here's the code for fitting a linear regression model in Python using `sklearn`.
 
+
+
 ```python
 features = ["rugged", "cont_africa_x_rugged", "cont_africa"]
 x = df[features]
@@ -72,9 +78,15 @@ print("Intercept: %f" % reg.intercept_)
 print("Coefficient of Determination: %f" % reg.score(x, y))
 ```
 
+
+
 ![](/assets/linear_regression_fit.png)
 
+
+
 Judging from the regression lines, there's definitely a difference in the effect between African and non-African countries. We can calculate the gradients of each of these slopes and compare them.
+
+
 
 ```python
 # backout the slopes of lines for nations in and out of Africa
@@ -83,6 +95,8 @@ print("Slope for non-African nations: ", coef["rugged"])
 ```
 
 Are we confident in these numbers? What if the model didn't have enough data and its confidence in these parameters estimates was very low? This is where Bayesian methods shine.
+
+
 
 ### Bayesian Regression
 
