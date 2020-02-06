@@ -66,13 +66,11 @@ print("Intercept: %f" % reg.intercept_)
 print("Coefficient of Determination: %f" % reg.score(x, y))
 ```
 
+Now we can plot the regression lines for African and Non-African nations. Judging from these lines, there's definitely a difference in relationship - at the very least, the two gradients are of opposite signs.
+
 &nbsp;
 
 ![](/assets/linear_regression_fit.png)
-
-&nbsp;
-
-Judging from the regression lines, there's definitely a difference in the effect between African and non-African countries. We can calculate the gradients of each of these slopes and compare them.
 
 &nbsp;
 
