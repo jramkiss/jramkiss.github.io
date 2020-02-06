@@ -1,42 +1,33 @@
 ---
 layout: post
-title: "Ordinary Regression VS Bayesian Regression"
+title: "Ordinary VS Bayesian Linear Regression"
 date: 2019-12-12 19:23
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: A motivating example on the power of Bayesian regression over ordinary linear regression.
+summary: A walkthrough of the intuition behind Bayesian regression and a practical comparison to ordinary linear regression.
 ---
 
-The notebook containing all code and plots for this post can be viewed [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
-
-## Key Differences
-- Bayesian models provide uncertainty estimates, which are important in determining how our model performs (how robust our model is) under certain parameter values.
-- Under a Bayesian framework, we can encode knowledge about parameters to supplement the model. For example, consider this toy problem: we are trying to find the error in a piece of apparatus that measures the acceleration of objects. We gather data by measuring dropping objects from a height and measuring their acceleration - which should be close to gravity. This "knowledge" about what the acceleration should be can be encoded into a Bayesian model, but cannot be used in a frequentist model.
+Bayesian methods are usually shrouded in mystery, draped behind walls of math and stats that no practitioner has the patience to understand. Why would I even use this complicated black magic if a neural network is better? Also, since when is there a Bayesian version of good ole linear regression?? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?
+All these questions will be answered in this blog post. We'll fit an ordinary linear regression and a Bayesian linear regression model to a toy problem, and walk through the intuition behind Bayesian thinking. The post itself isn't code-heavy, but rather provides little snippets for you to follow along. I've included the notebook with all the code [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
 
 &nbsp;
 
-## Motivating Problem
+## Problem
 
-To apply both regression methods to a real world problem, we'll try to determine the impact of terrain geography on economic growth for nations in Africa and outside of Africa.
-The predictors in this case are: `rugged` - denoting the geography of a country, `cont_africa` - denoting whether or not a country is in Africa and `cont_africa_x_rugged` - an interaction term to help the model. The response is `rgdppc_2000` - log real GDP per capita. This has been studied [here](https://diegopuga.org/papers/rugged.pdf).
+**Is the relationship between terrain ruggedness and economix growth the same for countries inside and outside of Africa?**
 
-&nbsp;
+Our data is as follows:
 
-```python
-DATA_URL = "https://d2hg8soec8ck9v.cloudfront.net/datasets/rugged_data.csv"
-data = pd.read_csv(DATA_URL, encoding="ISO-8859-1")
+- `rugged`: Ruggedness of a country's terrain
+- `cont_africa`: Whether or not a country is in Africa
+- `rgdppc_2000` - Real GDP per capita
 
-df = data[["cont_africa", "rugged", "rgdppc_2000"]] # we only need these features
-df = df[np.isfinite(df.rgdppc_2000)] # remove NaNs
 
-# real GPD per capita is skewed, so we'll log it
-df["rgdppc_2000"] = np.log(df["rgdppc_2000"])
+In our models, the response will be `rgdppc_2000` and the predictors are: `rugged`, `cont_africa` and an interaction term between these two, `cont_africa_x_rugged`. This interaction term helps the model a lot, I encourage you to run the code and think about the model parameters if you'd like to find out how.
+We can use the slope of regression lines for countries inside and outside Africa to determine the relationship between terrain ruggedness and GDP.
 
-# adding feature to capture the interaction between "cont_africa" and "rugged"
-# this will be important for comparing the slopes at the end
-df["cont_africa_x_rugged"] = df["cont_africa"] * df["rugged"]
-```
+Here's what the data looks like.
 
 &nbsp;
 
@@ -47,11 +38,11 @@ df["cont_africa_x_rugged"] = df["cont_africa"] * df["rugged"]
 
 ## Ordinary Linear Regression
 
-In the model below, $X$ is our data and $y$ is the response. Ordinary linear regression uses maximum likelihood to recover _point estimates_ for model parameters $(\beta, \sigma)$. What this means is that in the end, our model is summarized by a handful of numbers, each an estimate of a parameter.
+In (1), $X$ is the [data](#problem) and $y$ is the response, `rgdppc_2000`. The parameters are $(\beta, \sigma)$. Ordinary linear regression uses maximum likelihood to find estimates for the parameters, then we can use these estimates to compare the slopes.
 
 $$
 \begin{equation}
-y = \beta_0 + X_1\beta_1 + X_2\beta_2 + X_3\beta_3 + \epsilon
+y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
 \tag{1}
 \end{equation}
 $$
@@ -59,8 +50,6 @@ $$
 $$ \beta = (\beta_0, \beta_1, \beta_2, \beta_3) $$
 
 $$ \epsilon \sim N(0, \sigma^{2}) $$
-
-Here's the code for fitting a linear regression model in Python using `sklearn`.
 
 &nbsp;
 
@@ -190,3 +179,12 @@ for name, value in pyro.get_param_store().items():
         AutoDiagonalNormal.loc Parameter containing:
         tensor([-2.2693, -1.8370, -0.1964,  0.3043,  9.1820])
         AutoDiagonalNormal.scale tensor([0.0615, 0.1746, 0.0426, 0.0829, 0.0771])
+
+
+## Key Differences
+- Bayesian models provide uncertainty estimates, which are important in determining how our model performs (how robust our model is) under certain parameter values.
+- Under a Bayesian framework, we can encode knowledge about parameters to supplement the model. For example, consider this toy problem: we are trying to find the error in a piece of apparatus that measures the acceleration of objects. We gather data by measuring dropping objects from a height and measuring their acceleration - which should be close to gravity. This "knowledge" about what the acceleration should be can be encoded into a Bayesian model, but cannot be used in a frequentist model.
+
+
+### References
+- Study about terrain and economic growth [here](https://diegopuga.org/papers/rugged.pdf).
