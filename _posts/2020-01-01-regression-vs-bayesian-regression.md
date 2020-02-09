@@ -8,7 +8,7 @@ math: true
 summary: A walkthrough of the intuition behind Bayesian regression and a practical comparison to ordinary linear regression.
 ---
 
-Bayesian methods are usually shrouded in mystery, draped behind walls of math and stats that no practitioner has the patience to understand. Why would I even use this complicated black magic if a neural network is better? Also, since when is there a Bayesian version of good ole linear regression?? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?  
+Bayesian methods are usually shrouded in mystery, draped behind walls of math and stats that no practitioner has the patience to understand. Why would I even use this complicated black magic if a neural network is better? Also, since when is there a Bayesian version of good ole linear regression?? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?
 All these questions will be answered in this blog post. We'll fit an ordinary linear regression and a Bayesian linear regression model to a toy problem, and walk through the intuition behind Bayesian thinking. The post itself isn't code-heavy, but rather provides little snippets for you to follow along. I've included the notebook with all the code [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
 
 &nbsp;
@@ -88,11 +88,9 @@ Are we confident in these numbers? What if the model didn't have enough data and
 
 ## Bayesian Regression
 
+To make the ordinary linear regression model Bayesian, we have to specify priors for the parameters, $(\beta$, $\sigma$). However before we get there, to capture the essence of Bayesian methodology let's start with the linear model from (1) and build up.
 
-
-To make the ordinary linear regression model Bayesian, all we really have to do is specify priors for the parameters, $(\beta$, $\sigma$). However, to capture the essence of Bayesian methodology, let's think of the problem in a completely different way.
-
-We have a model for our data (1), that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. Because $\epsilon$ is Normally distributed, $y$ is also Normally distributed under this model. So we can write down a distribution for $y$ and interpret it as the probability that the data came from our model.
+We have a model for our data (1), that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. Because $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. Assuming we have values for $(\beta, \sigma)$, we can write down a distribution for $y$.
 
 $$
 \begin{equation}
@@ -101,21 +99,20 @@ p(y | \beta, \sigma) \sim N (X\beta, \sigma^2)
 \end{equation}
 $$
 
-We're interested in estimating values for $\beta$ so that we can plug them back into our model. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't really know anything about $\beta$... which is fine, but we do know that $\sigma$ can't be less than 0 because it is a standard deviation. The encoding of this knowledge before we start estimation is referred to as _prior specification_.
+Remember that we're interested in estimating values for $\beta$ so that we can plug them back into our model and interpret the regression slopes. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't really know anything about $\beta$ which is fine, but we do know that $\sigma$ can't be less than 0 because it is a standard deviation. The encoding of this knowledge before we start estimation is referred to as _prior specification_.
 
-Since we don't know much about $\beta$, we'll use an uninformative (flat) prior. For $\sigma$ we'll use $U(0, 10)$, which ensures positive values.
+Since we don't know much about $\beta$, we'll use an uninformative (flat) prior and for $\sigma$ we'll use $U(0, 10)$, which ensures only positive values.
 
 $$ p(\beta) \sim N(0, 5) $$
 
 $$ p(\sigma) \sim U(0, 10) $$
 
-Now we want to get the distribution $p(\beta  y, \sigma)$, which is proportional to the likelihood (2) times the priors. This is called the posterior formulation, and it is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior.
+Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.
+In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ a number (vector of numbers)? Well the distribution gives us more information about $\beta$, we can then find _point estimates_ by taking the mean, median or randomly sampling from this distribution.
 
 &nbsp;
 
-We'll use [Pyro](http://pyro.ai) to write the Bayesian model. Since the point of this post is to compare Bayesian regression to Ordinary linear regression, I'll be using Pyro as a tool and will skip over detailed explanation of the code. Luckily Pyro has amazing examples on their docs, and I have a link to my notebook [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
-
-We start by building a class, `BayesianRegression`, that will specify the regression model and parameter priors when initialized. The `forward` method is used to generate values for the response based on samples from the priors.
+To write the Bayesian model in Python, we'll use [Pyro](http://pyro.ai). Since the point of this post is to compare Bayesian regression to Ordinary linear regression, I'll be using Pyro as a tool and will skip over detailed explanation of the code. Luckily Pyro has amazing examples in their docs if you want to learn more.
 
 &nbsp;
 
@@ -139,7 +136,7 @@ class BayesianRegression(PyroModule):
 
 &nbsp;
 
-For posterior inference, we'll use stochastic variational inference, which approximates the posterior distribution by minimizing ELBO loss (evidence lower bound). The `guide` code below is Pyro's way of allowing us to specify a distribution to model the posterior after, we'll bypass specifying this outselves and use the `AutoDiagonalNormal` function, which does this automatically for us.
+For posterior inference, we'll use stochastic variational inference, which is a method used to approximate the posterior. The `guide` code below is Pyro's way of allowing us to specify a distribution to model the posterior after, we'll bypass specifying this outselves and use the `AutoDiagonalNormal` function, which does this automatically for us.
 
 &nbsp;
 
@@ -151,19 +148,6 @@ svi = SVI(model = model, # bayesian regression class
           guide = auto_guide, # using auto guide
           optim = pyro.optim.Adam({"lr": 0.05}),
           loss=Trace_ELBO())
-```
-
-Now we can run the inference loop:
-
-```python
-num_iterations = 2500
-# param_store is where Pyro stores all learned parameters of the model
-pyro.clear_param_store()
-for j in range(num_iterations):
-    # calculate the loss and take a gradient step
-    loss = svi.step(x_data, y_data)
-    if j % 250 == 0:
-        print("[iteration %04d] loss: %.4f" % (j + 1, loss / len(data)))
 ```
 
 Now that we've ran the inference loop, we can look at the learned parameters by iterating over the items in Pyro's _param_store_.
