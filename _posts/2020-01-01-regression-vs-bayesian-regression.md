@@ -150,23 +150,71 @@ svi = SVI(model = model, # bayesian regression class
           loss=Trace_ELBO())
 ```
 
-Now that we've ran the inference loop, we can look at the learned parameters by iterating over the items in Pyro's _param_store_.
+Now that we've ran the inference loop, we can generate posterior samples. Pyro uses the `Predictive` class to generate posterior samples. Specifying different `return_sites` will tell Pyro which parameters to sample.
+
+Here is where the advantage of Bayesian linear regression starts to show itself. With Ordinary linear regression we'd end up with point estimates of parameters, but now we have a way of seeing how confident the model is in the parameter estimate. We can plot the posterior distributions for each of the parameters to see the difference in confidence.
+
+&nbsp;
 
 ```python
-for name, value in pyro.get_param_store().items():
-    print(name, pyro.param(name))
+num_samples = 1000
+predictive = Predictive(model = model,
+                        guide = auto_guide,
+                        num_samples = num_samples,
+                        return_sites=("linear.weight", "linear.bias", "obs", "_RETURN"))
+pred = predictive(x_data)
+weight = pred["linear.weight"]
+weight = weight.reshape(weight.shape[0], 3)
+bias = pred["linear.bias"]
+
+# columns of x_data: cont_africa, rugged, cont_africa_x_rugged
+print("Mean for posterior distributions: ", torch.mean(weight, 0))
+print("97.5 percentile: ", weight.kthvalue(int(num_samples * 0.975), dim = 0)[0]) # find the 97.5 percentile value
+print("2.5 percentile: ", weight.kthvalue(int(num_samples * 0.025), dim = 0)[0]) # find the 2.5 percentile value
+
+fig = plt.figure(figsize = (10, 5))
+sns.distplot(weight[:, 0], kde_kws = {"label": "`cont_africa` Posterior Samples"})
+sns.distplot(weight[:, 1], kde_kws = {"label": "`rugged` Posterior Samples"})
+sns.distplot(weight[:, 2], kde_kws = {"label": "`cont_africax_rugged` Posterior Samples"})
+sns.distplot(bias[:, 0], kde_kws = {"label": "Bias term Posterior Samples"})
+
+fig.suptitle("Posterior Distributions");
 ```
 
-        AutoDiagonalNormal()
-        AutoDiagonalNormal.loc Parameter containing:
-        tensor([-2.2693, -1.8370, -0.1964,  0.3043,  9.1820])
-        AutoDiagonalNormal.scale tensor([0.0615, 0.1746, 0.0426, 0.0829, 0.0771])
+    Mean for posterior distributions:  tensor([[-1.9931, -0.1638,  0.2811]])
+    97.5 percentile:  tensor([[-1.6826, -0.0764,  0.4010]])
+    2.5 percentile:  tensor([[-2.2934, -0.2515,  0.1571]])
+
+&nbsp;
+
+<!-- space for plot of posterior disitbutrions -->
+
+&nbsp;
 
 
-## Key Differences
-- Bayesian models provide uncertainty estimates, which are important in determining how our model performs (how robust our model is) under certain parameter values.
-- Under a Bayesian framework, we can encode knowledge about parameters to supplement the model. For example, consider this toy problem: we are trying to find the error in a piece of apparatus that measures the acceleration of objects. We gather data by measuring dropping objects from a height and measuring their acceleration - which should be close to gravity. This "knowledge" about what the acceleration should be can be encoded into a Bayesian model, but cannot be used in a frequentist model.
+```python
+weight = weight.reshape(weight.shape[0], 3)
+in_africa = weight[:, 1] + weight[:, 2] # rugged + cont_africa_x_rugged
+outside_africa = weight[:, 1] # rugged
+
+fig = plt.figure(figsize=(10, 6))
+sns.distplot(in_africa,
+             kde_kws = {"label": "African nations"},)
+sns.distplot(outside_africa,
+             kde_kws={"label": "Non-African nations"})
+fig.suptitle("Density of Slope : log(GDP) vs. Terrain Ruggedness");
+```
+
+<!-- space for plot of difference in slopes -->
+
+&nbsp;
+
+### Key Differences
+- Bayesian models provide uncertainty estimates, which are important in determining how confident the model is in its parameters.
+- Under a Bayesian framework, we can encode knowledge about parameters to supplement the model.
+- With weak priors and enough data, the two methods produce the same parameter estimates. Priors can help a model when there is insufficient data, however if we have strong priors that are wrong, more data will be required to overcome them.
 
 
-### References
+### Resources
 - Study about terrain and economic growth [here](https://diegopuga.org/papers/rugged.pdf).
+- Pyro's [tutorial](http://pyro.ai/examples/bayesian_regression.html) on Bayesian linear regression
