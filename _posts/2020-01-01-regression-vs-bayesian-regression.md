@@ -193,7 +193,7 @@ fig.suptitle("Posterior Distributions");
 &nbsp;
 
 
-{% highlight python %}  
+{% highlight python %}
 weight = weight.reshape(weight.shape[0], 3)
 in_africa = weight[:, 1] + weight[:, 2] # rugged + cont_africa_x_rugged
 outside_africa = weight[:, 1] # rugged
