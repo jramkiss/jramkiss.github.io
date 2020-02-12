@@ -188,6 +188,7 @@ fig.suptitle("Posterior Distributions");
 &nbsp;
 
 <!-- space for plot of posterior disitbutrions -->
+![png](/assets/posteriors.png)
 
 &nbsp;
 
@@ -205,6 +206,7 @@ sns.distplot(outside_africa,
 fig.suptitle("Density of Slope : log(GDP) vs. Terrain Ruggedness");
 ```
 
+![](/assets/bayesian_slopes.png)
 <!-- space for plot of difference in slopes -->
 
 &nbsp;
