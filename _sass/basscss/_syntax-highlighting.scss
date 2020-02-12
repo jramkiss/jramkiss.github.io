@@ -7,7 +7,7 @@ $generic-text: #100D0D;
 .highlight .k { color: #204a87; font-weight: bold } /* Keyword */
 .highlight .l { color: $generic-text; } /* Literal */
 .highlight .n { color: $generic-text; } /* Name */
-.highlight .o { color: #ce5c00; font-weight: bold } /* Operator */
+.highlight .o { color: #3399cc;} /* Operator */
 .highlight .x { color: $generic-text; } /* Other */
 .highlight .p { color: $generic-text;; font-weight: bold } /* Punctuation */
 .highlight .cm { color: #8f5902; font-style: italic } /* Comment.Multiline */
@@ -31,7 +31,7 @@ $generic-text: #100D0D;
 .highlight .kr { color: #204a87; font-weight: bold } /* Keyword.Reserved */
 .highlight .kt { color: #204a87; font-weight: bold } /* Keyword.Type */
 .highlight .ld { color: $generic-text; } /* Literal.Date */
-.highlight .m { color: #0000cf; font-weight: bold } /* Literal.Number */
+.highlight .m { color: #0000cf; } /* Literal.Number */
 .highlight .s { color: #4e9a06 } /* Literal.String */
 .highlight .na { color: #c4a000 } /* Name.Attribute */
 .highlight .nb { color: #204a87 } /* Name.Builtin */
