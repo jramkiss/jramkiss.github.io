@@ -31,7 +31,7 @@ Here's what the data looks like.
 
 &nbsp;
 
-![](/assets/africa_data_viz.png)
+![](/assets/africa_data_viz.png | height=80)
 <!--![Figure1](/assets/word2vec_viz.png)-->
 
 &nbsp;
