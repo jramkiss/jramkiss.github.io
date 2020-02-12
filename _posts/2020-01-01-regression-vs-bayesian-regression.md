@@ -193,7 +193,7 @@ fig.suptitle("Posterior Distributions");
 &nbsp;
 
 
-```python
+{% highlight python %}  
 weight = weight.reshape(weight.shape[0], 3)
 in_africa = weight[:, 1] + weight[:, 2] # rugged + cont_africa_x_rugged
 outside_africa = weight[:, 1] # rugged
@@ -204,7 +204,7 @@ sns.distplot(in_africa,
 sns.distplot(outside_africa,
              kde_kws={"label": "Non-African nations"})
 fig.suptitle("Density of Slope : log(GDP) vs. Terrain Ruggedness");
-```
+{% endhighlight %}
 
 ![](/assets/bayesian_slopes.png)
 <!-- space for plot of difference in slopes -->
