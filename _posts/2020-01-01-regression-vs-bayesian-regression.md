@@ -188,7 +188,7 @@ fig.suptitle("Posterior Distributions");
 &nbsp;
 
 <!-- space for plot of posterior disitbutrions -->
-![png](/assets/posteriors.png)
+![](/assets/posteriors.png)
 
 &nbsp;
 
