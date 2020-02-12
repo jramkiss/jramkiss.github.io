@@ -21,8 +21,6 @@ google_tag_manager:
 # Bing services
 bing_verification:
 
-highlighter: rouge
-    input: GFM
 
 # Optional features
 animated:             false
