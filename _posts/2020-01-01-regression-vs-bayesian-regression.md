@@ -31,7 +31,7 @@ Here's what the data looks like.
 
 &nbsp;
 
-![](/assets/africa_data_viz.png | height=80)
+![](/assets/africa_data_viz.png)
 <!--![Figure1](/assets/word2vec_viz.png)-->
 
 &nbsp;
@@ -70,7 +70,7 @@ Now we can plot the regression lines for African and Non-African nations. Judgin
 
 &nbsp;
 
-![](/assets/linear_regression_fit.png | height=80)
+![](/assets/linear_regression_fit.png)
 
 &nbsp;
 
@@ -188,7 +188,7 @@ fig.suptitle("Posterior Distributions");
 &nbsp;
 
 <!-- space for plot of posterior disitbutrions -->
-![](/assets/posteriors.png | height=80)
+![](/assets/posteriors.png)
 
 &nbsp;
 
@@ -206,7 +206,7 @@ sns.distplot(outside_africa,
 fig.suptitle("Density of Slope : log(GDP) vs. Terrain Ruggedness");
 ```
 
-![](/assets/bayesian_slopes.png | height=80)
+![](/assets/bayesian_slopes.png)
 <!-- space for plot of difference in slopes -->
 
 &nbsp;
