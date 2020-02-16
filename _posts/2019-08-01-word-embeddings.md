@@ -396,9 +396,9 @@ def find_most_similar (vec, wv, words = None) :
     s = wv.similar_by_vector(vec, topn = 10)
     # filter out words like "king" and "man", or else they will be included in the similarity
     if (words != None) :
-      word_sim = list(filter(lambda x: (x[0] not in words), s))[:3]
+        word_sim = list(filter(lambda x: (x[0] not in words), s))[:3]
     else :
-      return (s[:3])
+        return (s[:3])
     return (word_sim)
 ```
 
