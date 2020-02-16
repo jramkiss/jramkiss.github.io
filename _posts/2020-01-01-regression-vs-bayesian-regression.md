@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Ordinary VS Bayesian Linear Regression"
-date: 2019-12-12 19:23
+date: 2020-02-02 19:23
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
@@ -40,6 +40,8 @@ Here's what the data looks like.
 
 In (1), $X$ is the [data](#problem) and $y$ is the response, `rgdppc_2000`. The parameters are $(\beta, \sigma)$. Ordinary linear regression uses maximum likelihood to find estimates for the parameters, then we can use these estimates to compare the slopes.
 
+&nbsp;
+
 $$
 \begin{equation}
 y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
@@ -60,10 +62,8 @@ y = df["rgdppc_2000"]
 
 reg = LinearRegression()
 _ = reg.fit(x, y)
-
-coef = dict([i for i in zip(list(x.columns), reg.coef_)]); coef
-print("Intercept: %f" % reg.intercept_)
-print("Coefficient of Determination: %f" % reg.score(x, y))
+# save coefficients
+coef = dict([i for i in zip(list(x.columns), reg.coef_)])
 ```
 
 Now we can plot the regression lines for African and Non-African nations. Judging from these lines, there's definitely a difference in relationship - at the very least, the two gradients are of opposite signs.
@@ -79,8 +79,6 @@ Now we can plot the regression lines for African and Non-African nations. Judgin
 print("Slope for African nations: ", coef["rugged"] + coef["cont_africa_x_rugged"])
 print("Slope for non-African nations: ", coef["rugged"])
 ```
-
-&nbsp;
 
 Are we confident in these numbers? What if the model didn't have enough data and its confidence in these parameters estimates was very low? This is where Bayesian methods shine.
 
@@ -110,7 +108,6 @@ $$ p(\sigma) \sim U(0, 10) $$
 Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.
 In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ a number (vector of numbers)? Well the distribution gives us more information about $\beta$, we can then find _point estimates_ by taking the mean, median or randomly sampling from this distribution.
 
-&nbsp;
 
 To write the Bayesian model in Python, we'll use [Pyro](http://pyro.ai). Since the point of this post is to compare Bayesian regression to Ordinary linear regression, I'll be using Pyro as a tool and will skip over detailed explanation of the code. Luckily Pyro has amazing examples in their docs if you want to learn more.
 
