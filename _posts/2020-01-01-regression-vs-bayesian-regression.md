@@ -7,8 +7,10 @@ math: true
 summary: A walkthrough of the intuition behind Bayesian regression and a practical comparison to ordinary linear regression.
 ---
 
-Bayesian methods are usually shrouded in mystery, draped behind walls of math and stats that no practitioner has the patience to understand. Why would I even use this complicated black magic if a neural network is better? Also, since when is there a Bayesian version of good ole linear regression?? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?
-All these questions will be answered in this blog post. We'll fit an ordinary linear regression and a Bayesian linear regression model to a toy problem, and walk through the intuition behind Bayesian thinking. The post itself isn't code-heavy, but rather provides little snippets for you to follow along. I've included the notebook with all the code [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
+Bayesian methods are usually shrouded in mystery, draped behind walls of math and stats that no practitioner has the patience to understand. Why would I even use this complicated black magic if a neural network is better? Also, since when is there a Bayesian version of simple linear regression?? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?
+The goal of this post is to answer all these questions and to explain the intuition behind Bayesian thinking without using math. To do this, we'll fit an ordinary linear regression and a Bayesian linear regression model to a practical problem.
+
+The post itself isn't code-heavy, but rather provides little snippets for you to follow along. I've included the notebook with all the code [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
 
 &nbsp;
 
@@ -189,7 +191,7 @@ fig.suptitle("Posterior Distributions");
 &nbsp;
 
 
-{% highlight python %}
+```python
 weight = weight.reshape(weight.shape[0], 3)
 in_africa = weight[:, 1] + weight[:, 2] # rugged + cont_africa_x_rugged
 outside_africa = weight[:, 1] # rugged
@@ -200,17 +202,19 @@ sns.distplot(in_africa,
 sns.distplot(outside_africa,
              kde_kws={"label": "Non-African nations"})
 fig.suptitle("Density of Slope : log(GDP) vs. Terrain Ruggedness");
-{% endhighlight %}
+```
 
 ![](/assets/bayesian_slopes.png)
 <!-- space for plot of difference in slopes -->
 
 &nbsp;
 
-### Key Differences
-- Bayesian models provide uncertainty estimates, which are important in determining how confident the model is in its parameters.
-- Under a Bayesian framework, we can encode knowledge about parameters to supplement the model.
-- With weak priors and enough data, the two methods produce the same parameter estimates. Priors can help a model when there is insufficient data, however if we have strong priors that are wrong, more data will be required to overcome them.
+Getting back to the questions we asked at the beginning of this post:
+
+- Why would I even use this complicated black magic if a neural network is better?: Different tools for different jobs. Neural networks are not as expressive as Bayesian methods. If all we care about is predictive power, then there's little need for parameter confidence intervals and a non-Bayesian approach will suffice in most instances. However, when we want to do inference and compare effects (coefficients) with some level of confidence, Bayesian methods shine.
+- Since when is there a Bayesian version of simple linear regression?: There's a Bayesian version of most things. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.
+- What in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?: MCMC is a family of methods used to sample distributions we can't write down (you don't need to care about different types of MCMC algorithms). However you should know that in Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample these undefined posteriors. There are other ways to sample / approximate distributions, such as variational inference.
+
 
 
 ### Resources
