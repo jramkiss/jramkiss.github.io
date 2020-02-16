@@ -20,8 +20,6 @@ The goal of this post is to first explain the intuition behind these 3 methods f
 
 # Word2Vec
 
-## Overview
-
 [Word2vec](https://arxiv.org/pdf/1310.4546.pdf) really refers to two models for learning word vectors: the continuous bag-of-words (CBOW) and the skip-gram model. They are very similar - CBOW accepts context words as input and predicts a target word, whereas the skip-gram accepts a target word as input and predicts a context word.
 
 
@@ -120,7 +118,6 @@ To summarize, this loss function is trying to maximize the probability that word
 
 ---
 
-<br/>
 
 # GloVe
 
@@ -178,7 +175,6 @@ This is the loss function that the GloVe model minimizes.
 
 <br/>
 ---
-<br/>
 
 # Fasttext
 
