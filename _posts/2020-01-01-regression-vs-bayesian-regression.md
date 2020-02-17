@@ -57,9 +57,8 @@ $$ \epsilon \sim N(0, \sigma^{2}) $$
 
 ### Ordinary Linear Regression
 
-Ordinary linear regression takes equation (1) and finds optimal values for $(\beta, \sigma)$ by minimizing the distance between the estimated value of $y$, and the true value of $y$.
-
-We can use the optimal parameter values to calculate the slopes of the regression lines for countries inside and outside of Africa, then compare the slopes.
+Ordinary linear regression takes equation [(1)](#regression-model) and finds optimal values for $(\beta, \sigma)$ by minimizing the distance between the estimated value of $y$, and the observed value of $y$.
+Below is an implementation of the model in Sklearn and a plot of the regression lines for European and non-European nations.
 
 &nbsp;
 
@@ -71,24 +70,19 @@ y = df["log_gdppc"]
 reg = LinearRegression()
 _ = reg.fit(x, y)
 coef = dict([i for i in zip(list(x.columns), reg.coef_)])
+# code for plot is in the notebook
+
+# backout the slopes of the regression lines for nations in and out of Europe
+print("Slope for European Nations: ",
+      round(coef["business_freedom"] + coef["business_freedom_x_region"], 3))
+print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
 ```
-
-&nbsp;
-
-Now we can plot the regression lines for African and Non-African nations. Judging from these lines, there's definitely a difference in relationship - at the very least, the two gradients are of opposite signs.
 
 &nbsp;
 
 ![](/assets/linear_regression_fit.png)
 
 &nbsp;
-
-```python
-# backout the slopes of the regression lines for nations in and out of Europe
-print("Slope for European Nations: ",
-      round(coef["business_freedom"] + coef["business_freedom_x_region"], 3))
-print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
-```
 
     Slope for European Nations:  0.026
     Slope for non-European Nations:  0.046
@@ -100,7 +94,7 @@ Although the slope for non-European countries is twice as large as European coun
 
 ### Bayesian Regression
 
-Starting with our regression model from (1), since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So if we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the _likelihood_ distribution.
+Starting with our regression model from [(1)](#regression-model), since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So if we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the _likelihood_ distribution.
 
 $$
 \begin{equation}
