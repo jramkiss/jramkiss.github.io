@@ -84,16 +84,17 @@ Now we can plot the regression lines for African and Non-African nations. Judgin
 &nbsp;
 
 ```python
-# backout the slopes of lines for nations in and out of Europe
-print("Slope for European Nations: ", round(coef["business_freedom"] + coef["business_freedom_x_region"], 3))
+# backout the slopes of the regression lines for nations in and out of Europe
+print("Slope for European Nations: ",
+      round(coef["business_freedom"] + coef["business_freedom_x_region"], 3))
 print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
 ```
 
-    Slope for Europe:  0.026
-    Slope for non-Europe:  0.046
+    Slope for European Nations:  0.026
+    Slope for non-European Nations:  0.046
 
 
-Are we confident in these numbers? What if the model didn't have enough data and its confidence in these parameters estimates was very low? This is where Bayesian methods shine.
+Although the slope for non-European countries is twice as large as European countries (0.046 VS 0.026), the absolute value of both numbers is small. Are these estimates really thats different? Ideally we want a measure of confidence for each estimate to see how much we can trust it, then we can be more sure that the two estimates are different. Keep this problem in mind for the next section and we'll see how Bayesian regression solves it.
 
 &nbsp;
 
