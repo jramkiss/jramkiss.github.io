@@ -115,11 +115,12 @@ Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportiona
 In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ a number (vector of numbers). Well the distribution gives us more information about $\beta$, we can then find _point estimates_ by taking the mean, median or randomly sampling from this distribution.
 
 
-To write the Bayesian model in Python, we'll use [Pyro](http://pyro.ai). Since the point of this post is to compare Bayesian regression to Ordinary linear regression, I'll be using Pyro as a tool and will skip over detailed explanation of the code. Luckily Pyro has amazing examples in their docs if you want to learn more.
+To write the Bayesian model in Python, we'll use [Pyro](http://pyro.ai). I skip over small details in the code, however Pyro has amazing examples in their docs if you want to learn more.
 
 &nbsp;
 
 ```python
+# specify the linear model
 class BayesianRegression(PyroModule):
     def __init__(self, in_features, out_features):
         super().__init__()
@@ -135,12 +136,6 @@ class BayesianRegression(PyroModule):
         obs = pyro.sample("obs", dist.Normal(mean, sigma), obs=y)
         return mean
 ```
-
-&nbsp;
-
-For posterior inference, we'll use stochastic variational inference, which is a method used to approximate the posterior. The `guide` code below is Pyro's way of allowing us to specify a distribution to model the posterior after, we'll bypass specifying this outselves and use the `AutoDiagonalNormal` function, which does this automatically for us.
-
-&nbsp;
 
 ```python
 model = BayesianRegression(3, 1)
@@ -161,7 +156,8 @@ for j in range(num_iterations):
         print("[iteration %04d] loss: %.4f" % (j + 1, loss / len(data)))
 ```
 
-The code above initializes the stochastic variational inference sampler and runs it for $2500$ iterations to approximate the posteriors. Now we can use the `Predictive` class to generate posterior samples for `business_freedom` and `business_freedom_x_region`.
+For posterior inference, we use stochastic variational inference, which is a method used to approximate probability distributions. The code above initializes the stochastic variational inference sampler and runs it for $2500$ iterations.
+Now the `Predictive` class can be used to generate posterior samples for each parameter. We'll only plot the posterior distributions for `business_freedom` and `business_freedom_x_region` as these are the most important.
 
 &nbsp;
 
@@ -176,59 +172,53 @@ weight = pred["linear.weight"]
 weight = weight.reshape(weight.shape[0], 3)
 bias = pred["linear.bias"]
 # code for posterior plots is in the notebook linked at the bottom of this post
-
-columns = ["is_europe", "business_freedom", "business_freedom_x_region"]
-bayes_coef = dict(zip(columns, torch.mean(weight, 0).numpy()))
-
-print("Slope for European nations: ", round(bayes_coef["business_freedom"] + bayes_coef["business_freedom_x_region"], 3))
-print("Slope for non-European nations: ", round(bayes_coef["business_freedom"], 3))
 ```
+
+&nbsp;
+
 
 <!-- space for plot of posterior disitbutrions -->
 ![](/assets/posteriors.png)
 
 
-
 &nbsp;
 
-
-    Slope for European nations:  0.024
-    Slope for non-European nations:  0.041
-
-&nbsp;
+Here is where the advantage of Bayesian linear regression starts to show. With Ordinary linear regression we end up with point estimates of parameters, but now we have an entire distribution for each parameter, and can use it to determine confidence levels. By combining appropriate posteriors and taking the mean, we can calculate a distribution for the slopes and compare them to the point estimates from [ordinary linear regression](#ordinary-linear-regression).
 
 ```python
-inside_europe = weight[:, 1] + weight[:, 2] # business_freedom + business_freedom_x_region
-outside_europe = weight[:, 1] # business_freedom
+slope_inside_europe = weight[:, 1] + weight[:, 2] # business_freedom + business_freedom_x_region
+slope_outside_europe = weight[:, 1] # business_freedom
+
+print("Slope for European nations: ", torch.mean(slope_inside_europe).numpy()) # business_freedom + interaction
+print("Slope for non-European nations: ", torch.mean(slope_outside_europe).numpy()) # business_freedom
 
 fig = plt.figure(figsize=(10, 5))
-sns.distplot(inside_europe, kde_kws = {"label": "European nations"})
-sns.distplot(outside_europe, kde_kws={"label": "Non-European nations"})
-fig.suptitle("log(GDP) vs Business Freedom");
+sns.distplot(slope_inside_europe, kde_kws = {"label": "European nations"})
+sns.distplot(slope_outside_europe, kde_kws={"label": "Non-European nations"})
+fig.suptitle("log(GDP Per Capita) vs Business Freedom");
 ```
 
+    Slope for European nations:  0.023792317
+    Slope for non-European nations:  0.040710554
 
+These estimates are different to the ones from Ordinary linear regression. This is because of the priors we used in the Bayesian model. Neither method is necessarily "more correct", actually, if we were to specify all flat priors and sample from the true posterior distribution, the parameter estimates would be the same.
+
+&nbsp;
 
 ![](/assets/bayesian_slopes.png)
 <!-- space for plot of difference in slopes -->
 
 &nbsp;
 
-Here is where the advantage of Bayesian linear regression starts to show. With Ordinary linear regression we'd end up with point estimates of parameters, but now we have a way of seeing how confident the model is in the parameter estimate. We can plot the posterior distributions for each of the parameters to see the difference in confidence.
-
+Although the absolute value of these slopes are small, we nnow have more confidence that the they are different becuase their distributions don't overlap. 
 
 &nbsp;
 
-Getting back to the questions we asked at the beginning of this post:
+Returning to the questions we asked at the beginning of this post:
 
-- Why would I even use this complicated black magic if a neural network is better? - Different tools for different jobs. Neural networks are not as expressive as Bayesian methods. If all we care about is predictive power, then there's little need for parameter confidence intervals and a non-Bayesian approach will suffice in most instances. However, when we want to do inference and compare effects (coefficients) with some level of confidence, Bayesian methods shine.
-- Since when is there a Bayesian version of simple linear regression? - There's a Bayesian version of most things. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.
-- What in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care? - MCMC is a family of methods used to sample distributions we can't write down (you don't need to care about different types of MCMC algorithms). However you should know that in Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample these undefined posteriors. There are other ways to sample / approximate distributions, such as variational inference.
+- **_Why would I even use this complicated black magic if a neural network is better?_** - Different tools for different jobs. Neural networks are not as expressive as Bayesian methods. If all we care about is predictive power, then there's little need for parameter confidence intervals and a non-Bayesian approach will suffice in most instances. However, when we want to do inference and compare effects (coefficients) with some level of confidence, Bayesian methods shine.
+- **_Since when is there a Bayesian version of simple linear regression?_** - There's a Bayesian version of most things. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.
+- **_What in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?_** - MCMC is a family of methods used to sample distributions we can't write down (you don't need to care about different types of MCMC algorithms). However you should know that in Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample these undefined posteriors. There are other ways to sample / approximate distributions, such as variational inference.
 
 
 All the code for this blog post can be viewed [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
-
-
-### Resources
-- Study about terrain and economic growth [here](https://diegopuga.org/papers/rugged.pdf).
-- Pyro's [tutorial](http://pyro.ai/examples/bayesian_regression.html) on Bayesian linear regression
