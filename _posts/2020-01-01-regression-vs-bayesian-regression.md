@@ -26,8 +26,7 @@ Our data is as follows:
 - `rgdppc_2000` - Real GDP per capita
 
 
-In our models, the response will be `rgdppc_2000` and the predictors are: `rugged`, `cont_africa` and an interaction term between these two, `cont_africa_x_rugged`. This interaction term helps the model a lot, I encourage you to run the code and think about the model parameters if you'd like to find out how.
-We can use the slope of regression lines for countries inside and outside Africa to determine the relationship between terrain ruggedness and GDP.
+We will use `rugged`, `cont_africa` and an interaction term between these two, `cont_africa_x_rugged`, to predict `rgdppc_2000`, then compare the slope of regression lines for countries inside and outside Africa to determine the relationship between terrain ruggedness and GDP.
 
 Here's what the data looks like.
 
@@ -38,9 +37,10 @@ Here's what the data looks like.
 
 &nbsp;
 
-## Ordinary Linear Regression
 
-In (1), $X$ is the [data](#problem) and $y$ is the response, `rgdppc_2000`. The parameters are $(\beta, \sigma)$. Ordinary linear regression uses maximum likelihood to find estimates for the parameters, then we can use these estimates to compare the slopes.
+## Regression Model
+
+$X$ is out [data](#problem) and $y$ is our response, `rgdppc_2000`. The model parameters are $(\beta, \sigma)$.
 
 &nbsp;
 
@@ -57,6 +57,14 @@ $$ \epsilon \sim N(0, \sigma^{2}) $$
 
 &nbsp;
 
+### Ordinary Linear Regression
+
+Ordinary linear regression finds optimal values for $(\beta, \sigma)$ to minimize the distance between the estimated value of $y$ from (1), and the true value of $y$ from the training data.
+
+We can use the optimal parameter values to calculate the slopes of the regression lines for countries inside and outside of Africa, then compare the slopes.
+
+&nbsp;
+
 ```python
 features = ["rugged", "cont_africa_x_rugged", "cont_africa"]
 x = df[features]
@@ -67,6 +75,8 @@ _ = reg.fit(x, y)
 # save coefficients
 coef = dict([i for i in zip(list(x.columns), reg.coef_)])
 ```
+
+&nbsp;
 
 Now we can plot the regression lines for African and Non-African nations. Judging from these lines, there's definitely a difference in relationship - at the very least, the two gradients are of opposite signs.
 
@@ -88,9 +98,9 @@ Are we confident in these numbers? What if the model didn't have enough data and
 
 ## Bayesian Regression
 
-To make the ordinary linear regression model Bayesian, we have to specify priors for the parameters, $(\beta$, $\sigma$). However before we get there, to capture the essence of Bayesian methodology let's start with the linear model from (1) and build up.
+To capture the essence of Bayesian methodology let's start with the linear model from (1) and build from there.
 
-We have a model for our data (1), that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. Because $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. Assuming we have values for $(\beta, \sigma)$, we can write down a distribution for $y$.
+We have a model for our data (1), that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. Because $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So if we have values for $(\beta, \sigma)$, we can write down a distribution for $y$.
 
 $$
 \begin{equation}
@@ -101,7 +111,7 @@ $$
 
 Remember that we're interested in estimating values for $\beta$ so that we can plug them back into our model and interpret the regression slopes. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't really know anything about $\beta$ which is fine, but we do know that $\sigma$ can't be less than 0 because it is a standard deviation. The encoding of this knowledge before we start estimation is referred to as _prior specification_.
 
-Since we don't know much about $\beta$, we'll use an uninformative (flat) prior and for $\sigma$ we'll use $U(0, 10)$, which ensures only positive values.
+Since we don't know anything about $\beta$, we'll use an uninformative (flat) prior and for $\sigma$ we'll use $U(0, 10)$, which ensures only positive values.
 
 $$ p(\beta) \sim N(0, 5) $$
 
