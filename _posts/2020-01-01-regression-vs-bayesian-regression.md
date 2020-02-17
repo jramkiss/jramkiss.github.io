@@ -24,10 +24,11 @@ This is the problem we want to answer. The data is taken from the [Heritage Foun
 - `is_europe`: Whether or not a country is in Europe
 - `log_gdppc` - Log of GDP per capita
 
+We'll answer the problem by fitting a linear model to the data and comparing the regression coefficients for countries inside and outside Europe. If the coefficients are significantly different, that will tell us about the effect of business freedom on GDP.
 
-We will use `business_freedom`, `is_europe` and an interaction term, `business_freedom_x_region`, to predict `log_gdppc`, then compare the slope of regression lines for countries inside and outside Europe to determine if the effect is the same.
+To supplement the model, we'll also add an interaction term between `business_freedom` and `us_europe` and call it `business_freedom_x_region`.
 
-Here's what the data looks like.
+Here's what the data looks like for countries inside and outside Europe.
 
 &nbsp;
 

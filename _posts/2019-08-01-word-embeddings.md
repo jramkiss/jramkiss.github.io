@@ -66,7 +66,7 @@ Although we now have a way of quantifying the probability a word appears in the 
 
 <br/>
 
-#### Negative Sampling Loss
+#### **Negative Sampling Loss**
 
 Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample $k$ words and determine the probability that these words **do not** co-occur with the target word. The intuition behind this is that a good model should be able to differentiate between data and noise.
 
@@ -125,7 +125,7 @@ GloVe (Global Vectors) is another architecture for learning word embeddings that
 
 ### Deep Dive
 
-#### The Co-Occurrence Matrix
+#### **The Co-Occurrence Matrix**
 
 The co-occurrence matrix, $X$, is generated from the corpus and vocabulary. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Then the probability of word $j$ occurring in the context of word $i$ is $P(i \lvert j) = \frac{X_{ij}}{X_i}$.
 
@@ -137,7 +137,7 @@ Below is the co-occurrence matrix for the corpus containing:
 
 ![](/assets/cooccurrence_matrix.png)
 
-#### From Softmax to GloVe
+#### **From Softmax to GloVe**
 
 We can find global loss using the softmax function, $Q_{ij}$, by summing over all target-context word pairs.
 
@@ -258,7 +258,7 @@ del glove_model
 Fasttext provides pre-trained models on for multiple languages, which can be used in different ways (through the command line, downloading the model, through `gensim`, etc.). We'll use the English model provided by `Gensim` which is trained on Wikipedia 2017 and news data, but you can go through [their Github](https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md) to see more.
 
 
-#### Word Comparison
+#### **Word Comparison**
 
 Now we have vector representations for all words in the vocabulary in `wv` and can compare the different models. We'll add and subtract some word vectors, then see what the closest word to the resulting vector is. Papers and blog posts have exhausted the "king" - "man" + "woman" = "queen" example, so I'll present some new ones.
 
@@ -333,7 +333,7 @@ fasttext: Doctor - Woman + Man
 This is a different result from the original results. Biases in the training data are expressed by the model. Also interestingly, there are some misspelled words in fasttext. This is because of the difference in learning methods.
 
 
-#### Visualizing Embeddings
+#### **Visualizing Embeddings**
 
 For the sake of completeness, I plotted words from different walks of life to see if the algorithms were able to unravel their semantic similarities/differences. The first 2 principal components of each word vector are plotted. Some expected similarities are seen here, however, we lose a lot of information from reducing the dimension from 300 to 2.
 
