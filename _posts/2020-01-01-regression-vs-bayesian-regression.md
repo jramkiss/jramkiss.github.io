@@ -16,16 +16,16 @@ The goal of this post is to answer all these questions and to explain the intuit
 
 ## Problem
 
-**Is the relationship between terrain ruggedness and economix growth the same for countries inside and outside of Africa?**
+**Does business freedom affect GDP the same for European and non-European nations?**
 
-Our data is as follows:
+This is the problem we want to answer. The data is taken from the [Heritage Foundation](https://www.heritage.org/index/) and is as follows:
 
-- `rugged`: Ruggedness of a country's terrain
-- `cont_africa`: Whether or not a country is in Africa
-- `rgdppc_2000` - Real GDP per capita
+- `business_freedom`: Score between 0-100 of a country's business freedom. Higher score means more freedom
+- `is_europe`: Whether or not a country is in Europe
+- `log_gdppc` - Log of GDP per capita
 
 
-We will use `rugged`, `cont_africa` and an interaction term between these two, `cont_africa_x_rugged`, to predict `rgdppc_2000`, then compare the slope of regression lines for countries inside and outside Africa to determine the relationship between terrain ruggedness and GDP.
+We will use `business_freedom`, `is_europe` and an interaction term, `business_freedom_x_region`, to predict `log_gdppc`, then compare the slope of regression lines for countries inside and outside Europe to determine if the effect is the same.
 
 Here's what the data looks like.
 
@@ -65,13 +65,12 @@ We can use the optimal parameter values to calculate the slopes of the regressio
 &nbsp;
 
 ```python
-features = ["rugged", "cont_africa_x_rugged", "cont_africa"]
+features = ["business_freedom", "business_freedom_x_region", "is_europe"]
 x = df[features]
-y = df["rgdppc_2000"]
+y = df["log_gdppc"]
 
 reg = LinearRegression()
 _ = reg.fit(x, y)
-# save coefficients
 coef = dict([i for i in zip(list(x.columns), reg.coef_)])
 ```
 
@@ -86,10 +85,14 @@ Now we can plot the regression lines for African and Non-African nations. Judgin
 &nbsp;
 
 ```python
-# backout the slopes of lines for nations in and out of Africa
-print("Slope for African nations: ", coef["rugged"] + coef["cont_africa_x_rugged"])
-print("Slope for non-African nations: ", coef["rugged"])
+# backout the slopes of lines for nations in and out of Europe
+print("Slope for European Nations: ", round(coef["business_freedom"] + coef["business_freedom_x_region"], 3))
+print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
 ```
+
+    Slope for Europe:  0.026
+    Slope for non-Europe:  0.046
+
 
 Are we confident in these numbers? What if the model didn't have enough data and its confidence in these parameters estimates was very low? This is where Bayesian methods shine.
 
@@ -126,16 +129,15 @@ To write the Bayesian model in Python, we'll use [Pyro](http://pyro.ai). Since t
 class BayesianRegression(PyroModule):
     def __init__(self, in_features, out_features):
         super().__init__()
-        # specify the linear model
         self.linear = PyroModule[nn.Linear](in_features, out_features)
-        # specify priors on `weight` and `bias`
-        self.linear.weight = PyroSample(dist.Normal(0., 1.).expand([out_features, in_features]).to_event(2))
-        self.linear.bias = PyroSample(dist.Normal(0., 10.).expand([out_features]).to_event(1))
+        # PyroSample used to declare priors:
+        self.linear.weight = PyroSample(dist.Normal(0., 5.).expand([out_features, in_features]).to_event(2))
+        self.linear.bias = PyroSample(dist.Normal(0., 5.).expand([out_features]).to_event(1))
 
     def forward(self, x, y=None):
         sigma = pyro.sample("sigma", dist.Uniform(0., 10.))
-        mean = self.linear(x).squeeze(-1) # prediction
-        # sample from the likelihood distribution
+        mean = self.linear(x).squeeze(-1)
+        # sample from the posterior
         obs = pyro.sample("obs", dist.Normal(mean, sigma), obs=y)
         return mean
 ```
@@ -173,43 +175,47 @@ weight = pred["linear.weight"]
 weight = weight.reshape(weight.shape[0], 3)
 bias = pred["linear.bias"]
 
-# columns of x_data: cont_africa, rugged, cont_africa_x_rugged
-print("Mean for posterior distributions: ", torch.mean(weight, 0))
-print("97.5 percentile: ", weight.kthvalue(int(num_samples * 0.975), dim = 0)[0]) # find the 97.5 percentile value
-print("2.5 percentile: ", weight.kthvalue(int(num_samples * 0.025), dim = 0)[0]) # find the 2.5 percentile value
-
 fig = plt.figure(figsize = (10, 5))
-sns.distplot(weight[:, 0], kde_kws = {"label": "`cont_africa` Posterior Samples"})
-sns.distplot(weight[:, 1], kde_kws = {"label": "`rugged` Posterior Samples"})
-sns.distplot(weight[:, 2], kde_kws = {"label": "`cont_africax_rugged` Posterior Samples"})
-sns.distplot(bias[:, 0], kde_kws = {"label": "Bias term Posterior Samples"})
+sns.distplot(weight[:, 1],
+             kde_kws = {"label": "business_freedom Posterior Samples"},
+             color = "teal",
+             norm_hist = True,
+             kde = True)
+sns.distplot(weight[:, 2],
+             kde_kws = {"label": "Interaction Term Posterior Samples"},
+             color = "red",
+             norm_hist = True,
+             kde = True)
 
 fig.suptitle("Posterior Distributions");
 ```
-
-    Mean for posterior distributions:  tensor([[-1.9931, -0.1638,  0.2811]])
-    97.5 percentile:  tensor([[-1.6826, -0.0764,  0.4010]])
-    2.5 percentile:  tensor([[-2.2934, -0.2515,  0.1571]])
-
-&nbsp;
 
 <!-- space for plot of posterior disitbutrions -->
 ![](/assets/posteriors.png)
 
 &nbsp;
 
+```python
+columns = ["is_europe", "business_freedom", "business_freedom_x_region"]
+bayes_coef = dict(zip(columns, torch.mean(weight, 0).numpy()))
+
+print("Slope for European nations: ", round(bayes_coef["business_freedom"] + bayes_coef["business_freedom_x_region"], 3))
+print("Slope for non-European nations: ", round(bayes_coef["business_freedom"], 3))
+```
+
+    Slope for European nations:  0.024
+    Slope for non-European nations:  0.041
+
+&nbsp;
 
 ```python
-weight = weight.reshape(weight.shape[0], 3)
-in_africa = weight[:, 1] + weight[:, 2] # rugged + cont_africa_x_rugged
-outside_africa = weight[:, 1] # rugged
+inside_europe = weight[:, 1] + weight[:, 2] # business_freedom + business_freedom_x_region
+outside_europe = weight[:, 1] # business_freedom
 
-fig = plt.figure(figsize=(10, 6))
-sns.distplot(in_africa,
-             kde_kws = {"label": "African nations"},)
-sns.distplot(outside_africa,
-             kde_kws={"label": "Non-African nations"})
-fig.suptitle("Density of Slope : log(GDP) vs. Terrain Ruggedness");
+fig = plt.figure(figsize=(10, 5))
+sns.distplot(inside_europe, kde_kws = {"label": "European nations"})
+sns.distplot(outside_europe, kde_kws={"label": "Non-European nations"})
+fig.suptitle("log(GDP) vs Business Freedom");
 ```
 
 ![](/assets/bayesian_slopes.png)
