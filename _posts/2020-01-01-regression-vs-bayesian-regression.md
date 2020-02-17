@@ -40,7 +40,7 @@ Here's what the data looks like.
 
 ## Regression Model
 
-$X$ is out [data](#problem) and $y$ is our response, `rgdppc_2000`. The model parameters are $(\beta, \sigma)$.
+Below is the regression model we have for our data that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$.
 
 &nbsp;
 
@@ -59,7 +59,7 @@ $$ \epsilon \sim N(0, \sigma^{2}) $$
 
 ### Ordinary Linear Regression
 
-Ordinary linear regression finds optimal values for $(\beta, \sigma)$ to minimize the distance between the estimated value of $y$ from (1), and the true value of $y$ from the training data.
+Ordinary linear regression takes equation (1) and finds optimal values for $(\beta, \sigma)$ by minimizing the distance between the estimated value of $y$, and the true value of $y$.
 
 We can use the optimal parameter values to calculate the slopes of the regression lines for countries inside and outside of Africa, then compare the slopes.
 
@@ -96,11 +96,9 @@ Are we confident in these numbers? What if the model didn't have enough data and
 
 &nbsp;
 
-## Bayesian Regression
+### Bayesian Regression
 
-To capture the essence of Bayesian methodology let's start with the linear model from (1) and build from there.
-
-We have a model for our data (1), that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$. Because $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So if we have values for $(\beta, \sigma)$, we can write down a distribution for $y$.
+Starting with our regression model from (1), since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So if we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the _likelihood_ distribution.
 
 $$
 \begin{equation}
