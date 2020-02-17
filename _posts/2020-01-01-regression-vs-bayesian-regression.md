@@ -5,7 +5,7 @@ date: "2020-02-16 2:54"
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: A walkthrough of the intuition behind Bayesian regression and a practical comparison to ordinary linear regression.
+summary: A walkthrough of the intuition behind Bayesian regression and a practical comparison to ordinary linear regression using Python.
 ---
 
 Bayesian methods are usually shrouded in mystery, hidden behind pages of math that no practitioner has the patience to understand. Why should I even use this complicated black magic if other models are better? Also, since when is there a Bayesian version of simple linear regression? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?
@@ -213,7 +213,7 @@ Returning to the questions we asked at the beginning of this post:
 
 - **_Why should I even use this complicated black magic if other models are better?_** - Different tools for different jobs. Non-Bayesian models are not as expressive as their Bayesian counterparts. If all we care about is predictive power, then there's little need for parameter confidence intervals and a non-Bayesian approach will suffice in most instances. However, when we want to do inference and compare effects (coefficients) with some level of confidence, Bayesian methods shine.
 - **_Since when is there a Bayesian version of simple linear regression?_** - There's a Bayesian version of most model. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.
-- **_What in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?_** - MCMC is a family of methods used to sample arbitrary probability distributions. In Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample them. 
+- **_What in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?_** - MCMC is a family of methods used to sample arbitrary probability distributions. In Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample them.
 
 
 All the code for this blog post can be viewed [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
