@@ -31,7 +31,7 @@ Here's what the data looks like.
 
 &nbsp;
 
-![](/assets/africa_data_viz.png)
+![](/assets/europe_data_viz.png)
 <!--![Figure1](/assets/word2vec_viz.png)-->
 
 &nbsp;
