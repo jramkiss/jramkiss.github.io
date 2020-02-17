@@ -26,9 +26,7 @@ This is the problem we want to answer. The data is taken from the [Heritage Foun
 
 We'll answer the problem by fitting a linear model to the data and comparing the regression coefficients for countries inside and outside Europe. If the coefficients are significantly different, that will tell us about the effect of business freedom on GDP.
 
-To supplement the model, we'll also add an interaction term between `business_freedom` and `us_europe` and call it `business_freedom_x_region`.
-
-Here's what the data looks like for countries inside and outside Europe.
+To supplement the model, we'll also add an interaction term between `business_freedom` and `us_europe` and call it `business_freedom_x_region`. Here's what the data looks like for countries inside and outside Europe.
 
 &nbsp;
 
