@@ -154,8 +154,6 @@ for j in range(num_iterations):
         print("[iteration %04d] loss: %.4f" % (j + 1, loss / len(data)))
 ```
 
-&nbsp;
-
 For posterior inference, we use stochastic variational inference, which is a method used to approximate probability distributions. The code above initializes the stochastic variational inference sampler and runs it for $2500$ iterations.
 Now the `Predictive` class can be used to generate posterior samples for each parameter. We'll only plot the posterior distributions for `business_freedom` and `business_freedom_x_region` as these are the most important.
 
@@ -198,7 +196,6 @@ fig.suptitle("log(GDP Per Capita) vs Business Freedom");
     Slope for European nations:  0.023792317
     Slope for non-European nations:  0.040710554
 
-&nbsp;
 
 These estimates are different to the ones from Ordinary linear regression. This is because of the priors we used in the Bayesian model. Neither method is necessarily "more correct", actually, if we were to specify all flat priors and sample from the true posterior distribution, the parameter estimates would be the same.
 
