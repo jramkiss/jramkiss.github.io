@@ -70,7 +70,7 @@ y = df["log_gdppc"]
 reg = LinearRegression()
 _ = reg.fit(x, y)
 coef = dict([i for i in zip(list(x.columns), reg.coef_)])
-# code for plot is in the notebook
+# code for posterior plots is in the notebook linked at the bottom of this post
 
 # backout the slopes of the regression lines for nations in and out of Europe
 print("Slope for European Nations: ",
@@ -94,7 +94,7 @@ Although the slope for non-European countries is twice as large as European coun
 
 ### Bayesian Regression
 
-Starting with our regression model from [(1)](#regression-model), since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So if we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the _likelihood_ distribution.
+Starting back from the regression model in [(1)](#regression-model), since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So if we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the _likelihood_ distribution.
 
 $$
 \begin{equation}
@@ -103,16 +103,16 @@ p(y | \beta, \sigma) \sim N (X\beta, \sigma^2)
 \end{equation}
 $$
 
-Remember that we're interested in estimating values for $\beta$ so that we can plug them back into our model and interpret the regression slopes. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't really know anything about $\beta$ which is fine, but we do know that $\sigma$ can't be less than 0 because it is a standard deviation. The encoding of this knowledge before we start estimation is referred to as _prior specification_.
+Remember that we're interested in estimating values for $\beta$ so that we can plug them back into our model and interpret the regression slopes. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't know anything about $\beta$ which is fine, but we know that $\sigma$ can't be less than 0 because it is a standard deviation. This step is referred to as _prior specification_.
 
-Since we don't know anything about $\beta$, we'll use an uninformative (flat) prior and for $\sigma$ we'll use $U(0, 10)$, which ensures only positive values.
+Since we don't know anything about $\beta$, we'll use an uninformative prior (think flat probability distribution) of $N(0, 5)$. For $\sigma$ we'll use $U(0, 10)$, which ensures only positive values. The choice of $10$ as the upper bound here is somewhat arbitrary, the rational is that $\sigma$ probably won't be very high based on the values of our response variable, $y$.
 
 $$ p(\beta) \sim N(0, 5) $$
 
 $$ p(\sigma) \sim U(0, 10) $$
 
 Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.
-In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ a number (vector of numbers)? Well the distribution gives us more information about $\beta$, we can then find _point estimates_ by taking the mean, median or randomly sampling from this distribution.
+In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ a number (vector of numbers). Well the distribution gives us more information about $\beta$, we can then find _point estimates_ by taking the mean, median or randomly sampling from this distribution.
 
 
 To write the Bayesian model in Python, we'll use [Pyro](http://pyro.ai). Since the point of this post is to compare Bayesian regression to Ordinary linear regression, I'll be using Pyro as a tool and will skip over detailed explanation of the code. Luckily Pyro has amazing examples in their docs if you want to learn more.
@@ -145,16 +145,23 @@ For posterior inference, we'll use stochastic variational inference, which is a 
 ```python
 model = BayesianRegression(3, 1)
 auto_guide = AutoDiagonalNormal(model)
-
 svi = SVI(model = model, # bayesian regression class
           guide = auto_guide, # using auto guide
-          optim = pyro.optim.Adam({"lr": 0.05}),
-          loss=Trace_ELBO())
+          optim = pyro.optim.Adam({"lr": 0.05}), # optimizer
+          loss=Trace_ELBO()) # loss function
+
+num_iterations = 2500
+# param_store is where pyro stores param estimates
+pyro.clear_param_store()
+# inference loop
+for j in range(num_iterations):
+    # calculate the loss and take a gradient step
+    loss = svi.step(x_data, y_data)
+    if j % 250 == 0:
+        print("[iteration %04d] loss: %.4f" % (j + 1, loss / len(data)))
 ```
 
-Now that we've ran the inference loop, we can generate posterior samples. Pyro uses the `Predictive` class to generate posterior samples. Specifying different `return_sites` will tell Pyro which parameters to sample.
-
-Here is where the advantage of Bayesian linear regression starts to show itself. With Ordinary linear regression we'd end up with point estimates of parameters, but now we have a way of seeing how confident the model is in the parameter estimate. We can plot the posterior distributions for each of the parameters to see the difference in confidence.
+The code above initializes the stochastic variational inference sampler and runs it for $2500$ iterations to approximate the posteriors. Now we can use the `Predictive` class to generate posterior samples for `business_freedom` and `business_freedom_x_region`.
 
 &nbsp;
 
@@ -168,34 +175,22 @@ pred = predictive(x_data)
 weight = pred["linear.weight"]
 weight = weight.reshape(weight.shape[0], 3)
 bias = pred["linear.bias"]
+# code for posterior plots is in the notebook linked at the bottom of this post
 
-fig = plt.figure(figsize = (10, 5))
-sns.distplot(weight[:, 1],
-             kde_kws = {"label": "business_freedom Posterior Samples"},
-             color = "teal",
-             norm_hist = True,
-             kde = True)
-sns.distplot(weight[:, 2],
-             kde_kws = {"label": "Interaction Term Posterior Samples"},
-             color = "red",
-             norm_hist = True,
-             kde = True)
-
-fig.suptitle("Posterior Distributions");
-```
-
-<!-- space for plot of posterior disitbutrions -->
-![](/assets/posteriors.png)
-
-&nbsp;
-
-```python
 columns = ["is_europe", "business_freedom", "business_freedom_x_region"]
 bayes_coef = dict(zip(columns, torch.mean(weight, 0).numpy()))
 
 print("Slope for European nations: ", round(bayes_coef["business_freedom"] + bayes_coef["business_freedom_x_region"], 3))
 print("Slope for non-European nations: ", round(bayes_coef["business_freedom"], 3))
 ```
+
+<!-- space for plot of posterior disitbutrions -->
+![](/assets/posteriors.png)
+
+
+
+&nbsp;
+
 
     Slope for European nations:  0.024
     Slope for non-European nations:  0.041
@@ -212,8 +207,15 @@ sns.distplot(outside_europe, kde_kws={"label": "Non-European nations"})
 fig.suptitle("log(GDP) vs Business Freedom");
 ```
 
+
+
 ![](/assets/bayesian_slopes.png)
 <!-- space for plot of difference in slopes -->
+
+&nbsp;
+
+Here is where the advantage of Bayesian linear regression starts to show. With Ordinary linear regression we'd end up with point estimates of parameters, but now we have a way of seeing how confident the model is in the parameter estimate. We can plot the posterior distributions for each of the parameters to see the difference in confidence.
+
 
 &nbsp;
 
