@@ -25,8 +25,7 @@ The goal of this post is to first explain the intuition behind these 3 methods f
 
 Although we will primarily focus on the skip-gram, both models are single layer neural networks that accept one-hot encoded vectors as input. We learn the weights of the hidden layer, and each row of this weight matrix is a word vector. The algorithm forces word vectors closer to each other every time words appear in each other's context, regardless of position in the context window. **It does this by: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary appears in the context of the target word.**
 
-If your understanding of neural network weights and the weight matricies is still shakey, [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html) gives a good into.
-
+If your understanding of neural network weights and the weight matricies is still shakey, [this chapter](http://neuralnetworksanddeeplearning.com/chap1.html) gives a good into.  
 
 ### Deep Dive
 
@@ -35,8 +34,10 @@ The main idea behind the skip-gram model is that we take a word in an input sequ
 <br/>
 
 ![](/assets/word2vec_viz.png)
+
 Figure 1: The skip gram prediction of target word "into" with window size 2. Taken from Stanford's NLP course
- <br/>
+
+&nbsp;
 
 Let's formalize some notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We'll call this input sequence the *corpus*, and all its unique words the *vocabulary*. Each word in the vocabulary will have 2 vector representations during training, $u_o$ when it's a context word and $v_c$ when it's a target word.
 In figure 1, $u_{turning}$ is the vector representation of "turning" as a context word, and $v_{banking}$ is the vector representation of "banking" as a target word.
@@ -64,7 +65,7 @@ Where:
 
 Although we now have a way of quantifying the probability a word appears in the context of another, the $\sum_{w=1}^W e^{u_w^T v_c}$ term requires us to iterate over all words in the vocabulary, making it computationally inefficient. To deal with this, we must approximate the softmax probability. One way of doing this is called negative sampling.
 
-<br/>
+&nbsp;
 
 #### **Negative Sampling Loss**
 
@@ -78,7 +79,7 @@ $$
 
 Where $\sigma(.)$ is the [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function).
 
-<br/>
+&nbsp;
 
 The new objective function becomes:
 
@@ -114,7 +115,7 @@ To summarize, this loss function is trying to maximize the probability that word
 
 [Here](http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/) is a *great* tutorial on the skip-gram model!
 
-<br/>
+&nbsp;
 
 ---
 
@@ -137,6 +138,8 @@ Below is the co-occurrence matrix for the corpus containing:
 
 ![](/assets/cooccurrence_matrix.png)
 
+&nbsp;
+
 #### **From Softmax to GloVe**
 
 We can find global loss using the softmax function, $Q_{ij}$, by summing over all target-context word pairs.
@@ -151,13 +154,14 @@ Re-arranging some terms, we can come up with this:
 
 $$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
 
-**What's going on right now?**
+&nbsp;
+
+**What's going on here?**
 
 - **Where did $P_{ij}$ come from?** - Remember that $P_{ij} = \frac{X_{ij}}{X_i}$ and $X_i = \sum_k X_{ik}$, therefore we can substitute $X_{ij} = P_{ij}X_i$.
 - **What's the relationship between $P_{ij}$ and $Q_{ij}$?** - $P_{ij}$ is the probability that word $j$ appears in the context of word $i$, but $Q_{ij}$ is also the probability that word $j$ appears in the context of word $i$. The difference between the two lies in how they are calculated. $P_{ij}$ is calculated using the co-occurrence matrix and doesn't change. $Q_{ij}$ is the naive softmax probability, that is calculated using the dot product of word vectors $u_j$ and $v_i$. We have the ability to change $Q_{ij}$ by changing these vectors.
 - **What's the point of $P_{ij}log(Q_{ij})$?** - Now that we've refreshed our memory of $P$ and $Q$, we can see that $P$ is the *true* probability distribution of context and target words, and $Q$ is some made up distribution based on the "goodness" of the word vectors. We really want these two distributions to be close to each other. Observing $H = P_{ij}log(Q_{ij})$, when $P$ and $Q$ are close to each other, $H$ is small, and when $P$ and $Q$ are far apart, $H$ is larger. Our end goal is the minimization of $J$, so the smaller $H$ is the better. This term is the cross-entropy between distributions $P$ and $Q$.
 
-> Cross entropy error is just one among many possible distance measures between probability distributions, and it has the unfortunate property that distributions with long tails are often modeled poorly with too much weight given to the unlikely events.
 
 The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ and $P_{ij}$ which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe's approach to this is dropping the normalization terms completely, so we end up with $\hat{P}$ and $\hat{Q}$, which are unnormalized distributions. The cross-entropy function is now useless, so we change our objective function to be a squared error function.
 
@@ -173,7 +177,7 @@ $$
 
 This is the loss function that the GloVe model minimizes.
 
-<br/>
+
 ---
 
 ## Fasttext
@@ -182,7 +186,6 @@ This is the loss function that the GloVe model minimizes.
 
 Word2vec trains a unique vector for each word, ignoring important word sub-structure (morphological structure) and making out-of-vocabulary prediction impossible. Fasttext attempts to solve this by treating each word as a sum of its subwords. These subwords can be defined in any way, however the simplest form is a character n-gram. A vector representation is associated with each n-gram, then the vector for each word is simply the sum of each of its n-grams. **Fasttext learns word embeddings for each subword, then treats each word as a sum of its subwords.**
 
-> This is especially significant for morphologically rich languages (German, Turkish) in which a single word can have a large number of morphological forms, each of which might occur rarely, thus making it hard to train good word embeddings.
 
 ### Deep Dive
 
@@ -201,11 +204,8 @@ $$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
 
 We learn the embeddings of each character n-gram and then each word embedding is a sum of its n-gram vectors.
 
-<br/>
 
 ---
-
-<br/>
 
 
 ## Word Embeddings in Python
@@ -332,6 +332,7 @@ fasttext: Doctor - Woman + Man
 
 This is a different result from the original results. Biases in the training data are expressed by the model. Also interestingly, there are some misspelled words in fasttext. This is because of the difference in learning methods.
 
+&nbsp;
 
 #### **Visualizing Embeddings**
 
@@ -359,13 +360,8 @@ Wrapping up, there are some key differences between word2vec (skip-gram), GloVe 
 
 Both word2vec and GloVe can be used as frameworks for learning general similarities in text without considering what each token is made of. This makes them useful for tasks like finding similar movies given a sequence of movies watched by users. Fasttext on the other hand is more robust for translation tasks, where the likelihood of encountering an out-of-vocabulary word is higher.
 
-<br/>
-
 
 ---
-
-
-<br/>
 
 
 ## More Code
