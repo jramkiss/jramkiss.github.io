@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Ordinary VS Bayesian Linear Regression"
-date: "2020-03-01 2:54"
+date: "2020-02-28 2:54"
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
