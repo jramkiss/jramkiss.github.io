@@ -28,8 +28,6 @@ We'll answer the problem by fitting a linear model to the data and comparing the
 
 To supplement the model, we'll also add an interaction term between `business_freedom` and `us_europe` and call it `business_freedom_x_region`. Here's what the data looks like for countries inside and outside Europe.
 
-&nbsp;
-
 ![](/assets/europe_data_viz.png)
 <!--![Figure1](/assets/word2vec_viz.png)-->
 
@@ -51,6 +49,7 @@ $$ \beta = (\beta_0, \beta_1, \beta_2, \beta_3) $$
 
 $$ \epsilon \sim N(0, \sigma^{2}) $$
 
+&nbsp;
 
 ### Ordinary Linear Regression
 
@@ -77,8 +76,6 @@ print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
 
     Slope for European Nations:  0.026
     Slope for non-European Nations:  0.046
-
-&nbsp;
 
 ![](/assets/linear_regression_fit.png)
 
