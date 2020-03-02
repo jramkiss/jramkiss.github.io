@@ -40,8 +40,6 @@ To supplement the model, we'll also add an interaction term between `business_fr
 
 Below is the regression model we have for our data that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$.
 
-&nbsp;
-
 $$
 \begin{equation}
 y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
@@ -53,7 +51,6 @@ $$ \beta = (\beta_0, \beta_1, \beta_2, \beta_3) $$
 
 $$ \epsilon \sim N(0, \sigma^{2}) $$
 
-&nbsp;
 
 ### Ordinary Linear Regression
 
@@ -196,6 +193,7 @@ fig.suptitle("log(GDP Per Capita) vs Business Freedom");
     Slope for European nations:  0.023792317
     Slope for non-European nations:  0.040710554
 
+&nbsp;
 
 These estimates are different to the ones from Ordinary linear regression. This is because of the priors we used in the Bayesian model. Neither method is necessarily "more correct", actually, if we were to specify all flat priors and sample from the true posterior distribution, the parameter estimates would be the same.
 
@@ -205,15 +203,15 @@ These estimates are different to the ones from Ordinary linear regression. This 
 
 &nbsp;
 
-Although the absolute value of these slopes are small, we nnow have more confidence that the they are different becuase their distributions don't overlap.
-
-&nbsp;
+Although the absolute value of these slopes are small, we nnow have more confidence that the they are different becuase their distributions don't overlap.  
 
 Returning to the questions we asked at the beginning of this post:
 
 - **_Why should I even use this complicated black magic if other models are better?_** - Different tools for different jobs. Non-Bayesian models are not as expressive as their Bayesian counterparts. If all we care about is predictive power, then there's little need for parameter confidence intervals and a non-Bayesian approach will suffice in most instances. However, when we want to do inference and compare effects (coefficients) with some level of confidence, Bayesian methods shine.
 - **_Since when is there a Bayesian version of simple linear regression?_** - There's a Bayesian version of most model. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.
 - **_What in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?_** - MCMC is a family of methods used to sample arbitrary probability distributions. In Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample them.
+
+&nbsp;
 
 
 All the code for this blog post can be viewed [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
