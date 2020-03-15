@@ -1,18 +1,16 @@
 ---
 layout: post
 title: "Ordinary VS Bayesian Linear Regression"
-date: "2020-02-16 2:54"
+date: "2020-03-01 2:54"
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: A walkthrough of the intuition behind Bayesian regression and a practical comparison to ordinary linear regression using Python.
+summary: Walkthrough of the intuition behind Bayesian regression and a comparison with ordinary linear regression using a practical example and Python.
 ---
 
 Bayesian methods are usually shrouded in mystery, hidden behind pages of math that no practitioner has the patience to understand. Why should I even use this complicated black magic if other models are better? Also, since when is there a Bayesian version of simple linear regression? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?
 
-The goal of this post is to answer all these questions and to explain the intuition behind Bayesian thinking without using math. To do this, we'll fit an ordinary linear regression and a Bayesian linear regression model to a practical problem. The post itself isn't code-heavy, but rather provides little snippets for you to follow along. I've included the notebook with all the code [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
-
-&nbsp;
+The goal of this post is to answer all these questions and to explain the intuition behind Bayesian thinking without using math. To do this, we'll fit an ordinary linear regression and a Bayesian linear regression model to a practical problem. The post itself isn't code-heavy, but rather provides little snippets for you to follow along. I've included the notebook with all the code [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).  
 
 ## Problem
 
@@ -28,8 +26,6 @@ We'll answer the problem by fitting a linear model to the data and comparing the
 
 To supplement the model, we'll also add an interaction term between `business_freedom` and `us_europe` and call it `business_freedom_x_region`. Here's what the data looks like for countries inside and outside Europe.
 
-&nbsp;
-
 ![](/assets/europe_data_viz.png)
 <!--![Figure1](/assets/word2vec_viz.png)-->
 
@@ -39,8 +35,6 @@ To supplement the model, we'll also add an interaction term between `business_fr
 ## Regression Model
 
 Below is the regression model we have for our data that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$.
-
-&nbsp;
 
 $$
 \begin{equation}
@@ -81,18 +75,16 @@ print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
     Slope for European Nations:  0.026
     Slope for non-European Nations:  0.046
 
-&nbsp;
-
 ![](/assets/linear_regression_fit.png)
 
 
-Although the slope for non-European countries is twice as large as European countries (0.046 VS 0.026), the absolute value of both numbers is small. Are these estimates really thats different? Ideally we want a measure of confidence for each estimate to see how much we can trust it, then we can be more sure that the two estimates are different. Keep this problem in mind for the next section and we'll see how Bayesian regression solves it.
+Although the slope for non-European countries is twice as large as European countries (0.046 VS 0.026), the absolute value of both numbers is small. Are these estimates really thats different? Ideally we want a measure of confidence for each estimate, then we can be more sure that they are different. Keep this problem in mind for the next section and we'll see how Bayesian regression solves it.
 
 &nbsp;
 
 ### Bayesian Regression
 
-Starting back from the regression model in [(1)](#regression-model), since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So if we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the _likelihood_ distribution.
+Starting back from the regression model in [(1)](#regression-model), since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So assuming that we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the _likelihood_ distribution.
 
 $$
 \begin{equation}
@@ -109,8 +101,8 @@ $$ p(\beta) \sim N(0, 5) $$
 
 $$ p(\sigma) \sim U(0, 10) $$
 
-Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.
-In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from the posterior so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ a number (vector of numbers). Well the distribution gives us more information about $\beta$, we can then find _point estimates_ by taking the mean, median or randomly sampling from this distribution.
+Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.  
+In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from intractable posterior distributions, so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ a number (vector of numbers). Well, the distribution gives us more information about $\beta$, then we can find point estimates by finding the mean, median, mode, etc.
 
 
 To write the Bayesian model in Python, we'll use [Pyro](http://pyro.ai). I skip over small details in the code, however Pyro has amazing examples in their docs if you want to learn more.
@@ -154,8 +146,7 @@ for j in range(num_iterations):
         print("[iteration %04d] loss: %.4f" % (j + 1, loss / len(data)))
 ```
 
-For posterior inference, we use stochastic variational inference, which is a method used to approximate probability distributions. The code above initializes the stochastic variational inference sampler and runs it for $2500$ iterations.
-Now the `Predictive` class can be used to generate posterior samples for each parameter. We'll only plot the posterior distributions for `business_freedom` and `business_freedom_x_region` as these are the most important.
+For posterior inference, we use stochastic variational inference, which is a method used to approximate probability distributions. The code above initializes the stochastic variational inference sampler and runs it for $2500$ iterations. Now the `Predictive` class can be used to generate posterior samples for each parameter. We'll only plot the posterior distributions for `business_freedom` and `business_freedom_x_region` as these are the most important.
 
 &nbsp;
 
@@ -196,6 +187,7 @@ fig.suptitle("log(GDP Per Capita) vs Business Freedom");
     Slope for European nations:  0.023792317
     Slope for non-European nations:  0.040710554
 
+&nbsp;
 
 These estimates are different to the ones from Ordinary linear regression. This is because of the priors we used in the Bayesian model. Neither method is necessarily "more correct", actually, if we were to specify all flat priors and sample from the true posterior distribution, the parameter estimates would be the same.
 
@@ -205,15 +197,15 @@ These estimates are different to the ones from Ordinary linear regression. This 
 
 &nbsp;
 
-Although the absolute value of these slopes are small, we nnow have more confidence that the they are different becuase their distributions don't overlap.
-
-&nbsp;
+Although the absolute value of these slopes are small, we nnow have more confidence that the they are different becuase their distributions don't overlap.  
 
 Returning to the questions we asked at the beginning of this post:
 
 - **_Why should I even use this complicated black magic if other models are better?_** - Different tools for different jobs. Non-Bayesian models are not as expressive as their Bayesian counterparts. If all we care about is predictive power, then there's little need for parameter confidence intervals and a non-Bayesian approach will suffice in most instances. However, when we want to do inference and compare effects (coefficients) with some level of confidence, Bayesian methods shine.
 - **_Since when is there a Bayesian version of simple linear regression?_** - There's a Bayesian version of most model. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.
 - **_What in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?_** - MCMC is a family of methods used to sample arbitrary probability distributions. In Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample them.
+
+&nbsp;
 
 
 All the code for this blog post can be viewed [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
