@@ -10,7 +10,7 @@ summary: Walkthrough of the intuition behind Bayesian regression and a compariso
 
 Bayesian methods are usually shrouded in mystery, hidden behind pages of math that no practitioner has the patience to understand. Why should I even use this complicated black magic if other models are better? Also, since when is there a Bayesian version of simple linear regression? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?
 
-The goal of this post is to answer all these questions and to explain the intuition behind Bayesian thinking without using math. To do this, we'll fit an ordinary linear regression and a Bayesian linear regression model to a practical problem. The post itself isn't code-heavy, but rather provides little snippets for you to follow along. I've included the notebook with all the code [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).  
+The goal of this post is to answer all these questions and to explain the intuition behind Bayesian thinking without using math. To do this, we'll fit an ordinary linear regression and a Bayesian linear regression model to a practical problem. The post itself isn't code-heavy, but rather provides little snippets for you to follow along. I've included the notebook with all the code [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb).
 
 ## Problem
 
@@ -24,7 +24,7 @@ This is the problem we want to answer. The data is taken from the [Heritage Foun
 
 We'll answer the problem by fitting a linear model to the data and comparing the regression coefficients for countries inside and outside Europe. If the coefficients are significantly different, that will tell us about the effect of business freedom on GDP.
 
-To supplement the model, we'll also add an interaction term between `business_freedom` and `us_europe` and call it `business_freedom_x_region`. Here's what the data looks like for countries inside and outside Europe.
+To supplement the model, we'll also add an interaction term between `business_freedom` and `is_europe` and call it `business_freedom_x_region`. Here's what the data looks like for countries inside and outside Europe.
 
 ![](/assets/europe_data_viz.png)
 <!--![Figure1](/assets/word2vec_viz.png)-->
@@ -78,7 +78,7 @@ print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
 ![](/assets/linear_regression_fit.png)
 
 
-Although the slope for non-European countries is twice as large as European countries (0.046 VS 0.026), the absolute value of both numbers is small. Are these estimates really thats different? Ideally we want a measure of confidence for each estimate, then we can be more sure that they are different. Keep this problem in mind for the next section and we'll see how Bayesian regression solves it.
+Although the slope for non-European countries is twice as large as European countries (0.046 VS 0.026), the absolute value of both numbers is small. Are these estimates really that different? Ideally we want a measure of confidence for each estimate, then we can be more sure that they are different. Keep this problem in mind for the next section and we'll see how Bayesian regression solves it.
 
 &nbsp;
 
@@ -101,8 +101,8 @@ $$ p(\beta) \sim N(0, 5) $$
 
 $$ p(\sigma) \sim U(0, 10) $$
 
-Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.  
-In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from intractable posterior distributions, so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ a number (vector of numbers). Well, the distribution gives us more information about $\beta$, then we can find point estimates by finding the mean, median, mode, etc.
+Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.
+In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from intractable posterior distributions, so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ is a number (vector of numbers). Well, the distribution gives us more information about $\beta$, then we can find point estimates by finding the mean, median, mode, etc.
 
 
 To write the Bayesian model in Python, we'll use [Pyro](http://pyro.ai). I skip over small details in the code, however Pyro has amazing examples in their docs if you want to learn more.
@@ -189,7 +189,7 @@ fig.suptitle("log(GDP Per Capita) vs Business Freedom");
 
 &nbsp;
 
-These estimates are different to the ones from Ordinary linear regression. This is because of the priors we used in the Bayesian model. Neither method is necessarily "more correct", actually, if we were to specify all flat priors and sample from the true posterior distribution, the parameter estimates would be the same.
+These estimates are different to the ones from Ordinary linear regression. This is because of the priors we used in the Bayesian model. Neither method is necessarily "more correct". Actually, if we were to specify all flat priors and sample from the true posterior distribution, the parameter estimates would be the same.
 
 
 ![](/assets/bayesian_slopes.png)
@@ -197,12 +197,12 @@ These estimates are different to the ones from Ordinary linear regression. This 
 
 &nbsp;
 
-Although the absolute value of these slopes are small, we nnow have more confidence that the they are different becuase their distributions don't overlap.  
+Although the absolute value of these slopes are small, we now have more confidence that the they are different becuase their distributions don't overlap.
 
 Returning to the questions we asked at the beginning of this post:
 
 - **_Why should I even use this complicated black magic if other models are better?_** - Different tools for different jobs. Non-Bayesian models are not as expressive as their Bayesian counterparts. If all we care about is predictive power, then there's little need for parameter confidence intervals and a non-Bayesian approach will suffice in most instances. However, when we want to do inference and compare effects (coefficients) with some level of confidence, Bayesian methods shine.
-- **_Since when is there a Bayesian version of simple linear regression?_** - There's a Bayesian version of most model. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.
+- **_Since when is there a Bayesian version of simple linear regression?_** - There's a Bayesian version of most models. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.
 - **_What in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?_** - MCMC is a family of methods used to sample arbitrary probability distributions. In Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample them.
 
 &nbsp;
