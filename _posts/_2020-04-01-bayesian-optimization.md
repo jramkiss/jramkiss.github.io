@@ -37,10 +37,53 @@ In typical Bayesian problems we specify priors for parameters of the model. One 
 
 You read that correctly, we're placing a prior on $f$, which is a function. The Gaussian Process is a generalization of the Gaussian distribution that gives us the flexibility to do this. You can think of a GP as multiple Normally distributed variables in an array which can be of any length, and this length can change, when we obvserve new points for example.
 
-In order to compute the posterior expectation, we need to fit the Gaussian Process to all observed data (realizations of $f$). This will update the posterior on $f$ to now include all of our observations. A visual representation of this can be seen in this post on **Gaussian Process priors**.
+In order to compute the posterior expectation, we need to fit the Gaussian Process to all observed data (realizations of $f$). This will update the posterior on $f$ to now include all of our observations. More on Gaussian Processes can be seen in this post on **Gaussian Process priors**.
 
 
 <!-- Image showing the posterior before and after we observe 1 datapoint -->
+
+
+### Acquisition Function - Utility
+
+So far we have only talked about $f$ and not about its parameters, after all we're only after the parameters that minimize $f$. The acquisition function (sometimes called selection function) describes how much utility we get from sampling different values of the parameters. We want to maximize the utility gained from the next sample so we maximize this acquisition function to find where to sample next.
+
+A commom function used as the acquisition function is Expected Improvement.
+
+
+### NOTES
+
+
+1)
+> Intuitively, it defines the nonnegative expective improvement over the best previously observed objective value, $f_{best}$ at a given location, $x$.
+
+$$
+EI(x \mid D) = \int_{f_{best}}^{\inf} (y - f_{best}) p(y \mid x, D) dy
+$$
+
+<br/>
+
+2) $\hat{x}$ is the current position of the optimal hyperparemters. We want to maximize the average value of the difference between every possibble $x$ and the current optimal value.
+    1) EI is high when the (posterior) expected value of the loss $\mu(x)$ is better than the current best value, $f(\hat{x})$
+    2) EI is high when the uncertainty, $\sigma(x)$, around $\hat{x}$ is high
+
+    This is a typical explore / exploit problem that is parameterized by the kernel function. This makes sense, if we maximize EI, we will either sample points that have a higher expected value than $\hat{x}$ or points in regions of $f$ that have not been explored yet. What parameter controls exploring and what parameter controls exploiting?
+
+    $EI(x) = E[max\{0, f(x) - f(\hat{x})\}]$
+
+<br/>
+
+3) > What makes Bayesian optimization different from other procedures is that it constructs a probabilistic model for $f(x)$ and then exploits this model to make decisions about where in $X$ to next evaluate the function, while integrating out uncertainty
+
+
+## Bayesian Optimization Example
+
+Step through a problem with images at each timestep:
+
+1) Gaussian process prior on $f$
+2) First sample(s) of $f$
+3) Fit GP prior
+4) Acquisition function (with explanation as to why it is 0 at some points)
+5) Next iteration
 
 
 
@@ -73,6 +116,7 @@ Outline of the Bayesian Optimization algorithm:
 
 ## Readings
 
+- Best paper so far: https://papers.nips.cc/paper/4522-practical-bayesian-optimization-of-machine-learning-algorithms.pdf
 - Hyperparameter optimization in high dimensional spaces: http://proceedings.mlr.press/v28/bergstra13.pdf
 - https://app.sigopt.com/static/pdf/SigOpt_Bayesian_Optimization_Primer.pdf
 - https://towardsdatascience.com/a-conceptual-explanation-of-bayesian-model-based-hyperparameter-optimization-for-machine-learning-b8172278050f
