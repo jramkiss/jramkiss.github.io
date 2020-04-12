@@ -82,10 +82,45 @@ In other words, we model $y$ as $w_1t + b_1$ for days up until day $\tau$. After
 
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors. For the prior means of the bias terms, we use the mean of the first and forth quartiles of $y$ respecitvely.
 
+&nbsp;
+
+```python
+class BayesianRegression(PyroModule):
+    def __init__(self, in_features, out_features, b1_mu, b2_mu):
+        super().__init__()
+        self.linear1 = PyroModule[nn.Linear](in_features, out_features, bias = False)
+        self.linear1.weight = PyroSample(dist.Normal(0, 1.).expand([1, 1]).to_event(1))
+        self.linear1.bias = PyroSample(dist.Normal(b1_mu, 1.))
+
+        # could possibly have stronger priors for the 2nd regression line, because we wont have as much data
+        self.linear2 = PyroModule[nn.Linear](in_features, out_features, bias = False)
+        self.linear2.weight = PyroSample(dist.Normal(0., 1.).expand([1, 1]).to_event(1))
+        self.linear2.bias = PyroSample(dist.Normal(b2_mu, 2.))
+
+    def forward(self, x, y=None):
+        tau = pyro.sample("tau", dist.Beta(4, 2))
+        sigma = pyro.sample("sigma", dist.Uniform(0., 2.))
+        # fit lm's to data based on tau
+        sep = int(np.ceil(tau.detach().numpy() * len(x)))
+        mean1 = self.linear1(x[:sep]).squeeze(-1)
+        mean2 = self.linear2(x[sep:]).squeeze(-1)
+        mean = torch.cat((mean1, mean2))
+        # sample from the posterior
+        obs = pyro.sample("obs", dist.Normal(mean, sigma), obs=y)
+        return mean
+```
+&nbsp;
+
 ## Data and Processing
 
 The data used was downloaded from [Kaggle](https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset#covid_19_data.csv). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected (based solely on intuition) cases on March 13th. In cases like this, the data was split between the two days.
 
 <!-- figure 1: daily confirmed cases in Italy -->
+![](/assets/italy-daily-cases.png)
 
 ### Italy
+
+Posterior plots for Italy
+
+<!-- figure 1: daily confirmed cases in Italy -->
+![](/assets/italy-posterior-plots.png)
