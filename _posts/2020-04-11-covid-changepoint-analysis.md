@@ -78,6 +78,8 @@ $$
 
 In other words, we model $y$ as $w_1t + b_1$ for days up until day $\tau$. After that we model $y$ as $w_2t + b_2$.
 
+&nbsp;
+
 **Prior Specification**
 
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors. For the prior means of the bias terms, we use the mean of the first and forth quartiles of $y$ respecitvely.
