@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Detecting Change Points in COVID-19 with Bayesian Models"
+title: "Detecting Changes in COVID-19 Cases with Bayesian Models"
 date: 2020-04-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
