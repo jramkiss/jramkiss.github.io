@@ -82,6 +82,11 @@ In other words, we model $y$ as $w_1t + b_1$ for days up until day $\tau$. After
 
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors. For the prior means of the bias terms, we use the mean of the first and forth quartiles of $y$ respecitvely.
 
+$$
+w_1, w_2 \sim N(0, 0.5) \qquad \qquad
+\sigma \sim U(0, 2)
+$$
+
 &nbsp;
 
 ```python
@@ -111,7 +116,9 @@ class BayesianRegression(PyroModule):
 ```
 &nbsp;
 
-## Data and Processing
+## Results
+
+### Data and Processing
 
 The data used was downloaded from [Kaggle](https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset#covid_19_data.csv). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected (based solely on intuition) cases on March 13th. In cases like this, the data was split between the two days.
 
@@ -120,7 +127,40 @@ The data used was downloaded from [Kaggle](https://www.kaggle.com/sudalairajkuma
 
 ### Italy
 
+Priors for Italy:
+
+$$
+b_1 \sim N(4.2, 1) \qquad b_2 \sim N(8.1, 1)
+$$
+
 Posterior plots for Italy
 
 <!-- figure 1: daily confirmed cases in Italy -->
 ![](/assets/italy-posterior-plots.png)
+
+Date change for Italy: 2020-03-24
+
+Regression plot for Italy:
+![](/assets/regression-plot-italy.png)
+
+
+### Spain
+
+Priors for Spain:
+
+$$
+w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(4.2, 1) \qquad b_2 \sim N(8.1, 1)
+$$
+
+Posterior plots for Spain
+
+<!-- figure 1: daily confirmed cases in Italy -->
+![](/assets/posterior-plots-spain.png)
+
+<br/>
+
+Change date for Spain: 2020-03-27
+
+Regression plot for Spain:
+
+![](/assets/regression-plot-spain.png)
