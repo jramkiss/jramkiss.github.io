@@ -26,7 +26,7 @@ $$
   \begin{split}
     y = wt + b + \epsilon
   \end{split}
-  \text{, } \qquad
+  \text{, } \qquad \qquad
   \begin{split}
     \epsilon \sim N(0, \sigma^2) \\[10pt]
     p(y \mid w, b, \sigma) \sim N(wt, \sigma^2)
@@ -37,7 +37,7 @@ $$
 
 $$
 \begin{equation*}
-\begin{split} \text{Where: } \qquad \end{split}
+\begin{split} \text{Where: } \qquad \qquad \end{split}
 \begin{split}
 w &= \begin{cases}
   w_1 & \text{if } \tau \le t\\
@@ -56,13 +56,13 @@ $$
 
 $$
 \begin{equation*}
-  w_1 \sim N(\mu_{w_1}, \sigma_{w_1}^2) \qquad
+  w_1 \sim N(\mu_{w_1}, \sigma_{w_1}^2) \qquad \qquad
   w_2 \sim N(\mu_{w_2}, \sigma_{w_2}^2)
   \\[10pt]
-  b_1 \sim N(\mu_{b_1}, \sigma_{b_1}^2) \qquad
+  b_1 \sim N(\mu_{b_1}, \sigma_{b_1}^2) \qquad \qquad
   b_2 \sim N(\mu_{b_2}, \sigma_{b_2}^2)
   \\[10pt]
-  \tau \sim Beta(\alpha, \beta) \qquad
+  \tau \sim Beta(\alpha, \beta) \qquad \qquad
   \sigma \sim U(0, 2)
 \end{equation*}
 $$
