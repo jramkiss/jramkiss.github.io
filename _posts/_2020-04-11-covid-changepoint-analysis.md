@@ -26,27 +26,29 @@ $$
   \begin{split}
     y = wt + b + \epsilon
   \end{split}
-  \text{ , }
+  \text{, } \qquad
   \begin{split}
-    \epsilon \sim N(0, \sigma^2) \\
-    y \sim N(wt, \sigma^2)
+    \epsilon \sim N(0, \sigma^2) \\[10pt]
+    p(y \mid w, b, \sigma) \sim N(wt, \sigma^2)
   \end{split}
+  \\[15pt]
 \end{equation*}
 $$
 
 $$
 \begin{equation*}
-\begin{split} \text{Where: } \end{split}
+\begin{split} \text{Where: } \qquad \end{split}
 \begin{split}
-w = \begin{cases}
+w &= \begin{cases}
   w_1 & \text{if } \tau \le t\\
   w_2 & \text{if } \tau \gt t\\
 \end{cases} \\
-b = \begin{cases}
+b &= \begin{cases}
   b_1 & \text{if } \tau \le t\\
   b_2 & \text{if } \tau \gt t\\
 \end{cases}
 \end{split}
+\\[10pt]
 \end{equation*}
 $$
 
@@ -54,19 +56,36 @@ $$
 
 $$
 \begin{equation*}
-  w_1, w_2 \sim N(\mu_w, \sigma_w^2)
-  \\
-  b_1, b_2 \sim N(\mu_b, \sigma_b^2)
-  \\
-  \tau \sim Beta(\alpha, \beta)
-  \\
+  w_1 \sim N(\mu_{w_1}, \sigma_{w_1}^2) \qquad
+  w_2 \sim N(\mu_{w_2}, \sigma_{w_2}^2)
+  \\[10pt]
+  b_1 \sim N(\mu_{b_1}, \sigma_{b_1}^2) \qquad
+  b_2 \sim N(\mu_{b_2}, \sigma_{b_2}^2)
+  \\[10pt]
+  \tau \sim Beta(\alpha, \beta) \qquad
   \sigma \sim U(0, 2)
 \end{equation*}
 $$
 
+**Posterior:**
 
-Simply put, in the end we want one regression model 1 to describe the data from day 0 to day $\tau$, and regression model 2 to describe the data otherwise.
+$$
+\begin{equation*}
+p(w, b, \tau, \sigma \mid y) = p(y \mid w, b, \tau, \sigma) \quad p(w, b \mid \tau) \quad p(\tau) \quad p(\sigma)
+\end{equation*}
+$$
 
-## Data
 
-The data we'll be looking at was downloaded from [Kaggle](https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset#covid_19_data.csv).
+In other words, we model $y$ as $w_1t + b_1$ for days up until day $\tau$. After that we model $y$ as $w_2t + b_2$.
+
+**Prior Specification**
+
+Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors. For the prior means of the bias terms, we use the mean of the first and forth quartiles of $y$ respecitvely.
+
+## Data and Processing
+
+The data used was downloaded from [Kaggle](https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset#covid_19_data.csv). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected (based solely on intuition) cases on March 13th. In cases like this, the data was split between the two days.
+
+<!-- figure 1: daily confirmed cases in Italy -->
+
+### Italy
