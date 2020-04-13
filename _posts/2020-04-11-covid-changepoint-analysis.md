@@ -146,10 +146,10 @@ Posterior plots for Italy
 <!-- figure 1: daily confirmed cases in Italy -->
 ![](/assets/italy-posterior-plots.png)
 
-Date change for Italy: 2020-03-24
+Date change for Italy: 2020-03-16
 
 Regression plot for Italy:
-![](/assets/regression-plot-italy.png)
+![](/assets/italy-regression-plot.png)
 
 
 ### Spain
