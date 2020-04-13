@@ -85,11 +85,12 @@ In other words, we model $y$ as $w_1t + b_1$ for days up until day $\tau$. After
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors. For the prior means of the bias terms, we use the mean of the first and forth quartiles of $y$ respecitvely.
 
 $$
-w_1, w_2 \sim N(0, 0.5) \qquad \qquad
-\sigma \sim U(0, 2)
+b_1 \sim N(\mu_{q_1}, 1) \qquad \qquad b_2 \sim N(\mu_{q_4}, 1)
 $$
 
-We also know that the growth will be positive in the beginning of the model, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $0, 1)$, an appropriate prior can be $w_1 \sim N(0.5, 0.25)$. I'm hesitant to use the same logic for $w_2$, as the model should be flexible enough to capture gradients similar to $w_1$, in the case where there is no real change in the data. We'll see examples about this in the Results section by testing the model on data up to a particular date. For now, we want the prior for $w_2$ to be symetric about $0$, with the majority of values lying between $(-0.5, 0.5)$. We'll use $w_2 \sim N(0, 0.25)$.
+
+We also know that the growth will be positive in the beginning of the model, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $(0, 1)$, an appropriate prior can be $w_1 \sim N(0.5, 0.25)$.
+I'm hesitant to use the same logic for $w_2$, as the model should be flexible enough to capture gradients similar to $w_1$ in the case where there is no real change in the data. We'll see examples about this in the Results section by testing the model on data up to a particular date. For now, we want the prior for $w_2$ to be symetric about $0$, with the majority of values lying between $(-0.5, 0.5)$. We'll use $w_2 \sim N(0, 0.25)$.
 
 &nbsp;
 
