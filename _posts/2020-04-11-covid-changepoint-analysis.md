@@ -152,23 +152,23 @@ Regression plot for Italy:
 ![](/assets/italy-regression-plot.png)
 
 
-### Spain
+### Canada
 
-Priors for Spain:
+Priors for Canada:
 
 $$
-w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(4.2, 1) \qquad b_2 \sim N(8.1, 1)
+w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 1) \qquad b_2 \sim N(7.2, 1)
 $$
 
-Posterior plots for Spain
+Posterior plots for Canada
 
 <!-- figure 1: daily confirmed cases in Italy -->
-![](/assets/posterior-plots-spain.png)
+![](/assets/canada-posterior-plots.png)
 
 <br/>
 
-Change date for Spain: 2020-03-27
+Change date for Canada: 2020-03-29
 
-Regression plot for Spain:
+Regression plot for Canada:
 
-![](/assets/regression-plot-spain.png)
+![](/assets/canada-regression-plot.png)
