@@ -89,6 +89,8 @@ w_1, w_2 \sim N(0, 0.5) \qquad \qquad
 \sigma \sim U(0, 2)
 $$
 
+We also know that the growth will be positive in the beginning of the model, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $0, 1)$, an appropriate prior can be $w_1 \sim N(0.5, 0.25)$. I'm hesitant to use the same logic for $w_2$, as the model should be flexible enough to capture gradients similar to $w_1$, in the case where there is no real change in the data. We'll see examples about this in the Results section by testing the model on data up to a particular date. For now, we want the prior for $w_2$ to be symetric about $0$, with the majority of values lying between $(-0.5, 0.5)$. We'll use $w_2 \sim N(0, 0.25)$.
+
 &nbsp;
 
 ```python
@@ -122,7 +124,7 @@ class BayesianRegression(PyroModule):
 
 ### Data and Processing
 
-The data used was downloaded from [Kaggle](https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset#covid_19_data.csv). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected (based solely on intuition) cases on March 13th. In cases like this, the data was split between the two days.
+The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected (based solely on intuition) cases on March 13th. In cases like this, the data was split between the two days.
 
 <!-- figure 1: daily confirmed cases in Italy -->
 ![](/assets/italy-daily-cases.png)
