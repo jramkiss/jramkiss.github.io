@@ -91,6 +91,7 @@ $$
 
 We also know that the growth will be positive in the beginning of the model, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $(0, 1)$, an appropriate prior can be $w_1 \sim N(0.5, 0.25)$.
 I'm hesitant to use the same logic for $w_2$, as the model should be flexible enough to capture gradients similar to $w_1$ in the case where there is no real change in the data. We'll see examples about this in the Results section by testing the model on data up to a particular date. For now, we want the prior for $w_2$ to be symetric about $0$, with the majority of values lying between $(-0.5, 0.5)$. We'll use $w_2 \sim N(0, 0.25)$.
+As for $\tau$, since at this time we don't have access to all the data (the virus is ongoing), we're unable to have a completely flat prior and have the model estimate it. Instead, the assumption is made that the change is more likely to occur in the second half of the date range at hand, so we use $\tau \sim Beta(4, 3)$.
 
 &nbsp;
 
