@@ -133,28 +133,9 @@ The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/coron
 <!-- figure 1: daily confirmed cases in Italy -->
 ![](/assets/italy-daily-cases.png)
 
-### Italy
-
-Priors for Italy:
-
-$$
-b_1 \sim N(4.2, 1) \qquad b_2 \sim N(8.1, 1)
-$$
-
-Posterior plots for Italy
-
-<!-- figure 1: daily confirmed cases in Italy -->
-![](/assets/italy-posterior-plots.png)
-
-Date change for Italy: 2020-03-16
-
-Regression plot for Italy:
-![](/assets/italy-regression-plot.png)
-
-
 ### Canada
 
-Priors for Canada:
+Priors:
 
 $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 1) \qquad b_2 \sim N(7.2, 1)
@@ -172,3 +153,22 @@ Change date for Canada: 2020-03-29
 Regression plot for Canada:
 
 ![](/assets/canada-regression-plot.png)
+
+#### Canada with Less Data
+
+To test the model's robustness to countries that have not began to flatten the curve yet, we'll look at data from Canada up until March 29th. This is the day that the model estimated curve flattening began.
+
+Priors:
+
+$$
+w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(0.9, 1) \qquad b_2 \sim N(6.4, 1)
+$$
+
+The posteriors for $w_1$ and $w_2$ overlap, and the posterior for $\tau$ is bi-model. This is a good sign, because it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
+
+![](/assets/canada-march29-posterior-plots)
+
+
+Even though an appropriate $\tau$ doesn't exist, we're still able to describe the data well, as shown by samples from the likelihood distribution below.
+
+![](/assets/canada-march29-regression-plot.png)
