@@ -149,10 +149,6 @@ samples = mcmc.get_samples()
 
 ## Results
 
-What do I want to convey in this section?
-
-- The model works for Canada. We would conclude that there was no change if the posteriors for weight 1 and weight 2 were reasonably close together and possibly overlapping, however they don't overlap at all, suggesting there was a real change. Similarly for the posterior distribution for bias.
-
 ### Canada
 
 Since I live in Canada and have exposure to the dates precautions started, modelling wil start here. We'll use Feburary 27th as the date the virus "started".
@@ -172,7 +168,7 @@ $$
 
 Starting the the posteriors for $w_1$ and $w_2$, if there was no change in the data we would expect to see these two distributions close to each other as they govern the growth rate of the virus. It is a good sign that these distributions, along with the posteriors for $b_1$ and $b_2$, don't overlap. The posterior for $\tau$ is also symmetric about its mean and doesn't show signs of bi-modality. All of this is evidence that the change point estimated by our model is true.
 
-This change point was estimated as: 2020-03-29
+This change point was estimated as: **2020-03-29**
 
 As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. Assuming the incubation period for the virus is up to 14 days as reported, these dates align!
 The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
