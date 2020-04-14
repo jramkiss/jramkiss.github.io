@@ -1,16 +1,16 @@
 ---
 layout: post
 title: "Detecting Changes in COVID-19 Cases with Bayesian Models"
-date: 2020-04-01 19:22
+date: 2020-04-12 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Usinng Bayesian change point analysis with regression to determine when COVID-19 cases started to change in different countries.
+summary: Bayesian model to estimate the date that flattening of new COVID-19 cases started.
 ---
 
 ## Problem
 
-With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear to that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the number of new COVID-19 cases in a particular country changes.
+With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the distribution of new COVID-19 cases in a particular country changes.
 
 
 ## Model
@@ -67,7 +67,7 @@ $$
 
 &nbsp;
 
-In other words, $y$ will be modelled as $w_1t + b_1$ for days up until day $\tau$. After that it will be modelled as $w_2t + b_2$.
+In other words, $y$ will be modeled as $w_1t + b_1$ for days up until day $\tau$. After that it will be modeled as $w_2t + b_2$.
 
 &nbsp;
 
@@ -75,7 +75,7 @@ In other words, $y$ will be modelled as $w_1t + b_1$ for days up until day $\tau
 
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors.
 
-Starting with $w_1$ and $w_2$, these parameters can be interpreted as the growth rate of the virus before and after the date change. We know that the growth will be positive in the beginning, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $(0, 1)$, an appropriate prior can be $w_1 \sim N(0.5, 0.25)$.
+Starting with $w_1$ and $w_2$, these parameters can be interpreted as the growth rate of the virus before and after the date change. We know that the growth will be positive in the beginning, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $(0, 1)$, $w_1 \sim N(0.5, 0.25)$ will be used as the prior.
 We'll use similar logic for $p(w_2)$, but will have to keep in mind flexibility. Without a flexible enough prior here, the model won't do well in cases where there is no real change point in the data. In these cases, $w_2 \approx w_1$, and we'll see and example of this in the [Results](#results) section. For now, we want $p(w_2)$ to be symmetric about $0$, with the majority of values lying between $(-0.5, 0.5)$. We'll use $w_2 \sim N(0, 0.25)$.
 
 Next are the bias terms, $b_1$ and $b_2$. Priors for these parameters are especially sensitive to country characteristics. Countries that are more exposed to COVID-19 (for whatever reason), will have more confirmed cases at its peak than countries that are less exposed. This will directly affect the posterior distribution for $b_2$. In order to adapt this parameter to different countries, the mean of the first and forth quartiles of $y$ are used as $mu_{b_1}$ and $mu_{b_2}$ respectively. The standard deviation for these priors is taken as half the mean value in order to preserve flexibility.
@@ -94,12 +94,12 @@ class BayesianRegression(PyroModule):
         super().__init__()
         self.linear1 = PyroModule[nn.Linear](in_features, out_features, bias = False)
         self.linear1.weight = PyroSample(dist.Normal(0, 1.).expand([1, 1]).to_event(1))
-        self.linear1.bias = PyroSample(dist.Normal(b1_mu, 1.))
+        self.linear1.bias = PyroSample(dist.Normal(b1_mu, 1_mu/2))
 
         # could possibly have stronger priors for the 2nd regression line, because we wont have as much data
         self.linear2 = PyroModule[nn.Linear](in_features, out_features, bias = False)
         self.linear2.weight = PyroSample(dist.Normal(0., 1.).expand([1, 1]).to_event(1))
-        self.linear2.bias = PyroSample(dist.Normal(b2_mu, 2.))
+        self.linear2.bias = PyroSample(dist.Normal(b2_mu, b2_mu/2))
 
     def forward(self, x, y=None):
         tau = pyro.sample("tau", dist.Beta(4, 2))
@@ -118,9 +118,9 @@ class BayesianRegression(PyroModule):
 
 ## Data and Inference
 
-The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected (based solely on intuition) cases on March 13th. In cases like this, the data was split between the two days.
+The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected cases on March 13th. In cases like this, the data was split between the two days.
 
-The virus also starts at different times in different countries. Because we have a regression model, it will be inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is closer to the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
+The virus also starts at different times in different countries. Because we have a regression model, it is inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is better interpreted as the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
 
 &nbsp;
 
@@ -151,7 +151,7 @@ samples = mcmc.get_samples()
 
 ### Canada
 
-Since I live in Canada and have exposure to the dates precautions started, modelling wil start here. We'll use Feburary 27th as the date the virus "started".
+Since I live in Canada and have exposure to the dates precautions started, modeling will start here. We'll use February 27th as the date the virus "started".
 
 **Prior**
 
