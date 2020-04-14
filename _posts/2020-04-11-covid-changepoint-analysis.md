@@ -177,13 +177,15 @@ This change point was estimated as: 2020-03-29
 As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. Assuming the incubation period for the virus is up to 14 days as reported, these dates align!
 The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
 
+&nbsp;
+
 ![](/assets/canada-regression-plot.png)
 
 &nbsp;
 
 ### Canada with Less Data
 
-To test the model's robustness to countries that have not began to flatten the curve yet, we'll look at data from Canada up until March 29th. This is the day that the model estimated curve flattening began.
+To test the model's robustness to countries that have not began to flatten the curve yet, we'll look at data from Canada up until March 29th. This is the day that the model estimated curve flattening began. Now just because there isn't a true change date doesn't mean the model will output "No change". We'll use the posterior distributions to reason that there is no change in the data.
 
 **Prior**
 
@@ -191,11 +193,11 @@ $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(0.9, 1) \qquad b_2 \sim N(6.4, 1)
 $$
 
-The posteriors for $w_1$ and $w_2$ overlap, and the posterior for $\tau$ is bi-model. This is a good sign, because it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
 
 ![](/assets/canada-march29-posterior-plots.png)
 
+The posteriors for $w_1$ and $w_2$ overlap, and the posterior for $\tau$ is bi-model. This is a good sign, because it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
 
-Even though an appropriate $\tau$ doesn't exist, we're still able to describe the data well, as shown by samples from the likelihood distribution below.
+Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well, as shown by the plot below.
 
 ![](/assets/canada-march29-regression-plot.png)
