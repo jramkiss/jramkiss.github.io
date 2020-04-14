@@ -159,6 +159,7 @@ $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 0.5) \qquad b_2 \sim N(7.2, 3.6)
 $$
 
+&nbsp;
 **Posterior Distributions**
 
 <!-- figure 1: daily confirmed cases in Italy -->
@@ -189,6 +190,9 @@ $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(0.9, 1) \qquad b_2 \sim N(6.4, 1)
 $$
 
+&nbsp;
+**Posterior Distributions**
+
 
 ![](/assets/canada-march29-posterior-plots.png)
 
@@ -196,4 +200,5 @@ The posteriors for $w_1$ and $w_2$ overlap, and the posterior for $\tau$ is bi-m
 
 Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well, as shown by the plot below.
 
+&nbsp;
 ![](/assets/canada-march29-regression-plot.png)
