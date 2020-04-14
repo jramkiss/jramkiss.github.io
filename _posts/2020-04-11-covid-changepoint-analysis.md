@@ -135,7 +135,9 @@ The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/coron
 
 ### Canada
 
-Priors:
+Since I live in Canada and have exposure to the dates precautions started, I'll start here.
+
+**Prior**
 
 $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 1) \qquad b_2 \sim N(7.2, 1)
@@ -154,11 +156,11 @@ Regression plot for Canada:
 
 ![](/assets/canada-regression-plot.png)
 
-#### Canada with Less Data
+### Canada with Less Data
 
 To test the model's robustness to countries that have not began to flatten the curve yet, we'll look at data from Canada up until March 29th. This is the day that the model estimated curve flattening began.
 
-Priors:
+**Prior**
 
 $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(0.9, 1) \qquad b_2 \sim N(6.4, 1)
