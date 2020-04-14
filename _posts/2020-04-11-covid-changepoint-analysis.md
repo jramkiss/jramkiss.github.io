@@ -117,8 +117,6 @@ class BayesianRegression(PyroModule):
 
 ## Data and Inference
 
-### Data
-
 The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected (based solely on intuition) cases on March 13th. In cases like this, the data was split between the two days.
 
 The virus also starts at different times in different countries. Because we have a regression model, it will be inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is closer to the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
@@ -126,8 +124,7 @@ The virus also starts at different times in different countries. Because we have
 <!-- figure 1: daily confirmed cases in Italy -->
 ![](/assets/italy-daily-cases.png)
 
-
-### Inference
+&nbsp;
 
 Hamiltonian Monte Carlo is used for posterior sampling.
 
