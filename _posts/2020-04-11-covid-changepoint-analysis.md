@@ -168,7 +168,8 @@ $$
 
 The posteriors for $w_1$ and $w_2$ overlap, and the posterior for $\tau$ is bi-model. This is a good sign, because it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
 
-![](/assets/canada-march29-posterior-plots)
+![](/assets/canada-march29-posterior-plots.png)
+<img src="/assets/canada-march29-posterior-plots.png" alt="drawing" width=100% />
 
 
 Even though an appropriate $\tau$ doesn't exist, we're still able to describe the data well, as shown by samples from the likelihood distribution below.
