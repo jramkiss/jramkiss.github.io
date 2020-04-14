@@ -10,14 +10,12 @@ summary: Usinng Bayesian change point analysis with regression to determine when
 
 ## Problem
 
-There's an amazing example of Bayesian change point analysis in the book [Bayesian Methods for Hackers](https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/blob/master/Chapter1_Introduction/Ch1_Introduction_TFP.ipynb), and
-
-With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear to me that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). I propose a Bayesian model for estimating the date that the number of new confirmed cases in a particular country.
+With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear to that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the number of new COVID-19 cases in a particular country changes.
 
 
 ## Model
 
-We want to describe $y$, log of the number of new confirmed cases each day, which we'll do using a segmented regression model. The point at which we segment will be determined by a learned parameter, $\tau$. The model is below:
+We want to describe $y$, log of the number of new cases each day, which we'll do using a segmented regression model. The point at which we segment will be determined by a learned parameter, $\tau$. This is outlined below:
 
 **Likelihood:**
 
@@ -67,33 +65,25 @@ $$
 \end{equation*}
 $$
 
-**Posterior:**
 
-$$
-\begin{equation*}
-p(w, b, \tau, \sigma \mid y) = p(y \mid w, b, \tau, \sigma) \quad p(w, b \mid \tau) \quad p(\tau) \quad p(\sigma)
-\end{equation*}
-$$
-
-
-In other words, we model $y$ as $w_1t + b_1$ for days up until day $\tau$. After that we model $y$ as $w_2t + b_2$.
+In other words, $y$ will be modelled as $w_1t + b_1$ for days up until day $\tau$. After that it will be modelled as $w_2t + b_2$.
 
 &nbsp;
 
-**Prior Specification**
+### Prior Interpretation and Specification
 
-Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors. For the prior means of the bias terms, we use the mean of the first and forth quartiles of $y$ respectively.
+Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors.
+
+Starting with $w_1$ and $w_2$, these parameters can be interpreted as the growth rate of the virus before and after the date change. We know that the growth will be positive in the beginning, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $(0, 1)$, an appropriate prior can be $w_1 \sim N(0.5, 0.25)$.
+We'll use similar logic for $p(w_2)$, but will have to keep in mind flexibility. Without a flexible enough prior here, the model won't do well in cases where there is no real change point in the data. In these cases, $w_2 \approx w_1$, and we'll see and example of this in the [Results](#results) section. For now, we want $p(w_2)$ to be symmetric about $0$, with the majority of values lying between $(-0.5, 0.5)$. We'll use $w_2 \sim N(0, 0.25)$.
+
+Next are the bias terms, $b_1$ and $b_2$. Priors for these parameters are especially sensitive to country characteristics. Countries that are more exposed to COVID-19 (for whatever reason), will have more confirmed cases at its peak than countries that are less exposed. This will directly affect the posterior distribution for $b_2$. In order to adapt this parameter to different countries, the mean of the first and forth quartiles of $y$ are used as $mu_{b_1}$ and $mu_{b_2}$ respectively. The standard deviation for these priors is taken as half the mean value in order to preserve flexibility.
 
 $$
-b_1 \sim N(\mu_{q_1}, 1) \qquad \qquad b_2 \sim N(\mu_{q_4}, 1)
+b_1 \sim N(\mu_{q_1}, \frac{\mu_{q_1}}{2}) \qquad \qquad b_2 \sim N(\mu_{q_4}, \frac{\mu_{q_4}}{2})
 $$
 
-
-We also know that the growth will be positive in the beginning of the model, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $(0, 1)$, an appropriate prior can be $w_1 \sim N(0.5, 0.25)$.
-
-I'm hesitant to use the same logic for $w_2$, as the model should be flexible enough to capture gradients similar to $w_1$ in the case where there is no real change in the data. We'll see examples about this in the Results section by testing the model on data up to a particular date. For now, we want the prior for $w_2$ to be symmetric about $0$, with the majority of values lying between $(-0.5, 0.5)$. We'll use $w_2 \sim N(0, 0.25)$.
-
-As for $\tau$, since at this time we don't have access to all the data (the virus is ongoing), we're unable to have a completely flat prior and have the model estimate it. Instead, the assumption is made that the change is more likely to occur in the second half of the date range at hand, so we use $\tau \sim Beta(4, 3)$.
+As for $\tau$, since at this time we don't have access to all the data (the virus is ongoing), we're unable to have a completely flat prior and have the model estimate it. Instead, the assumption is made that the change is more likely to occur in the second half of the date range at hand, so we use $\tau \sim Beta(4, 2)$.
 
 &nbsp;
 
@@ -124,23 +114,48 @@ class BayesianRegression(PyroModule):
 ```
 &nbsp;
 
-## Results
 
-### Data and Processing
+## Data and Inference
+
+### Data
 
 The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected (based solely on intuition) cases on March 13th. In cases like this, the data was split between the two days.
+
+The virus also starts at different times in different countries. Because we have a regression model, it will be inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is closer to the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
 
 <!-- figure 1: daily confirmed cases in Italy -->
 ![](/assets/italy-daily-cases.png)
 
+
+### Inference
+
+Hamiltonian Monte Carlo is used for posterior sampling.
+
+```python
+model = BayesianRegression(1, 1,
+                           b1_mu = bias_1_mean,
+                           b2_mu = bias_2_mean)
+# mcmc
+nuts_kernel = NUTS(model)
+mcmc = MCMC(nuts_kernel,
+            num_samples=300,
+            warmup_steps = 100,
+            num_chains = 4)
+mcmc.run(x_data, y_data)
+samples = mcmc.get_samples()
+```
+
+
+## Results
+
 ### Canada
 
-Since I live in Canada and have exposure to the dates precautions started, I'll start here.
+Since I live in Canada and have exposure to the dates precautions started, modelling wil start here. We'll use Feburary 27th as the date the virus "started".
 
 **Prior**
 
 $$
-w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 1) \qquad b_2 \sim N(7.2, 1)
+w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 0.5) \qquad b_2 \sim N(7.2, 3.6)
 $$
 
 Posterior plots for Canada
