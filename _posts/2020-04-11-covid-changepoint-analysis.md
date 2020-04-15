@@ -181,7 +181,9 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 
 &nbsp;
 
-To diagnose the MCMC, below are trace plots for each parameter. Each of these have mixed well and are stationary.
+When running these experiments, the most important step is to diagnose the MCMC for convergence. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence.
+  
+Below are trace plots for each parameter, and each chain is stationary and mixed well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
 ![](/assets/canada-trace-plots.png)
 
