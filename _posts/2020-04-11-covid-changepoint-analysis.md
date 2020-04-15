@@ -12,6 +12,8 @@ summary: Bayesian model to estimate the date that flattening of new COVID-19 cas
 
 With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the distribution of new COVID-19 cases in a particular country changes.
 
+All the code for this post can be found [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb).
+
 
 ## Model
 
@@ -182,7 +184,7 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 &nbsp;
 
 When running these experiments, the most important step is to diagnose the MCMC for convergence. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence.
-  
+
 Below are trace plots for each parameter, and each chain is stationary and mixed well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
 ![](/assets/canada-trace-plots.png)
