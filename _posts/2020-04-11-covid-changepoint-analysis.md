@@ -11,7 +11,7 @@ summary: Bayesian model to estimate the date that flattening of new COVID-19 cas
 ## Problem
 
 With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the distribution of new COVID-19 cases in a particular country changes.
-  
+
 An important reminder before we get into it is that all models are wrong, but some are useful. This model is useful for estimating the date of change, not for predicting what will happen with COVID-19.
 
 All the code for this post can be found [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb).
@@ -171,11 +171,11 @@ $$
 
 &nbsp;
 
-Starting the the posteriors for $w_1$ and $w_2$, if there was no change in the data we would expect to see these two distributions close to each other as they govern the growth rate of the virus. It is a good sign that these distributions, along with the posteriors for $b_1$ and $b_2$, don't overlap. The posterior for $\tau$ is also symmetric about its mean and doesn't show signs of bi-modality. All of this is evidence that the change point estimated by our model is true.
+Starting with the posteriors for $w_1$ and $w_2$, if there was no change date, we would expect to see these two distributions close to each other as they govern the growth rate of the virus. It is a good sign that these distributions, along with the posteriors for $b_1$ and $b_2$, don't overlap. All of this is evidence that the change point estimated by our model is true.
 
 This change point was estimated as: **2020-03-27**
 
-As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. This is around the date most companies issued mandatory work from home policies. Assuming the incubation period for the virus around 10-14 days as reported, these dates align!
+As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th. Around this time, most companies in Toronto would have instated mandatory work from home policies. This is 11 days before the model's estimated date change. Assuming the incubation period for the virus up to 10-14 days as reported, these dates align!
 The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
 
 &nbsp;
