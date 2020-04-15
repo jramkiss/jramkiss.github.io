@@ -63,7 +63,7 @@ $$
   b_2 \sim N(\mu_{b_2}, \sigma_{b_2}^2)
   \\[10pt]
   \tau \sim Beta(\alpha, \beta) \qquad \qquad
-  \sigma \sim U(0, 2)
+  \sigma \sim U(0, 3)
 \end{equation*}
 $$
 
@@ -189,6 +189,10 @@ Below are trace plots for each parameter, and each chain is stationary and mixed
 
 ![](/assets/canada-trace-plots.png)
 
+&nbsp;
+
+After convergence, the last thing to check before moving on to other examples is how appropriate the model is for the data. Is it consistent with the assumptions made earlier? To test this we'll use a residual plot, as shown below.  
+I've outlined the
 
 ### Canada with Less Data
 
@@ -223,8 +227,18 @@ This MCMC did not converge. It is probably because we have a strong prior on $b_
 
 &nbsp;
 
-### Notes on Findings
+### Notes and Findings - Remove
 
-- With a strong prior on $b_2$, the MCMC converges quickly when we have a change point. If we don't have a change point (Canada before March 29th), some parameters don't converge. This means that the prior is too strong and the model cannot generalize easily. I'll need to do some experiments with the prior specification for $b_2$ to see how flat it should be. Can also experiment with a hierarchical prior on $b_2$. I'm not sure how adding a hierarchical prior will affect the model as we have so little data.
+- With a strong prior on $b_2$, the MCMC converges quickly when we have a change point. If we don't have a change point (Canada before March 29th), some parameters don't converge. This means that the prior is too strong and the model cannot generalize easily. I'll need to do some experiments with the prior specification for $b_2$ to see how flat it should be. Can also experiment with a hierarchical prior on $b_2$. I'm not sure how adding a hierarchical prior will affect the model as we have so little data. UPDATE: Just tried with $\frac{mu_{q_4}}{4}$ and 400 warm-up for Canada before March 29th, everything converged except for $b_2$, which had an R_hat value of 1.2, $w_2$ had an R_hat value of 1.09.
 - Interestingly (not really), the model can deal with a flat prior on $b_1$.
 - Try flat priors on all parameters. N(0, 5) or something. Assess convergence, R_hat, fit and residuals.
+
+
+### Open Questions
+
+- Are the reasons for prior specifications reasonable? Specifically want to know about using $mu_{q_1}$ and $mu_{q_4}$, as this in combination with the prior on $\tau$ is a strong assumption that there is a changepoint in the data and possibly making the model subjective.
+- How to know if the model is appropriate for the data and models it well?
+- Is observing trace plots and R_hat sufficient for convergence?
+- In a case like this where we have limited data, how will a hierarchical prior help?
+- Why do some posteriors converge and others don't? Are some parameters notoriously more difficult to learn based on limited data or model specifications? $b_2$ is having a hard time converging with a flatter prior
+-
