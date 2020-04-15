@@ -151,8 +151,6 @@ samples = mcmc.get_samples()
 
 ## Results
 
-### Canada
-
 Since I live in Canada and have exposure to the dates precautions started, modeling will start here. We'll use February 27th as the date the virus "started".
 
 **Prior**
@@ -183,6 +181,8 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 
 &nbsp;
 
+### Assessing Convergence
+
 When running these experiments, the most important step is to diagnose the MCMC for convergence. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence.
 
 Below are trace plots for each parameter, and each chain is stationary and mixed well. Additionally, all $\hat{R}$ values are less than $1.1$.
@@ -191,8 +191,12 @@ Below are trace plots for each parameter, and each chain is stationary and mixed
 
 &nbsp;
 
-After convergence, the last thing to check before moving on to other examples is how appropriate the model is for the data. Is it consistent with the assumptions made earlier? To test this we'll use a residual plot, as shown below.  
-I've outlined the
+After convergence, the last thing to check before moving on to other examples is how appropriate the model is for the data. Is it consistent with the assumptions made earlier? To test this we'll use a residual plot and a QQ-plot, as shown below.
+I've outlined the estimated change point in order to compare residuals before and after the change to test for homoscedasticity.
+
+<!-- qq-plot and residual plot -->
+![](/assets/canada-resid-plots.png)
+
 
 ### Canada with Less Data
 
