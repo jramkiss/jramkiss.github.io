@@ -176,6 +176,7 @@ Starting with the posteriors for $w_1$ and $w_2$, if there was no change date, w
 This change point was estimated as: **2020-03-27**
 
 As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th. Around this time, most companies in Toronto would have instated mandatory work from home policies. This is 11 days before the model's estimated date change. Assuming the incubation period for the virus up to 10-14 days as reported, these dates align!
+
 The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
 
 &nbsp;
@@ -232,6 +233,12 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 &nbsp;
 ![](/assets/canada-march27-trace-plots.png)
 &nbsp;
+
+## Next Steps and Open Questions
+
+This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting bi-product of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were.
+
+Thank you for reading, and I encourage you to reach out to me by e-mail or other means if you have suggestions or recommendations, or even just to chat!
 
 
 <!--
