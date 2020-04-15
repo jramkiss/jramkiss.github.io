@@ -91,27 +91,26 @@ As for $\tau$, since at this time we don't have access to all the data (the viru
 &nbsp;
 
 ```python
-class BayesianRegression(PyroModule):
+class COVID_change(PyroModule):
     def __init__(self, in_features, out_features, b1_mu, b2_mu):
         super().__init__()
         self.linear1 = PyroModule[nn.Linear](in_features, out_features, bias = False)
-        self.linear1.weight = PyroSample(dist.Normal(0, 1.).expand([1, 1]).to_event(1))
-        self.linear1.bias = PyroSample(dist.Normal(b1_mu, b1_mu/2))
+        self.linear1.weight = PyroSample(dist.Normal(0.5, 0.25).expand([1, 1]).to_event(1))
+        self.linear1.bias = PyroSample(dist.Normal(b1_mu, 1.))
 
         # could possibly have stronger priors for the 2nd regression line, because we wont have as much data
         self.linear2 = PyroModule[nn.Linear](in_features, out_features, bias = False)
-        self.linear2.weight = PyroSample(dist.Normal(0., 1.).expand([1, 1]).to_event(1))
+        self.linear2.weight = PyroSample(dist.Normal(0., 0.25).expand([1, 1])) #.to_event(1))
         self.linear2.bias = PyroSample(dist.Normal(b2_mu, b2_mu/4))
 
     def forward(self, x, y=None):
-        tau = pyro.sample("tau", dist.Beta(4, 2))
-        sigma = pyro.sample("sigma", dist.Uniform(0., 2.))
+        tau = pyro.sample("tau", dist.Beta(4, 3))
+        sigma = pyro.sample("sigma", dist.Uniform(0., 3.))
         # fit lm's to data based on tau
         sep = int(np.ceil(tau.detach().numpy() * len(x)))
         mean1 = self.linear1(x[:sep]).squeeze(-1)
         mean2 = self.linear2(x[sep:]).squeeze(-1)
         mean = torch.cat((mean1, mean2))
-        # sample from the posterior
         obs = pyro.sample("obs", dist.Normal(mean, sigma), obs=y)
         return mean
 ```
@@ -134,11 +133,12 @@ The virus also starts at different times in different countries. Because we have
 Hamiltonian Monte Carlo is used for posterior sampling.
 
 ```python
-model = BayesianRegression(1, 1,
-                           b1_mu = bias_1_mean,
-                           b2_mu = bias_2_mean)
-# mcmc
+model = COVID_change(1, 1,
+                     b1_mu = bias_1_mean,
+                     b2_mu = bias_2_mean)
+
 num_samples = 600
+# mcmc
 nuts_kernel = NUTS(model)
 mcmc = MCMC(nuts_kernel,
             num_samples=num_samples,
