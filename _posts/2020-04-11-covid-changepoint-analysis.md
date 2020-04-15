@@ -1,11 +1,11 @@
 ---
 layout: post
 title: "Detecting Changes in COVID-19 Cases with Bayesian Models"
-date: 2020-04-11 19:22
+date: 2020-04-14 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Bayesian model to estimate the date that flattening of new COVID-19 cases started.
+summary: Bayesian model to estimate the date that flattening of new COVID-19 cases started in each country.
 ---
 
 ## Problem
