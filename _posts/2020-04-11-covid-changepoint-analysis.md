@@ -83,10 +83,10 @@ We'll use similar logic for $p(w_2)$, but will have to keep in mind flexibility.
 Next are the bias terms, $b_1$ and $b_2$. Priors for these parameters are especially sensitive to country characteristics. Countries that are more exposed to COVID-19 (for whatever reason), will have more confirmed cases at its peak than countries that are less exposed. This will directly affect the posterior distribution for $b_2$. In order to adapt this parameter to different countries, the mean of the first and forth quartiles of $y$ are used as $mu_{b_1}$ and $mu_{b_2}$ respectively. The standard deviation for these priors is taken as half the mean value in order to preserve flexibility.
 
 $$
-b_1 \sim N(\mu_{q_1}, \frac{\mu_{q_1}}{2}) \qquad \qquad b_2 \sim N(\mu_{q_4}, \frac{\mu_{q_4}}{2})
+b_1 \sim N(\mu_{q_1}, 1) \qquad \qquad b_2 \sim N(\mu_{q_4}, \frac{\mu_{q_4}}{4})
 $$
 
-As for $\tau$, since at this time we don't have access to all the data (the virus is ongoing), we're unable to have a completely flat prior and have the model estimate it. Instead, the assumption is made that the change is more likely to occur in the second half of the date range at hand, so we use $\tau \sim Beta(4, 2)$.
+As for $\tau$, since at this time we don't have access to all the data (the virus is ongoing), we're unable to have a completely flat prior and have the model estimate it. Instead, the assumption is made that the change is more likely to occur in the second half of the date range at hand, so we use $\tau \sim Beta(4, 3)$.
 
 &nbsp;
 
@@ -171,9 +171,9 @@ $$
 
 Starting the the posteriors for $w_1$ and $w_2$, if there was no change in the data we would expect to see these two distributions close to each other as they govern the growth rate of the virus. It is a good sign that these distributions, along with the posteriors for $b_1$ and $b_2$, don't overlap. The posterior for $\tau$ is also symmetric about its mean and doesn't show signs of bi-modality. All of this is evidence that the change point estimated by our model is true.
 
-This change point was estimated as: **2020-03-29**
+This change point was estimated as: **2020-03-27**
 
-As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. This is around the date most companies issued mandatory work from home policies. Assuming the incubation period for the virus is up to 14 days as reported, these dates align!
+As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. This is around the date most companies issued mandatory work from home policies. Assuming the incubation period for the virus around 10-14 days as reported, these dates align!
 The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
 
 &nbsp;
@@ -184,7 +184,7 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 
 When running these experiments, the most important step is to diagnose the MCMC for convergence. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence.
 
-Below are trace plots for each parameter, and each chain is stationary and mixed well. Additionally, all $\hat{R}$ values are less than $1.1$.
+Below are trace plots for each parameter, and each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
 &nbsp;
 ![](/assets/canada-trace-plots.png)
@@ -199,14 +199,14 @@ The residuals look to follow a Normal distribution with zero mean, and no have d
 &nbsp;
 
 
-### Canada with Less Data
+### What About no Change?
 
-To test the model's robustness to countries that have not began to flatten the curve yet, we'll look at data from Canada up until March 29th. This is the day that the model estimated curve flattening began. Now just because there isn't a true change date doesn't mean the model will output "No change". We'll use the posterior distributions to reason that there is no change in the data.
+To test the model's robustness to a country that has not began to flatten the curve, we'll look at data from Canada up until March 27th. This is the day that the model estimated curve flattening began in Canada. Just because there isn't a true change date doesn't mean the model will output "No change". We'll have to use the posterior distributions to reason that the change date provided by the model is inappropriate, and consequentially there is no change in the data.
 
 **Prior**
 
 $$
-w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(0.9, 1) \qquad b_2 \sim N(6.4, 1)
+w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(0.9, 1) \qquad b_2 \sim N(6.4, 1.6)
 $$
 
 &nbsp;
@@ -214,21 +214,21 @@ $$
 **Posterior Distributions**
 
 &nbsp;
-![](/assets/canada-march29-posterior-plots.png)
+![](/assets/canada-march27-posterior-plots.png)
 &nbsp;
 
-The posteriors for $w_1$ and $w_2$ overlap, and the posterior for $\tau$ is bi-model. This is a good sign, because it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
+The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the growth rate of the virus hasn't change significantly. The posterior of $\tau$ is also closer to uniformly distributed. These are good signs, as it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
 
-Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well, as shown by the plot below.
-
-&nbsp;
-![](/assets/canada-march29-regression-plot.png)
-&nbsp;
-
-This MCMC did not converge. It is probably because we have a strong prior on $b_2$ which is misspecified. Trying a flatter prior and running the MCMC for longer will probably help.
+Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well.
 
 &nbsp;
-![](/assets/canada-march29-trace-plots.png)
+![](/assets/canada-march27-regression-plot.png)
+&nbsp;
+
+Similar to the previous example, the MCMC has converged. The trace plots below show sufficient mixing and stationarity of the chains, and $\hat{R}$ values less than $1.1$.
+
+&nbsp;
+![](/assets/canada-march27-trace-plots.png)
 &nbsp;
 
 
