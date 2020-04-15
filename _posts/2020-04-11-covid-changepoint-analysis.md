@@ -184,7 +184,7 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 
 When running these experiments, the most important step is to diagnose the MCMC for convergence. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence.
 
-Below are trace plots for each parameter, and each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
+Below are trace plots for each parameter each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
 &nbsp;
 ![](/assets/canada-trace-plots.png)
@@ -246,6 +246,7 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 - How to know if the model is appropriate for the data and models it well?
 - Is observing trace plots and R_hat sufficient for convergence?
 - In a case like this where we have limited data, how will a hierarchical prior help?
+- How to publicize the post?
 - Why do some posteriors converge and others don't? Are some parameters notoriously more difficult to learn based on limited data or model specifications? $b_2$ is having a hard time converging with a flatter prior
 
 -->
