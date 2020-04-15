@@ -11,6 +11,8 @@ summary: Bayesian model to estimate the date that flattening of new COVID-19 cas
 ## Problem
 
 With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the distribution of new COVID-19 cases in a particular country changes.
+  
+An important reminder before we get into it is that all models are wrong, but some are useful. This model is useful for estimating the date of change, not for predicting what will happen with COVID-19.
 
 All the code for this post can be found [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb).
 
@@ -242,11 +244,14 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 
 ### Open Questions
 
-- Are the reasons for prior specifications reasonable? Specifically want to know about using $mu_{q_1}$ and $mu_{q_4}$, as this in combination with the prior on $\tau$ is a strong assumption that there is a changepoint in the data and possibly making the model subjective.
+- Are the reasons for prior specifications reasonable? Specifically want to know about using $mu_{q_1}$ and $mu_{q_4}$, as this in combination with the prior on $\tau$ is a strong assumption that there is a change point in the data and possibly making the model subjective.
 - How to know if the model is appropriate for the data and models it well?
 - Is observing trace plots and R_hat sufficient for convergence?
 - In a case like this where we have limited data, how will a hierarchical prior help?
 - How to publicize the post?
 - Why do some posteriors converge and others don't? Are some parameters notoriously more difficult to learn based on limited data or model specifications? $b_2$ is having a hard time converging with a flatter prior
 
+All models are wrong but some are useful. This model is useful for estimating the change point date, but wrong for predictive analysis.
+- Can we compare the effectiveness of the lockdown in different countries. Can compare slopes of w_2 to
+- Can try to pool all the countries together and take mean of the 4th quartile as the prior mean for b_2?
 -->
