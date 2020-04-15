@@ -192,9 +192,11 @@ Below are trace plots for each parameter, and each chain is stationary and mixed
 
 After convergence, the last thing to check before moving on to other examples is how appropriate the model is for the data. Is it consistent with the assumptions made earlier? To test this we'll use a residual plot and a QQ-plot, as shown below.
 I've outlined the estimated change point in order to compare residuals before and after the change to test for homoscedasticity.
+The residuals look to follow a Normal distribution with zero mean, and no have dependence with time, before and after the date of change.
 
-<!-- qq-plot and residual plot -->
+&nbsp;
 ![](/assets/canada-resid-plots.png)
+&nbsp;
 
 
 ### Canada with Less Data
@@ -211,24 +213,24 @@ $$
 
 **Posterior Distributions**
 
-
+&nbsp;
 ![](/assets/canada-march29-posterior-plots.png)
+&nbsp;
 
 The posteriors for $w_1$ and $w_2$ overlap, and the posterior for $\tau$ is bi-model. This is a good sign, because it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
 
 Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well, as shown by the plot below.
 
 &nbsp;
-
 ![](/assets/canada-march29-regression-plot.png)
-
 &nbsp;
 
 This MCMC did not converge. It is probably because we have a strong prior on $b_2$ which is misspecified. Trying a flatter prior and running the MCMC for longer will probably help.
 
-![](/assets/canada-march29-trace-plots.png)
-
 &nbsp;
+![](/assets/canada-march29-trace-plots.png)
+&nbsp;
+
 
 ### Notes and Findings - Remove
 
