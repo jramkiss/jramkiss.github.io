@@ -179,6 +179,12 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 
 ![](/assets/canada-regression-plot.png)
 
+&nbsp;
+
+To diagnose the MCMC, below are trace plots for each parameter. Each of these have mixed well and are stationary.
+
+![](/assets/canada-trace-plots.png)
+
 
 ### Canada with Less Data
 
