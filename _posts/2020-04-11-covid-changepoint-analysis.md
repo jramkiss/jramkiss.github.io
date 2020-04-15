@@ -96,12 +96,12 @@ class BayesianRegression(PyroModule):
         super().__init__()
         self.linear1 = PyroModule[nn.Linear](in_features, out_features, bias = False)
         self.linear1.weight = PyroSample(dist.Normal(0, 1.).expand([1, 1]).to_event(1))
-        self.linear1.bias = PyroSample(dist.Normal(b1_mu, 1_mu/2))
+        self.linear1.bias = PyroSample(dist.Normal(b1_mu, b1_mu/2))
 
         # could possibly have stronger priors for the 2nd regression line, because we wont have as much data
         self.linear2 = PyroModule[nn.Linear](in_features, out_features, bias = False)
         self.linear2.weight = PyroSample(dist.Normal(0., 1.).expand([1, 1]).to_event(1))
-        self.linear2.bias = PyroSample(dist.Normal(b2_mu, b2_mu/2))
+        self.linear2.bias = PyroSample(dist.Normal(b2_mu, b2_mu/4))
 
     def forward(self, x, y=None):
         tau = pyro.sample("tau", dist.Beta(4, 2))
@@ -120,7 +120,7 @@ class BayesianRegression(PyroModule):
 
 ## Data and Inference
 
-The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, there are no new confirmed cases on March 12th, but nearly double the expected cases on March 13th. In cases like this, the data was split between the two days.
+The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, in Italy there are no new confirmed cases on March 12th, but nearly double the expected cases on March 13th. In cases like this, the data was split between the two days.
 
 The virus also starts at different times in different countries. Because we have a regression model, it is inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is better interpreted as the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
 
@@ -138,9 +138,10 @@ model = BayesianRegression(1, 1,
                            b1_mu = bias_1_mean,
                            b2_mu = bias_2_mean)
 # mcmc
+num_samples = 600
 nuts_kernel = NUTS(model)
 mcmc = MCMC(nuts_kernel,
-            num_samples=300,
+            num_samples=num_samples,
             warmup_steps = 100,
             num_chains = 4)
 mcmc.run(x_data, y_data)
@@ -153,7 +154,7 @@ samples = mcmc.get_samples()
 
 Since I live in Canada and have exposure to the dates precautions started, modeling will start here. We'll use February 27th as the date the virus "started".
 
-**Prior**
+**Priors:**
 
 $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 1) \qquad b_2 \sim N(7.2, 1)
@@ -172,13 +173,11 @@ Starting the the posteriors for $w_1$ and $w_2$, if there was no change in the d
 
 This change point was estimated as: **2020-03-29**
 
-As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. Assuming the incubation period for the virus is up to 14 days as reported, these dates align!
+As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. This is around the date most companies issued mandatory work from home policies. Assuming the incubation period for the virus is up to 14 days as reported, these dates align!
 The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
 
 &nbsp;
-
 ![](/assets/canada-regression-plot.png)
-
 &nbsp;
 
 ### Assessing Convergence
@@ -187,8 +186,8 @@ When running these experiments, the most important step is to diagnose the MCMC 
 
 Below are trace plots for each parameter, and each chain is stationary and mixed well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
+&nbsp;
 ![](/assets/canada-trace-plots.png)
-
 &nbsp;
 
 After convergence, the last thing to check before moving on to other examples is how appropriate the model is for the data. Is it consistent with the assumptions made earlier? To test this we'll use a residual plot and a QQ-plot, as shown below.
