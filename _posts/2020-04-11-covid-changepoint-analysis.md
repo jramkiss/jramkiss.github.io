@@ -156,7 +156,7 @@ Since I live in Canada and have exposure to the dates precautions started, model
 **Prior**
 
 $$
-w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 0.5) \qquad b_2 \sim N(7.2, 3.6)
+w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 1) \qquad b_2 \sim N(7.2, 1)
 $$
 
 &nbsp;
@@ -210,3 +210,17 @@ Even though an appropriate $\tau$ doesn't exist, the model priors are flexible e
 &nbsp;
 
 ![](/assets/canada-march29-regression-plot.png)
+
+&nbsp;
+
+This MCMC did not converge. It is probably because we have a strong prior on $b_2$ which is misspecified. Trying a flatter prior and running the MCMC for longer will probably help.
+
+![](/assets/canada-march29-trace-plots.png)
+
+&nbsp;
+
+### Notes on Findings
+
+- With a strong prior on $b_2$, the MCMC converges quickly when we have a change point. If we don't have a change point (Canada before March 29th), some parameters don't converge. This means that the prior is too strong and the model cannot generalize easily. I'll need to do some experiments with the prior specification for $b_2$ to see how flat it should be. Can also experiment with a hierarchical prior on $b_2$. I'm not sure how adding a hierarchical prior will affect the model as we have so little data.
+- Interestingly (not really), the model can deal with a flat prior on $b_1$.
+- Try flat priors on all parameters. N(0, 5) or something. Assess convergence, R_hat, fit and residuals.
