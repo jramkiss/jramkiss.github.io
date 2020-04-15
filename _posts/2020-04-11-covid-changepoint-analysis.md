@@ -232,6 +232,7 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 &nbsp;
 
 
+<!--
 ### Notes and Findings - Remove
 
 - With a strong prior on $b_2$, the MCMC converges quickly when we have a change point. If we don't have a change point (Canada before March 29th), some parameters don't converge. This means that the prior is too strong and the model cannot generalize easily. I'll need to do some experiments with the prior specification for $b_2$ to see how flat it should be. Can also experiment with a hierarchical prior on $b_2$. I'm not sure how adding a hierarchical prior will affect the model as we have so little data. UPDATE: Just tried with $\frac{mu_{q_4}}{4}$ and 400 warm-up for Canada before March 29th, everything converged except for $b_2$, which had an R_hat value of 1.2, $w_2$ had an R_hat value of 1.09.
@@ -246,4 +247,5 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 - Is observing trace plots and R_hat sufficient for convergence?
 - In a case like this where we have limited data, how will a hierarchical prior help?
 - Why do some posteriors converge and others don't? Are some parameters notoriously more difficult to learn based on limited data or model specifications? $b_2$ is having a hard time converging with a flatter prior
--
+
+-->
