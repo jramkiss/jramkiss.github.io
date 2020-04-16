@@ -126,7 +126,7 @@ The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/coron
 The virus also starts at different times in different countries. Because we have a regression model, it is inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is better interpreted as the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
 
 &nbsp;
-
+![](/assets/italy-daily-cases.png)
 &nbsp;
 
 Hamiltonian Monte Carlo is used for posterior sampling.
@@ -170,9 +170,9 @@ $$
 
 Starting the the posteriors for $w_1$ and $w_2$, if there was no change in the data we would expect to see these two distributions close to each other as they govern the growth rate of the virus. It is a good sign that these distributions, along with the posteriors for $b_1$ and $b_2$, don't overlap. The posterior for $\tau$ is also symmetric about its mean and doesn't show signs of bi-modality. All of this is evidence that the change point estimated by our model is true.
 
-This change point was estimated as: **2020-03-27**
+This change point was estimated as: **2020-03-28**
 
-As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. This is around the date most companies issued mandatory work from home policies. Assuming the incubation period for the virus around 10-14 days as reported, these dates align!
+As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 12 days before the model's estimated change date. This is around the date most companies issued mandatory work from home policies. Assuming the incubation period for the virus around 10-14 days as reported, these dates align!
 The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
 
 &nbsp;
@@ -200,7 +200,7 @@ The residuals look to follow a Normal distribution with zero mean, and no have d
 
 ### What About no Change?
 
-To test the model's robustness to a country that has not began to flatten the curve, we'll look at data from Canada up until March 27th. This is the day that the model estimated curve flattening began in Canada. Just because there isn't a true change date doesn't mean the model will output "No change". We'll have to use the posterior distributions to reason that the change date provided by the model is inappropriate, and consequentially there is no change in the data.
+To test the model's robustness to a country that has not began to flatten the curve, we'll look at data from Canada up until March 28th. This is the day that the model estimated curve flattening began in Canada. Just because there isn't a true change date doesn't mean the model will output "No change". We'll have to use the posterior distributions to reason that the change date provided by the model is inappropriate, and consequentially there is no change in the data.
 
 **Prior**
 
