@@ -227,7 +227,7 @@ Even though an appropriate $\tau$ doesn't exist, the model priors are flexible e
 ![](/assets/canada-march27-regression-plot.png)
 &nbsp;
 
-Similar to the previous example, the MCMC has converged. The trace plots below show sufficient mixing and stationarity of the chains, and $\hat{R}$ values less than $1.1$.
+Similar to the previous example, the MCMC has converged. The trace plots below show sufficient mixing and stationarity of the chains, and most $\hat{R}$ values less than $1.1$.
 
 &nbsp;
 ![](/assets/canada-march27-trace-plots.png)
