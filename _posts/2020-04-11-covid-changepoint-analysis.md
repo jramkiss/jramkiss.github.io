@@ -219,7 +219,7 @@ $$
 ![](/assets/canada-march27-posterior-plots.png)
 &nbsp;
 
-The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the growth rate of the virus hasn't change significantly. The posterior of $\tau$ is also closer to uniformly distributed. These are good signs, as it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
+The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the growth rate of the virus hasn't change significantly. Posteriors for $b_1$ and $b_2$ are also overlapping. These are good signs, as it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
 
 Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well.
 
