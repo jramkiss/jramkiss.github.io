@@ -126,7 +126,7 @@ The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/coron
 The virus also starts at different times in different countries. Because we have a regression model, it is inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is better interpreted as the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
 
 &nbsp;
-![](/assets/italy-daily-cases.png)
+
 &nbsp;
 
 Hamiltonian Monte Carlo is used for posterior sampling.
