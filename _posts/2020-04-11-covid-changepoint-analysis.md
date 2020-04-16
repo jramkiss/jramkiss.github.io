@@ -12,7 +12,7 @@ summary: Bayesian model to estimate the date that flattening of new COVID-19 cas
 
 With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the distribution of new COVID-19 cases in a particular country changes.
 
-An important reminder before we get into it is that all models are wrong, but some are useful. This model is useful for estimating the date of change, not for predicting what will happen with COVID-19. This model should not be mistaken for a groundbreaking epidemology model that will tell us when the quarantine will end, but instead a statistical way of connecting what we have already observed.
+An important reminder before we get into it is that all models are wrong, but some are useful. This model is useful for estimating the date of change, not for predicting what will happen with COVID-19. It should not be mistaken for an amazing epidemology model that will tell us when the quarantine will end, but instead a way of describing what we have already observed with probability distributions.
 
 All the code for this post can be found [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb).
 
@@ -221,7 +221,7 @@ The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the
 Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well.
 
 &nbsp;
-![](/assets/canada-test.png)
+![](/assets/canada-march27-regression-plot.png)
 &nbsp;
 
 Similar to the previous example, the MCMC has converged. The trace plots below show sufficient mixing and stationarity of the chains, and $\hat{R}$ values less than $1.1$.
@@ -233,7 +233,7 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 
 ## Next Steps and Open Questions
 
-This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting bi-product of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were.
+This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting bi-product of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were. This analysis and more will likely come in a subsequent post.
 
 Thank you for reading, and I encourage you to reach out to me by e-mail or other means if you have suggestions or recommendations, or even just to chat!
 
