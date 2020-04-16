@@ -73,7 +73,7 @@ $$
 
 In other words, $y$ will be modeled as $w_1t + b_1$ for days up until day $\tau$. After that it will be modeled as $w_2t + b_2$.
 
-The model was written in [Pyro](https://pyro.ai/), a probabalistic programing language built on [PyTorch](https://pytorch.org/). Chunks of the code are included in this post, but the majority of code is in [this](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb) notebook. 
+The model was written in [Pyro](https://pyro.ai/), a probabalistic programing language built on [PyTorch](https://pytorch.org/). Chunks of the code are included in this post, but the majority of code is in [this](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb) notebook.
 
 &nbsp;
 
