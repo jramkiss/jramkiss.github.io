@@ -221,7 +221,7 @@ The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the
 Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well.
 
 &nbsp;
-![](/assets/canada-march27-regression-plot.png)
+![](/assets/canada-test.png)
 &nbsp;
 
 Similar to the previous example, the MCMC has converged. The trace plots below show sufficient mixing and stationarity of the chains, and $\hat{R}$ values less than $1.1$.
