@@ -231,6 +231,12 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 &nbsp;
 
 
+## Next Steps and Open Questions
+
+This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting bi-product of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were.
+
+Thank you for reading, and I encourage you to reach out to me by e-mail or other means if you have suggestions or recommendations, or even just to chat!
+
 <!--
 ### Notes and Findings - Remove
 
