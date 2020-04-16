@@ -12,7 +12,7 @@ summary: Bayesian model to estimate the date that flattening of new COVID-19 cas
 
 With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the distribution of new COVID-19 cases in a particular country changes.
 
-An important reminder before we get into it is that all models are wrong, but some are useful. This model is useful for estimating the date of change, not for predicting what will happen with COVID-19. This model should not be mistaken for a groundbreaking epidimology model that will tell us when the quarantine will end, but instead a statistical way of connecting what we have observed.
+An important reminder before we get into it is that all models are wrong, but some are useful. This model is useful for estimating the date of change, not for predicting what will happen with COVID-19. This model should not be mistaken for a groundbreaking epidemology model that will tell us when the quarantine will end, but instead a statistical way of connecting what we have already observed.
 
 All the code for this post can be found [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb).
 
