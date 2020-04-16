@@ -1,25 +1,23 @@
 ---
 layout: post
 title: "Detecting Changes in COVID-19 Cases with Bayesian Models"
-date: 2020-04-14 19:22
+date: 2020-04-11 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Bayesian model to estimate the date that flattening of new COVID-19 cases started in each country.
+summary: Bayesian model to estimate the date that flattening of new COVID-19 cases started.
 ---
 
 ## Problem
 
 With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the distribution of new COVID-19 cases in a particular country changes.
 
-An important reminder before we get into it is that all models are wrong, but some are useful. This model is useful for estimating the date of change, not for predicting what will happen with COVID-19.
-
 All the code for this post can be found [here](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb).
 
 
 ## Model
 
-We want to describe $y$, log of the number of new cases each day, which we'll do using a segmented regression model. The point at which we segment will be determined by a learned parameter, $\tau$. This is outlined below:
+We want to describe $y$, log of the number of new cases each day, as a function of $t$, the number of days since the virus started in a particular country. We'll do this using a segmented regression model. The point at which we segment will be determined by a learned parameter, $\tau$. This is model is written below:
 
 **Likelihood:**
 
@@ -79,10 +77,10 @@ In other words, $y$ will be modeled as $w_1t + b_1$ for days up until day $\tau$
 
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors.
 
-Starting with $w_1$ and $w_2$, these parameters can be interpreted as the growth rate of the virus before and after the date change. We know that the growth will be positive in the beginning, so we can put a reasonably strong prior on $w_1$. Assuming that we want the majority of values to lie between $(0, 1)$, $w_1 \sim N(0.5, 0.25)$ will be used as the prior.
+Starting with $w_1$ and $w_2$, these parameters can be interpreted as the growth rate of the virus before and after the date change. We know that the growth will be positive in the beginning and is not likely to be larger than $1$. With these assumptions, $w_1 \sim N(0.5, 0.25)$ is a suitable prior.
 We'll use similar logic for $p(w_2)$, but will have to keep in mind flexibility. Without a flexible enough prior here, the model won't do well in cases where there is no real change point in the data. In these cases, $w_2 \approx w_1$, and we'll see and example of this in the [Results](#results) section. For now, we want $p(w_2)$ to be symmetric about $0$, with the majority of values lying between $(-0.5, 0.5)$. We'll use $w_2 \sim N(0, 0.25)$.
 
-Next are the bias terms, $b_1$ and $b_2$. Priors for these parameters are especially sensitive to country characteristics. Countries that are more exposed to COVID-19 (for whatever reason), will have more confirmed cases at its peak than countries that are less exposed. This will directly affect the posterior distribution for $b_2$. In order to adapt this parameter to different countries, the mean of the first and forth quartiles of $y$ are used as $mu_{b_1}$ and $mu_{b_2}$ respectively. The standard deviation for these priors is taken as half the mean value in order to preserve flexibility.
+Next are the bias terms, $b_1$ and $b_2$. Priors for these parameters are especially sensitive to country characteristics. Countries that are more exposed to COVID-19 (for whatever reason), will have more confirmed cases at its peak than countries that are less exposed. This will directly affect the posterior distribution for $b_2$ (which is the bias term for the second regression). In order to automatically adapt this parameter to different countries, we use the mean of the first and forth quartiles of $y$ as $\mu_{b_1}$ and $\mu_{b_2}$ respectively. The standard deviation for $b_1$ is taken as $1$, which makes $p(b_1)$ a relatively flat prior. The standard deviation of $p(b_2)$ is taken as $\frac{\mu_{b_2}}{4}$ so that the prior scales with larger values of $\mu_{b_2}$.
 
 $$
 b_1 \sim N(\mu_{q_1}, 1) \qquad \qquad b_2 \sim N(\mu_{q_4}, \frac{\mu_{q_4}}{4})
@@ -171,12 +169,11 @@ $$
 
 &nbsp;
 
-Starting with the posteriors for $w_1$ and $w_2$, if there was no change date, we would expect to see these two distributions close to each other as they govern the growth rate of the virus. It is a good sign that these distributions, along with the posteriors for $b_1$ and $b_2$, don't overlap. All of this is evidence that the change point estimated by our model is true.
+Starting the the posteriors for $w_1$ and $w_2$, if there was no change in the data we would expect to see these two distributions close to each other as they govern the growth rate of the virus. It is a good sign that these distributions, along with the posteriors for $b_1$ and $b_2$, don't overlap. The posterior for $\tau$ is also symmetric about its mean and doesn't show signs of bi-modality. All of this is evidence that the change point estimated by our model is true.
 
 This change point was estimated as: **2020-03-27**
 
-As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th. Around this time, most companies in Toronto would have instated mandatory work from home policies. This is 11 days before the model's estimated date change. Assuming the incubation period for the virus up to 10-14 days as reported, these dates align!
-
+As a side note, with no hard science attached, my company issued a mandatory work from home policy on March 16th, 13 days before the model's estimated change date. This is around the date most companies issued mandatory work from home policies. Assuming the incubation period for the virus around 10-14 days as reported, these dates align!
 The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
 
 &nbsp;
@@ -187,7 +184,7 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 
 When running these experiments, the most important step is to diagnose the MCMC for convergence. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence.
 
-Below are trace plots for each parameter each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
+Below are trace plots for each parameter, each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
 &nbsp;
 ![](/assets/canada-trace-plots.png)
@@ -234,12 +231,6 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 ![](/assets/canada-march27-trace-plots.png)
 &nbsp;
 
-## Next Steps and Open Questions
-
-This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting bi-product of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were.
-
-Thank you for reading, and I encourage you to reach out to me by e-mail or other means if you have suggestions or recommendations, or even just to chat!
-
 
 <!--
 ### Notes and Findings - Remove
@@ -251,14 +242,11 @@ Thank you for reading, and I encourage you to reach out to me by e-mail or other
 
 ### Open Questions
 
-- Are the reasons for prior specifications reasonable? Specifically want to know about using $mu_{q_1}$ and $mu_{q_4}$, as this in combination with the prior on $\tau$ is a strong assumption that there is a change point in the data and possibly making the model subjective.
+- Are the reasons for prior specifications reasonable? Specifically want to know about using $mu_{q_1}$ and $mu_{q_4}$, as this in combination with the prior on $\tau$ is a strong assumption that there is a changepoint in the data and possibly making the model subjective.
 - How to know if the model is appropriate for the data and models it well?
 - Is observing trace plots and R_hat sufficient for convergence?
 - In a case like this where we have limited data, how will a hierarchical prior help?
 - How to publicize the post?
 - Why do some posteriors converge and others don't? Are some parameters notoriously more difficult to learn based on limited data or model specifications? $b_2$ is having a hard time converging with a flatter prior
 
-All models are wrong but some are useful. This model is useful for estimating the change point date, but wrong for predictive analysis.
-- Can we compare the effectiveness of the lockdown in different countries. Can compare slopes of w_2 to
-- Can try to pool all the countries together and take mean of the 4th quartile as the prior mean for b_2?
 -->
