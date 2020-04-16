@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Detecting Changes in COVID-19 Cases with Bayesian Models"
-date: 2020-04-11 19:22
+date: 2020-04-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
