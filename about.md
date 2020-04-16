@@ -7,4 +7,4 @@ tags: about
 
 <img style="display: block; margin-left: auto; margin-right: auto; object-fit: cover; border-radius:50%;" width="300" height="300" src="/assets/profile.JPG" align="middle" alt="Profile">
 
-Data scientist at [Scribd](https://www.scribd.com), former swimmer
+Data scientist at [Scribd](https://www.scribd.com). Former competitive swimmer.
