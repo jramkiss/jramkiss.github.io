@@ -138,7 +138,7 @@ model = COVID_change(1, 1,
                      b1_mu = bias_1_mean,
                      b2_mu = bias_2_mean)
 
-num_samples = 600
+num_samples = 800
 # mcmc
 nuts_kernel = NUTS(model)
 mcmc = MCMC(nuts_kernel,
