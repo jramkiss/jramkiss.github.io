@@ -19,7 +19,7 @@ All the code for this post can be found [here](https://nbviewer.jupyter.org/gith
 
 ## Model
 
-We want to describe $y$, log of the number of new cases each day, as a function of $t$, the number of days since the virus started in a particular country. We'll do this using a segmented regression model. The point at which we segment will be determined by a learned parameter, $\tau$. This is model is written below:
+We want to describe $y$, log of the number of new COVID-19 cases in a particular country each day, as a function of $t$, the number of days since the virus started in that country. We'll do this using a segmented regression model. The point at which we segment will be determined by a learned parameter, $\tau$. This is model is written below:
 
 **Likelihood:**
 
