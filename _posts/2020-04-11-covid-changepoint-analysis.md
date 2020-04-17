@@ -88,7 +88,7 @@ The virus also starts at different times in different countries. Because we have
 &nbsp;
 
 
-### Prior Specification 
+### Prior Specification
 
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors.
 
@@ -178,7 +178,7 @@ This change point was estimated as: **2020-03-28**
 
 As a side note, with no science attached, my company issued a mandatory work from home policy on March 16th. Around this date is when most companies in Toronto would have issues mandatory work from home policies where applicable. Assuming the reported incubation period of the virus is up to 14 days, this estimated date change makes sense as it is 12 days after widespread social distancing measures began!
 
-The model fit along with 95% credible interval bands can be seen in the plot below. Also included is the true number of daily cases.
+The model fit along with 95% credible interval bands can be seen in the plot below. On the left is log of the number of daily cases, which is what we used to fit the model, and on the right is the true number of daily cases. It is very difficult to visually determine a change point by simply looking at the number of daily cases, and even more difficult by looking at the total number of confirmed cases.
 
 &nbsp;
 ![](/assets/canada-regression-plot.png)
@@ -186,7 +186,7 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 
 ### Assessing Convergence
 
-When running these experiments, the most important step is to diagnose the MCMC. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence. We observe mixing and stationarity of the Markov chains in order to know if the HMC is producing appropriate posterior samples.
+When running these experiments, the most important step is to diagnose the MCMCfor convergence. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence. We observe mixing and stationarity of the Markov chains in order to know if the HMC is producing appropriate posterior samples.
 
 Below are [trace plots](https://stats.stackexchange.com/questions/120936/why-we-need-trace-plot-for-mcmc-results) for each parameter. Each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
