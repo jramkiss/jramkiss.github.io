@@ -88,7 +88,7 @@ The virus also starts at different times in different countries. Because we have
 &nbsp;
 
 
-### Prior Specification
+## Prior Specification
 
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors.
 
