@@ -73,7 +73,7 @@ $$
 
 In other words, $y$ will be modeled as $w_1t + b_1$ for days up until day $\tau$. After that it will be modeled as $w_2t + b_2$.
 
-The model was written in [Pyro](https://pyro.ai/), a probabalistic programing language built on [PyTorch](https://pytorch.org/). Chunks of the code are included in this post, but the majority of code is in [this](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb) notebook.
+The model was written in [Pyro](https://pyro.ai/), a probabilistic programming language built on [PyTorch](https://pytorch.org/). Chunks of the code are included in this post, but the majority of code is in [this](https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/covid19-changes.ipynb) notebook.
 
 &nbsp;
 
@@ -186,7 +186,7 @@ The model fit along with 95% credible interval bands can be seen in the plot bel
 
 When running these experiments, the most important step is to diagnose the MCMC. I adopt 3 ways of assessing convergence for this model by observing mixing and stationarity of the chains and $\hat{R}$. $\hat{R}$ is the factor by which each posterior distribution will reduce by as the number of samples tends to infinity. A perfect $\hat{R}$ value is 1, and values less than $1.1$ are indicative of convergence. We observe mixing and stationarity of the Markov chains in order to know if the HMC is producing appropriate posterior samples.
 
-Below are trace plots for each parameter. Each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
+Below are [trace plots](https://stats.stackexchange.com/questions/120936/why-we-need-trace-plot-for-mcmc-results) for each parameter. Each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
 &nbsp;
 ![](/assets/canada-trace-plots.png)
@@ -219,9 +219,9 @@ $$
 ![](/assets/canada-march27-posterior-plots.png)
 &nbsp;
 
-The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the growth rate of the virus hasn't change significantly. Posteriors for $b_1$ and $b_2$ are also overlapping. These are good signs, as it shows that the model is trying to estimate an appropriate $\tau$ but cannot because it doesn't exist.
+The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the growth rate of the virus hasn't changed significantly. Posteriors for $b_1$ and $b_2$ are also overlapping. These show that the model is struggling to estimate a reasonable $\tau$, which is good validation for us that the priors aren't too strong.
 
-Even though an appropriate $\tau$ doesn't exist, the model priors are flexible enough to allow us to still describe the data well.
+Although we have already concluded that there is no change date for this data, we'll still plot the model out of curiosity.
 
 &nbsp;
 ![](/assets/canada-march27-regression-plot.png)
