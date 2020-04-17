@@ -77,7 +77,18 @@ The model was written in [Pyro](https://pyro.ai/), a probabilistic programming l
 
 &nbsp;
 
-### Prior Interpretation and Specification
+## Data
+
+The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, in Italy there are no new confirmed cases on March 12th, but nearly double the expected cases on March 13th. In cases like this, the data was split between the two days.
+
+The virus also starts at different times in different countries. Because we have a regression model, it is inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is better interpreted as the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
+
+&nbsp;
+![](/assets/italy-daily-cases.png)
+&nbsp;
+
+
+### Prior Specification 
 
 Virus growth is sensitive to population dynamics of individual countries and we are limited in the amount of data available, so it is important to supplement the model with appropriate priors.
 
@@ -120,17 +131,6 @@ class COVID_change(PyroModule):
 ```
 &nbsp;
 
-
-## Data and Inference
-
-The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/corona-virus-report). Available to us is the number of daily confirmed cases in each country, and Figure 1 shows this data in Italy. It is clear that there are some inconsistencies in how the data is reported, for example, in Italy there are no new confirmed cases on March 12th, but nearly double the expected cases on March 13th. In cases like this, the data was split between the two days.
-
-The virus also starts at different times in different countries. Because we have a regression model, it is inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is better interpreted as the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
-
-&nbsp;
-![](/assets/italy-daily-cases.png)
-&nbsp;
-
 [Hamiltonian Monte Carlo](https://www.cs.toronto.edu/~radford/ftp/ham-mcmc.pdf) is used for posterior sampling. The code for this is shown below.
 
 ```python
@@ -150,6 +150,8 @@ samples = mcmc.get_samples()
 ```
 
 &nbsp;
+
+
 
 ## Results
 
