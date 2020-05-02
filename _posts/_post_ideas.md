@@ -8,6 +8,23 @@ math: true
 summary: Bullet points of ideas for future posts.
 ---
 
+### Online Learning with Bayesian Methods
+- Read this paper: https://www.ki.tu-berlin.de/fileadmin/fg135/publikationen/opper/Op98b.pdf
+- Implement a simple model with online learning and compare the time and accuracy to a model where we re-estimate using the entire dataset everytime we get new data.
+- Compare the two models for accuracy, time to predictions and ease of implementations
+- Do we have to know about the posterior to do online learning?
+
+### What in the World is a Dirichlet Process
+- Basically a small explanation about conjugate priors and the relationship between binonial distributions and beta distributions, then multinomial distributions and dirichlet distributions.
+- From there, explain dirichlet processes 
+
+### Why Gaussian Process Regression?
+- Explain what fitting a GP is
+- What is Guassian Process regression and what is the difference between that, regular regression and bayesian regression
+
+### Bayesian Optimization
+- Why use Bayesian Optimization
+- Can we use bayesian optimization with machine learning? We can start with a ulmfit model and use Bayesian optimization to tune hyperparameters like BPTT, LR, etc.
 
 ### Tradeoffs Between Priors and Data
 - How do strong priors affect Bayesian models? Is my model going to be subjective if I start with a strong prior that is wrong? Why would I use Bayesian methods if I have no prior beliefs? (all flat priors)
@@ -17,16 +34,3 @@ summary: Bullet points of ideas for future posts.
     - If we start with a strong prior that is wrong, how will this affec the model?
     - How long does it take for data to overcome a prior?
 - Have a toy example with bayesian linear regression, maybe an example with interpretabble coefficients, like weight VS height. So we can start with a strong prior and not a lot of data, then test out weak priors with lots of data, etc.
-
-
-### Why Gaussian Process Regression?
-- Explain what fitting a GP is
-- What is Guassian Process regression and what is the difference between that, regular regression and bayesian regression
-
-### Bayesian Methods for Determining Changes in Churn Rate
-- Post explaining how we can use a bayesian model to see if the churn rate in Mexico changed when we made a decision about entities.
-- We can do this by having a hypothesis about dates, then formulating a model with interpretable parameters to see if the parameters match up with date we made the change
-
-### Bayesian Optimization
-- Why use Bayesian Optimization
-- Can we use bayesian optimization with machine learning? We can start with a ulmfit model and use Bayesian optimization to tune hyperparameters like BPTT, LR, etc.

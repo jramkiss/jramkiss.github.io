@@ -113,7 +113,6 @@ class COVID_change(PyroModule):
         self.linear1.weight = PyroSample(dist.Normal(0.5, 0.25).expand([1, 1]).to_event(1))
         self.linear1.bias = PyroSample(dist.Normal(b1_mu, 1.))
 
-        # could possibly have stronger priors for the 2nd regression line, because we wont have as much data
         self.linear2 = PyroModule[nn.Linear](in_features, out_features, bias = False)
         self.linear2.weight = PyroSample(dist.Normal(0., 0.25).expand([1, 1])) #.to_event(1))
         self.linear2.bias = PyroSample(dist.Normal(b2_mu, b2_mu/4))
