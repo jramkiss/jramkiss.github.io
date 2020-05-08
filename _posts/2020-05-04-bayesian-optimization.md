@@ -1,27 +1,24 @@
 ---
 layout: post
-title: "Bayesian Optimization Explained and Applied"
-date: 2020-04-01 19:22
+title: "Bayesian Optimization"
+date: 2020-05-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: A look at Bayesian optimization with application to a real world problem
+summary: Notes on Bayesian Optimization for self reference later on.
 ---
 
 ## Bayesian Optimization
 
-This post first will focus on explaining Bayesian Optimization, then show an example of its usage in Python. Since you're here, I assume you have some interest in finding out more about Bayesian Optimization, and therefore at least know one of its use cases - hyper parameter optimization.
+Starting with an outline of the Bayesian Optimization algorithm:
 
-Let's jump right in by starting with an outline of the Bayesian Optimization algorithm, then we'll disect it.
-
-- Start with a function $f(x)$ that we want to minimize
+- Start with a function $f(x)$ that we want to maximize
 - Place a Gaussian Process prior on $f$
 - Evaluate $f$ at an initial point, $x_0$
 - Until convergence criteria is fullfilled:
   - Update posterior on $f$
   - Computer a posterior expectation of $f$
   - Sample a new point $x_{new}$ that maximizes some utility of the expectation of $f$.
-
 
 
 Now that we have a template, let's fill in the knnowledge gaps by answering these questions:
@@ -116,6 +113,7 @@ Outline of the Bayesian Optimization algorithm:
 
 ## Readings
 
+- https://distill.pub/2020/bayesian-optimization/
 - Best paper so far: https://papers.nips.cc/paper/4522-practical-bayesian-optimization-of-machine-learning-algorithms.pdf
 - Hyperparameter optimization in high dimensional spaces: http://proceedings.mlr.press/v28/bergstra13.pdf
 - https://app.sigopt.com/static/pdf/SigOpt_Bayesian_Optimization_Primer.pdf
