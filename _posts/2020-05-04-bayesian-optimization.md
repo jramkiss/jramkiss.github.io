@@ -5,7 +5,7 @@ date: 2020-05-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Notes on Bayesian Optimization for self reference later on.
+summary: Notes on Bayesian Optimization
 ---
 
 ## Bayesian Optimization
@@ -46,6 +46,7 @@ So far we have only talked about $f$ and not about its parameters, after all we'
 
 A commom function used as the acquisition function is Expected Improvement.
 
+---
 
 ### NOTES
 
