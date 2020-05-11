@@ -8,6 +8,16 @@ math: true
 summary: Bullet points of ideas for future posts.
 ---
 
+
+### Inferring Clusters with Dirichlet Processes
+- Implement a dirichlet process clustering model with MNIST
+- Explain what Dirichlet processes are
+- Can use MNIST with 10 classes, and less than 10 classes and see how it works
+
+### Interesting Relationships between Probability distributions
+- Binomial and beta, multinomial and whatever is its corresponding continuous distribution 
+
+
 ### Online Learning with Bayesian Methods
 - Read this paper: https://www.ki.tu-berlin.de/fileadmin/fg135/publikationen/opper/Op98b.pdf
 - Implement a simple model with online learning and compare the time and accuracy to a model where we re-estimate using the entire dataset everytime we get new data.
@@ -16,7 +26,7 @@ summary: Bullet points of ideas for future posts.
 
 ### What in the World is a Dirichlet Process
 - Basically a small explanation about conjugate priors and the relationship between binonial distributions and beta distributions, then multinomial distributions and dirichlet distributions.
-- From there, explain dirichlet processes 
+- From there, explain dirichlet processes
 
 ### Why Gaussian Process Regression?
 - Explain what fitting a GP is
