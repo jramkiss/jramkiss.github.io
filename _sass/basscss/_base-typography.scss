@@ -3,7 +3,8 @@
 body {
   font-family: $font-family;
   line-height: $line-height;
-  font-size: 100%;
+  font-size: $base-font-size;
+  font-weight: $base-font-weight;
 }
 
 h1,
