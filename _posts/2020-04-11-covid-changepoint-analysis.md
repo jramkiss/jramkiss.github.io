@@ -10,7 +10,7 @@ summary: Bayesian model to estimate the date that flattening of new COVID-19 cas
 
 ## Problem
 
-more reduced math size and code size
+code size
 
 With the current global pandemic and its associated resources (data, analyses, etc.), I've been trying for some time to come up with an interesting COVID-19 problem to attack with statistics. After looking at the number of confirmed cases for some counties, it was clear that at _some_ date, the number of new cases stopped being exponential and its distribution changed. However, this date was different for each country (obviously). This post introduces and discusses a Bayesian model for estimating the date that the distribution of new COVID-19 cases in a particular country changes.
 
