@@ -239,7 +239,7 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 
 ## Next Steps and Open Questions
 
-This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting byproduct of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were. This analysis and more will likely come in a subsequent post.
+This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting byproduct of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were. The logical next modelling step would be to fit a hierarchical model in order to use partial pooling of data between countries. I find that the definition of each pool is most interesting for this problem. Some of my ideas about this are: geographic region, virus start time and population size.
 
 Thank you for reading, and definitely reach out to me by e-mail or other means if you have suggestions or recommendations, or even just to chat!
 
