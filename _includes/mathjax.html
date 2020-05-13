@@ -1,3 +1,4 @@
+<!--
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
   CommonHTML: {
@@ -8,4 +9,33 @@ MathJax.Hub.Config({
 
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-AMS-MML_HTMLorMML,https://idcrook.github.io/assets/js/MathJaxLocal.js">
+</script>
+-->
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$'] ],
+    processEscapes: true,
+  },
+  CommonHTML: {
+    scale: 85
+  }
+});
+MathJax.Hub.Register.MessageHook("Math Processing Error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
