@@ -26,7 +26,7 @@ Suppose we have an experiment where we ask $n$ random people **if their favourit
 &nbsp;
 <!-- binomial plot of samples -->
 <!--![](/assets/binomial-samples.png | width=24)-->
-<img src="/assets/binomial-samples.png" height="300">
+<img src="/assets/binomial-samples.png" height="350">
 &nbsp;
 
 ## Beta Distribution
@@ -37,7 +37,8 @@ Samples from the Beta distribution can be thought of as potential probabilities 
 
 <!-- beta plot of samples -->
 &nbsp;
-![](/assets/beta-samples.png | width=300)
+<!--![](/assets/beta-samples.png | width=300)-->
+<img src="/assets/beta-samples.png" height="350">
 &nbsp;
 
 
@@ -55,7 +56,8 @@ Now we want more information. We're interested in the distribution of people who
 
 <!-- beta plot of samples -->
 &nbsp;  
-![](/assets/multinomial-samples.png | width=48)
+<!--![](/assets/multinomial-samples.png | width=48)-->
+<img src="/assets/multinomial-samples.png" height="350">
 &nbsp;
 
 
@@ -67,7 +69,8 @@ Technically the Beta distribution produces
 
 <!-- dirichlet plot of samples -->
 &nbsp;  
-![](/assets/dirichlet-samples.png)  
+<!--![](/assets/dirichlet-samples.png)-->
+<img src="/assets/dirichlet-samples.png" height="350">
 &nbsp;
 
 
