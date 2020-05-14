@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Notes on the Beta and Dirichlet Distributions"
-date: 2020-05-12 12:22
+date: 2020-05-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
