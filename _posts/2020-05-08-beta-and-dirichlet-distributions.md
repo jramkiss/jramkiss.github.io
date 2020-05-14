@@ -70,7 +70,7 @@ Technically the Beta distribution produces
 &nbsp;
 
 
-#### How do we always sum to 1?
+### How do we always sum to 1?
 
 Let's take a Dirichlet distribution with 5 components, meaning that samples from this distribution will be a vector of length 5, whose sum is 1:
 
