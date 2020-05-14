@@ -26,8 +26,9 @@ We'll answer the problem by fitting a linear model to the data and comparing the
 
 To supplement the model, we'll also add an interaction term between `business_freedom` and `is_europe` and call it `business_freedom_x_region`. Here's what the data looks like for countries inside and outside Europe.
 
-![](/assets/europe_data_viz.png)
-<!--![Figure1](/assets/word2vec_viz.png)-->
+<p align="center">
+  <img src="/assets/europe_data_viz.png" height="300">
+</p>
 
 &nbsp;
 
@@ -75,7 +76,10 @@ print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
     Slope for European Nations:  0.026
     Slope for non-European Nations:  0.046
 
-![](/assets/linear_regression_fit.png)
+
+<p align="center">
+  <img src="/assets/linear_regression_fit.png" height="350">
+</p>
 
 
 Although the slope for non-European countries is twice as large as European countries (0.046 VS 0.026), the absolute value of both numbers is small. Are these estimates really that different? Ideally we want a measure of confidence for each estimate, then we can be more sure that they are different. Keep this problem in mind for the next section and we'll see how Bayesian regression solves it.
@@ -164,7 +168,9 @@ bias = pred["linear.bias"]
 ```
 
 <!-- space for plot of posterior disitbutrions -->
-![](/assets/posteriors.png)
+<p align="center">
+  <img src="/assets/posteriors.png" height="350">
+</p>
 
 
 &nbsp;
@@ -192,7 +198,9 @@ fig.suptitle("log(GDP Per Capita) vs Business Freedom");
 These estimates are different to the ones from Ordinary linear regression. This is because of the priors we used in the Bayesian model. Neither method is necessarily "more correct". Actually, if we were to specify all flat priors and sample from the true posterior distribution, the parameter estimates would be the same.
 
 
-![](/assets/bayesian_slopes.png)
+<p align="center">
+  <img src="/assets/bayesian_slopes.png" height="350">
+</p>
 <!-- space for plot of difference in slopes -->
 
 &nbsp;
