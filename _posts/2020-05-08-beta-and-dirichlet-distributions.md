@@ -25,7 +25,7 @@ Suppose we have an experiment where we ask $n$ random people **if their favourit
 
 &nbsp;
 <!-- binomial plot of samples -->
-![](/assets/binomial-samples.png)
+![](/assets/binomial-samples.png | width=24)
 &nbsp;
 
 ## Beta Distribution
@@ -36,7 +36,7 @@ Samples from the Beta distribution can be thought of as potential probabilities 
 
 <!-- beta plot of samples -->
 &nbsp;
-![](/assets/beta-samples.png)
+![](/assets/beta-samples.png | width=30)
 &nbsp;
 
 
@@ -53,8 +53,8 @@ We used the Binomial distribution to find out if people's favourite colour is bl
 Now we want more information. We're interested in the distribution of people whose favourite colours are either: blue, green, red or yellow. If we ask $n$ people to choose their favourite color from one of these, the number of successes for each colour will follow a Multinomial distribution. Each parameter, $p_{blue}, p_{green}, p_{red}, p_{yellow}$ is the probability of that colour being a random person's favourite. Sampling from this Multinomial will return a vector of length $4$ corresponding to the number of successes for that color. For each sample, the total number of successes sums to $n$.
 
 <!-- beta plot of samples -->
-&nbsp;
-![](/assets/multinomial-samples.png)
+&nbsp;  
+![](/assets/multinomial-samples.png | width=48)
 &nbsp;
 
 
@@ -65,8 +65,8 @@ Similarly with the Beta and Binomial combo, we need a prior for each $p_i$ in th
 Technically the Beta distribution produces
 
 <!-- dirichlet plot of samples -->
-&nbsp;
-![](/assets/dirichlet-samples.png)
+&nbsp;  
+![](/assets/dirichlet-samples.png)  
 &nbsp;
 
 
