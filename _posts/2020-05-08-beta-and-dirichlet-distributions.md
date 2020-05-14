@@ -17,7 +17,7 @@ Throughout the post, we'll use probability distributions to model people's favou
 The Binomial distribution describes the number of successes in a binary task. It is parametized by the probability of success, $p$, and the number of times the task was completed, $n$.
 
 &nbsp;
-#### Example: Simple Favourite Colour
+### Example: Simple Favourite Colour
 
 Suppose we have an experiment where we ask $n$ random people if their favourite color is blue. The number of people whose favourite colour is blue, follows a Binomial distribution. The parameter $p$ being the probability of someone's favourite color being blue. Taking $p=0.5$ and $n=1000$, we can sample from this Binomial and each sample is a potential number of people whose favourite color is blue.
 
@@ -48,7 +48,7 @@ A limitation of the Binomial distribution is we only have 2 potential outcomes. 
 &nbsp;
 
 
-#### Example: Favourite Colour
+### Example: Favourite Colour
 
 We used the Binomial distribution to find out if people's favourite colour is blue, but this didn't give us much information on what other colours people liked.
 Now we want more information. We're interested in the distribution of people whose favourite colours are either: blue, green, red or yellow. If we ask $n$ people to choose their favourite color from one of these, the number of successes for each colour will follow a Multinomial distribution. Each parameter, $p_{blue}, p_{green}, p_{red}, p_{yellow}$ is the probability of that colour being a random person's favourite. Sampling from this Multinomial will return a vector of length $4$ corresponding to the number of successes for that color. For each sample, the total number of successes sums to $n$.
