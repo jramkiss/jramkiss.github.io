@@ -65,7 +65,7 @@ Now we want more information. We're interested in the distribution of people who
 
 Similarly with the Beta and Binomial combo, we need a prior for each $p_i$ in the Multinomial likelihood. Unlike the Binomial, where we could potentially use any distribution with $(0, 1)$ domain as a prior for $p$, the Multinomial has an added restriction, as the vector of probabilities needs to sum to 1. Placing an arbitrary prior on each $p_i$ won't ensure that $\sum p_i = 1$. This is what the Dirichlet distribution offers. It acts as a prior over the entire vector of probabilities, $p = [p_1, p_2, ..., p_k]$. It is a generalization of the Beta distribution, and is also a conjugate prior for the Multinomial, which is an added benefit.
 
-Technically the Beta distribution produces
+A vector of length $k$ parameterizes the Dirichlet distribution, and the parameters are similar to $(\alpha, \beta)$ for the Beta distribution. Below are samples from 2 Dirichlet distributions with different parameters.
 
 <!-- dirichlet plot of samples -->
 <!--![](/assets/dirichlet-samples.png)-->
