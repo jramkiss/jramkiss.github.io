@@ -8,22 +8,20 @@ math: true
 summary: Quick notes on the Beta and Dirichlet distributions and their uses. No math.
 ---
 
-This post motivates the Beta and Dirichlet distributions by walking through examples and relationships to other distributions (Binomial and Multinomial). No math here.
+This post motivates the Beta and Dirichlet distributions using a simple example. It also relates the Beta and Dirichlet distributions to the Binomial and Multinomial. No math here.
 
-Throughout the post, we'll use probability distributions to model people's favourite color. The favourite color experiments start off very simple, then get more interesting as we introduce more flexible probability distributions. Then it briefly touches on how the Dirichlet distribution works.
+Throughout the post, we'll use probability distributions to model people's favourite color. The favourite color experiments start off very simple, then get more interesting as we introduce more flexible probability distributions. Then we briefly touch on how the Dirichlet distribution works.
 
 ## Binomial Distribution
 
 The Binomial distribution describes the number of successes in a binary task. It is parametized by the probability of success, $p$, and the number of times the task was completed, $n$.
 
 &nbsp;
-
 ### Example: Favourite Colour Blue
 
 Suppose we have an experiment where we ask $n$ random people **if their favourite color is blue**. The number of people whose favourite colour is blue, follows a Binomial distribution. The parameter $p$ being the probability of someone's favourite color being blue. Taking $p=0.5$ and $n=1000$, we can sample from this Binomial and each sample is a potential number of people whose favourite color is blue.
 
 
-&nbsp;
 <!-- binomial plot of samples -->
 <p align="center">
   <img src="/assets/binomial-samples.png" height="350">
@@ -37,7 +35,6 @@ In a Bayesian setting, we'll want to use the Binomial distribution as the likeli
 Samples from the Beta distribution can be thought of as potential probabilities of success, $p$, for the Binomial. The Beta distribution itself is parameterized by $(\alpha, \beta)$ which determine its location and scale. Below are plots of samples from the Beta distribution with different parameters, notice that all the samples are between $(0, 1)$.
 
 <!-- beta plot of samples -->
-&nbsp;
 <p align="center">
   <img src="/assets/beta-samples.png" height="350">
 </p>
@@ -56,8 +53,7 @@ A limitation of the Binomial distribution is we only have 2 potential outcomes. 
 We used the Binomial distribution to find out if people's favourite colour is blue, but this didn't give us much information on what other colours people liked.
 Now we want more information. We're interested in the distribution of people whose favourite colours are either: blue, green, red or yellow. If we ask $n$ people to choose their favourite color from one of these, the number of successes for each colour will follow a Multinomial distribution. Each parameter, $p_{blue}, p_{green}, p_{red}, p_{yellow}$ is the probability of that colour being a random person's favourite. Sampling from this Multinomial will return a vector of length $4$ corresponding to the number of successes for that color. For each sample, the total number of successes sums to $n$.
 
-<!-- beta plot of samples -->
-&nbsp;  
+<!-- beta plot of samples -->  
 <!--![](/assets/multinomial-samples.png | width=48)-->
 <p align="center">
   <img src="/assets/multinomial-samples.png" height="350">
@@ -72,7 +68,6 @@ Similarly with the Beta and Binomial combo, we need a prior for each $p_i$ in th
 Technically the Beta distribution produces
 
 <!-- dirichlet plot of samples -->
-&nbsp;  
 <!--![](/assets/dirichlet-samples.png)-->
 <p align="center">
   <img src="/assets/dirichlet-samples.png" height="350">
