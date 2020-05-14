@@ -30,7 +30,7 @@ Suppose we have an experiment where we ask $n$ random people if their favourite 
 
 ## Beta Distribution
 
-In a Bayesian setting, we'll want to use the Binomial distribution as the likelihood for the favourite color blue problem. This would mean placing a prior on $p$, which is a probability and needs to be between $[0, 1]$. It's possible to use any probability density whose domain is $[0,1]$, however we prefer a distribution that would leave us with an analytic posterior. For a Binomial likelihood this is the Beta distribution, meaning Beta is a conjugate prior for the Binomial.
+In a Bayesian setting, we'll want to use the Binomial distribution as the likelihood for the favourite color problem mentioned above. This would mean placing a prior on $p$, which is a probability and needs to be between $[0, 1]$. It's possible to use any probability density whose domain is $[0,1]$, however we prefer a distribution that would leave us with an analytic posterior. For a Binomial likelihood this is the Beta distribution, meaning Beta is a conjugate prior for the Binomial.
 
 Samples from the Beta distribution can be thought of as potential probabilities of success, $p$, for the Binomial. The Beta distribution itself is parameterized by $(\alpha, \beta)$ which determine its location and scale. Below are plots of samples from the Beta distribution with different parameters, notice that all the samples are between $(0, 1)$.
 
