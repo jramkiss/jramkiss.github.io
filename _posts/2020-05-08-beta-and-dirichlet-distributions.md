@@ -85,19 +85,18 @@ Two samples from $X$:
 $$ x_1 = [0.3, 0.15, 0.05, 0.25, 0.25] $$
 $$ x_2 = [0.13, 0.17, 0.05, 0.2, 0.45] $$
 
-Two things are consistent: $\sum_{i=1}^{5} x_i = 1$ and len(x) = $5$. So we can imagine that each sample from a Dirichlet distribution is a literal stick of length 1, that is (literally) broken into $5$ sections. Each section (or class) has a length, for example section 2 in $x_1$ has length $0.15$. Each sample, $x_1$, $x_2$, etc. can have different lengths for each section. All the Dirichlet distribution does is propose different ways of breaking this stick into 5 pieces. Of course there is a specific way of breaking the stick to generate samples from the Distribution, which is very aptly named the [stick breaking construction](https://www.stats.ox.ac.uk/~teh/research/npbayes/Teh2010a.pdf).
+Two things are consistent: $\sum_{i=1}^{5} x_i = 1$ and len(x) = $5$. So we can imagine that each sample from a Dirichlet distribution is a literal stick of length 1, that is broken into $5$ sections. Each section (or class) has a length, for example section 2 in $x_1$ has length $0.15$. Each sample can have different lengths for each section. The Dirichlet distribution does is proposes different ways of breaking this stick into 5 pieces. Of course, there is a specific way of breaking the stick to generate samples from the Distribution, which is very aptly named the [stick breaking construction](https://www.stats.ox.ac.uk/~teh/research/npbayes/Teh2010a.pdf).
 
 The next logical step from here is to ask the question: why 5 pieces? What if we don't know how many pieces we want? So really we want a distribution to propose breaking this stick in any way possible, 3 pieces, 100 pieces, 1e10 places. This is what the Dirichlet process is used for.
 
 
 ### Another View: Distribution over Distributions
 
-Suppose we have an arbitrary experiment with $k$ outcomes, that each happen with probability $p_i$. Every time we repeat this experiment, we get a distribution (probability mass function), $p$. Since we have a finite number of outcomes, we can imagine that each $p$ came from some Dirichlet distribution. In this sense, the Dirichlet distribution is a distribution over distributions.
+Suppose we have an arbitrary experiment with $k$ outcomes, that each happen with probability $p_i$. Every time we repeat this experiment, we get a probability distribution, $p$. Since we have a finite number of outcomes, we can imagine that each $p$ came from some Dirichlet distribution. In this sense, the Dirichlet distribution is a distribution over probability distributions.
 
 
 &nbsp;
 
-Here are a couple good resources to read more about Dirichlet distributions
 
 <!--
 ## Resources
