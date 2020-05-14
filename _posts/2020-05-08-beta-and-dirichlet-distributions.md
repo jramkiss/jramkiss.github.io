@@ -25,7 +25,8 @@ Suppose we have an experiment where we ask $n$ random people **if their favourit
 
 &nbsp;
 <!-- binomial plot of samples -->
-![](/assets/binomial-samples.png | width=24)
+<!--![](/assets/binomial-samples.png | width=24)-->
+<img src="/assets/binomial-samples.png" height="300">
 &nbsp;
 
 ## Beta Distribution
@@ -36,7 +37,7 @@ Samples from the Beta distribution can be thought of as potential probabilities 
 
 <!-- beta plot of samples -->
 &nbsp;
-![](/assets/beta-samples.png | width=30)
+![](/assets/beta-samples.png | width=300)
 &nbsp;
 
 
