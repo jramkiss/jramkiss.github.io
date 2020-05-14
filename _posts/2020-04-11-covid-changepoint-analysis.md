@@ -5,7 +5,7 @@ date: 2020-04-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Bayesian model to estimate the date that flattening of new COVID-19 cases started.
+summary: Bayesian change point model to estimate the date that flattening of new COVID-19 cases started in different countries.
 ---
 
 ## Problem
