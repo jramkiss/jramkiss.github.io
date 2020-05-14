@@ -16,40 +16,58 @@ Throughout the post, we'll use probability distributions to model people's favou
 
 The Binomial distribution describes the number of successes in a binary task. It is parametized by the probability of success, $p$, and the number of times the task was completed, $n$.
 
+&nbsp;
+
 ### Example: Favourite Colour Blue
 
 Suppose we have an experiment where we ask $n$ random people **if their favourite color is blue**. The number of people whose favourite colour is blue, follows a Binomial distribution. The parameter $p$ being the probability of someone's favourite color being blue. Taking $p=0.5$ and $n=1000$, we can sample from this Binomial and each sample is a potential number of people whose favourite color is blue.
 
 
+&nbsp;
 <!-- binomial plot of samples -->
+![](/assets/binomial-samples.png)
+&nbsp;
 
 ## Beta Distribution
 
-In a Bayesian setting, we'll want to use the Binomial distribution as the likelihood for the favourite color blue problem. This would mean placing a prior on $p$, which is a probability and needs to be between $[0, 1]$. It's possible to use any probability density whose domain is $[0,1]$, however we prefer a distribution that would leave us with an analytic posterior. For a Binomial likelihood this is the Beta distrubtion, meaning Beta is a conjugate prior for the Binomial.
+In a Bayesian setting, we'll want to use the Binomial distribution as the likelihood for the favourite color blue problem. This would mean placing a prior on $p$, which is a probability and needs to be between $[0, 1]$. It's possible to use any probability density whose domain is $[0,1]$, however we prefer a distribution that would leave us with an analytic posterior. For a Binomial likelihood this is the Beta distribution, meaning Beta is a conjugate prior for the Binomial.
 
-Samples from the Beta distribution can be thought of as potential probabilities of success, $p$, for the Binomial. The Beta distribution itself is parameterized by $(\alpha, \beta)$ which determine its location and scale. Below are plots of samples from the Beta distribtution with different parameters, notice that all the samples are between $(0, 1)$.
-
+Samples from the Beta distribution can be thought of as potential probabilities of success, $p$, for the Binomial. The Beta distribution itself is parameterized by $(\alpha, \beta)$ which determine its location and scale. Below are plots of samples from the Beta distribution with different parameters, notice that all the samples are between $(0, 1)$.
 
 <!-- beta plot of samples -->
+&nbsp;
+![](/assets/beta-samples.png)
+&nbsp;
 
 
 ## Multinomial Distribution
 
 A limitation of the Binomial distribution is we only have 2 potential outcomes. The Multinormial distribution is a generalization of this, so we can have $k$ possible outcomes. It is parameterized by the number of trials, $n$ and the probability of success for each outcome $p_i$. Each sample from a Multinomial is a vector of length $k$, where each index corresponds to the number of successes for that outcome.
 
+&nbsp;
+
+
 ### Example: Favourite Colour
 
 We used the Binomial distribution to find out if people's favourite colour is blue, but this didn't give us much information on what other colours people liked.
 Now we want more information. We're interested in the distribution of people whose favourite colours are either: blue, green, red or yellow. If we ask $n$ people to choose their favourite color from one of these, the number of successes for each colour will follow a Multinomial distribution. Each parameter, $p_{blue}, p_{green}, p_{red}, p_{yellow}$ is the probability of that colour being a random person's favourite. Sampling from this Multinomial will return a vector of length $4$ corresponding to the number of successes for that color. For each sample, the total number of successes sums to $n$.
 
-<!-- multinomial plot of samples -->
+<!-- beta plot of samples -->
+&nbsp;
+![](/assets/multinomial-samples.png)
+&nbsp;
 
 
 ## Dirichlet Distribution
 
-Similarly with the Beta and Binomial combo, we need a prior for each $p_i$ in the Multinomial likelihood. Unlike the Binomial, where we could potentially use any distribution with $(0, 1)$ domain as a prior for $p$, the Multinomial has an added restriction, as the vector of probabilities needs to sum to 1. Placing an arbitrary prior on each $p_i$ won't ensure that $\sum p_i = 1$. This is what the Dirichlet distiribution offers. It acts as a prior over the entire vector of probabilities, $p = [p_1, p_2, ..., p_k]$. It is a generalization of the Beta distribution, and is also a conjugate prior for the Multinomial, which is an added benefit.
+Similarly with the Beta and Binomial combo, we need a prior for each $p_i$ in the Multinomial likelihood. Unlike the Binomial, where we could potentially use any distribution with $(0, 1)$ domain as a prior for $p$, the Multinomial has an added restriction, as the vector of probabilities needs to sum to 1. Placing an arbitrary prior on each $p_i$ won't ensure that $\sum p_i = 1$. This is what the Dirichlet distribution offers. It acts as a prior over the entire vector of probabilities, $p = [p_1, p_2, ..., p_k]$. It is a generalization of the Beta distribution, and is also a conjugate prior for the Multinomial, which is an added benefit.
 
 Technically the Beta distribution produces
+
+<!-- dirichlet plot of samples -->
+&nbsp;
+![](/assets/dirichlet-samples.png)
+&nbsp;
 
 
 #### How do we always sum to 1?
@@ -71,16 +89,16 @@ The next logical step from here is to ask the question: why 5 pieces? What if we
 
 Suppose we have an arbitrary experiment with $k$ outcomes, that each happen with probability $p_i$. Every time we repeat this experiment, we get a distribution (probability mass function), $p$. Since we have a finite number of outcomes, we can imagine that each $p$ came from some Dirichlet distribution. In this sense, the Dirichlet distribution is a distribution over distributions.
 
-<!-- Dirichlet plot of samples -->
 
+&nbsp;
 
-## Questions
-- What do samples from a dirichlet distribution look like?
-- What is an analogy for a Dirichlet process? Dice analogy where a Dirichlet distribution is limited in the number of sides (finite dimensional) but a Dirichlet process isn't limited by the number of sides (infinite dimensional)
+Here are a couple good resources to read more about Dirichlet distributions
 
+<!--
 ## Resources
 - https://people.eecs.berkeley.edu/~jordan/courses/260-spring10/other-readings/chapter9.pdf
 - https://www.stats.ox.ac.uk/~teh/research/npbayes/Teh2010a.pdf
 - https://people.eecs.berkeley.edu/~stephentu/writeups/dirichlet-conjugate-prior.pdf
 - https://www.cs.cmu.edu/~epxing/Class/10701-08s/recitation/dirichlet.pdf
 - https://www.gatsby.ucl.ac.uk/~ywteh/research/npbayes/dp.pdf
+-->
