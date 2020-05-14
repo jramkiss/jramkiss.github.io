@@ -16,4 +16,4 @@ summary: An overview of Dirichlet processes and application to clustering where 
 - https://people.eecs.berkeley.edu/~stephentu/writeups/dirichlet-conjugate-prior.pdf
 - https://www.cs.cmu.edu/~epxing/Class/10701-08s/recitation/dirichlet.pdf
 - https://www.gatsby.ucl.ac.uk/~ywteh/research/npbayes/dp.pdf
-- 
+- http://mlg.eng.cam.ac.uk/tutorials/07/ywt.pdf

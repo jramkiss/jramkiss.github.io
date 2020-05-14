@@ -13,6 +13,21 @@ summary: Testing interactive plots with Bokeh
 
 Text text text
 
+```python
+from bokeh.plotting import figure
+from bokeh.resources import CDN
+from bokeh.embed import file_html
+
+plot = figure()
+plot.circle([1,2], [3,4])
+
+html = file_html(plot, CDN, "my plot")
+
+#print(html)
+file = open("bokeh_test.html","w")
+file.write(html)
+file.close()
+```
 
 ## Bokeh Plot
 
