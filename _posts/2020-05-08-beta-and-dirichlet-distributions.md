@@ -5,10 +5,10 @@ date: 2020-05-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Quick notes on the Beta and Dirichlet distributions and their uses. No math.
+summary: Quick notes on the Beta and Dirichlet distributions and their uses.
 ---
 
-This post motivates the Beta and Dirichlet distributions using a simple example. It also relates the Beta and Dirichlet distributions to the Binomial and Multinomial. No math here.
+This post motivates the Beta and Dirichlet distributions using a simple example. It also relates the Beta and Dirichlet distributions to the Binomial and Multinomial. It's written without any equations for readability.
 
 Throughout the post, we'll use probability distributions to model people's favourite color. The favourite color experiments start off very simple, then get more interesting as we introduce more flexible probability distributions. Then we briefly touch on how the Dirichlet distribution works.
 
@@ -53,7 +53,7 @@ A limitation of the Binomial distribution is we only have 2 potential outcomes. 
 We used the Binomial distribution to find out if people's favourite colour is blue, but this didn't give us much information on what other colours people liked.
 Now we want more information. We're interested in the distribution of people whose favourite colours are either: blue, green, red or yellow. If we ask $n$ people to choose their favourite color from one of these, the number of successes for each colour will follow a Multinomial distribution. Each parameter, $p_{blue}, p_{green}, p_{red}, p_{yellow}$ is the probability of that colour being a random person's favourite. Sampling from this Multinomial will return a vector of length $4$ corresponding to the number of successes for that color. For each sample, the total number of successes sums to $n$.
 
-<!-- beta plot of samples -->  
+<!-- beta plot of samples -->
 <!--![](/assets/multinomial-samples.png | width=48)-->
 <p align="center">
   <img src="/assets/multinomial-samples.png" height="350">
@@ -87,7 +87,7 @@ $$ x_2 = [0.13, 0.17, 0.05, 0.2, 0.45] $$
 
 Two things are consistent: $\sum_{i=1}^{5} x_i = 1$ and len(x) = $5$. So we can imagine that each sample from a Dirichlet distribution is a literal stick of length 1, that is broken into $5$ sections. Each section (or class) has a length, for example section 2 in $x_1$ has length $0.15$. Each sample can have different lengths for each section. The Dirichlet distribution does is proposes different ways of breaking this stick into 5 pieces. Of course, there is a specific way of breaking the stick to generate samples from the Distribution, which is very aptly named the [stick breaking construction](https://www.stats.ox.ac.uk/~teh/research/npbayes/Teh2010a.pdf).
 
-The next logical step from here is to ask the question: why 5 pieces? What if we don't know how many pieces we want? So really we want a distribution to propose breaking this stick in any way possible, 3 pieces, 100 pieces, 1e10 places. This is what the Dirichlet process is used for.
+The next logical step from here is to ask the question: why 5 pieces? What if we don't know how many pieces we want? So really we want a distribution to propose breaking this stick in any way possible, 3 pieces, 100 pieces, 1e10 places. This is the Dirichlet process.
 
 
 ### Another View: Distribution over Distributions
