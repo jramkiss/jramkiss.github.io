@@ -1,24 +1,24 @@
 ---
 layout: post
 title: "Wrong and Strong Neural Networks"
-date: 2020-06-29 12:22
+date: 2020-07-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: This post is on the overconfidence problem in neural networks
+summary: This post is on my experience dealing with the overconfidence problem in ReLU networks
 ---
 
-This post will mainly walk through my experience building an open ended image classifier and dealing with the overconfidence problem with ReLU networks. It will follow the results in [this paper](https://arxiv.org/pdf/1812.05720.pdf) closely and can act as a practical summary. 
+This post will mainly walk through my experience building an open ended image classifier and dealing with the overconfidence problem with ReLU networks. It will follow the results in [this paper](https://arxiv.org/pdf/1812.05720.pdf) closely and can act as a practical summary.
 
-I've been struggling with a seemingly simple problem. The task is to build an image classifier to determine if an arbitrary image is sheet music or not. Just like you, on the surface I thought this would be an easy and borderline mundane task - how could this possibly not work??
+I've been struggling with a seemingly simple problem of building an image classifier to determine if an arbitrary image is sheet music or not. Just like you, on the surface I thought this would be an easy and borderline mundane task - how could this possibly not work??
 
 As a reminder of how "easy" this problem is, here are example images of sheet music and not sheet music.
 
 &nbsp;
 
 <p align="center">
-  <img src="/assets/maybe-sheet-music.jpg" height="350">
-  <img src="/assets/yes-sheet-music.jpg" height="350">
+  <img src="/assets/maybe-sheet-music.jpg" height="450">
+  <img src="/assets/yes-sheet-music.jpg" height="450">
 </p>
 
 &nbsp;
