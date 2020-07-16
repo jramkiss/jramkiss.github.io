@@ -15,7 +15,7 @@ As a reminder of how "easy" this problem is, here's an example of sheet music an
 
 
 
-<p float="center">
+<p align="center">
   <img src="/assets/not-sheet-music.png" height="320">
   <img src="/assets/yes-sheet-music.jpg" height="320">
 </p>
