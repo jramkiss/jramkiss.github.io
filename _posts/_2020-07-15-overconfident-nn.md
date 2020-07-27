@@ -5,10 +5,14 @@ date: 2020-07-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: This post is on my experience dealing with the overconfidence problem in ReLU networks
+summary: This post is on my experience dealing with the overconfidence problem in ReLU networks by using a last layer Laplace approximation
 ---
 
-This post will mainly walk through my experience building an open ended image classifier and dealing with the overconfidence problem with ReLU networks. It will follow the results in [this paper](https://arxiv.org/pdf/1812.05720.pdf) closely and can act as a practical summary.
+This post will mainly walk through my experience building an open ended image classifier and dealing with the overconfidence problem with ReLU networks. By open ended I'm referring to the eligible images that can be parsed to the model being unbounded. For example, instead of building a classifier to differentiate between classes A and B, I'm interested in differentiating between classes A, B and "other". 
+
+It will follow the results in [this paper](https://proceedings.icml.cc/static/paper_files/icml/2020/780-Paper.pdf) closely and can act as a practical summary.
+
+For future, there is also [this paper](https://arxiv.org/pdf/1812.05720.pdf) that tries to solve the same problem with a different approach.
 
 I've been struggling with a seemingly simple problem of building an image classifier to determine if an arbitrary image is sheet music or not. Just like you, on the surface I thought this would be an easy and borderline mundane task - how could this possibly not work??
 
@@ -34,7 +38,14 @@ Interestingly, [this paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a exp
 Essentially they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of this is the inability to set softmax thresholds to preserve classifier precision.
 
 
-There are a couple ways this problem can be attacked, which generally fall into two categories: 1) building a generative model for the data and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and technically also doesn't solve the problem with ReLU networks. Instead we'll focus on modifying the network directly, as proposed by [this paper](https://arxiv.org/pdf/1812.05720.pdf).
+There are a couple ways this problem can be attacked, which generally fall into two categories: 1) building a generative model for the data and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and technically also doesn't solve the problem with ReLU networks. Instead we'll focus on modifying the network directly by injecting Bayesian-ness into the last layer of the model.
+
+
+### A bit Bayesian?
+
+As described in the paper, an alternative to having a posterior over all parameters of the model (which is infeasible given there are millions of parameters), is to only be Bayesian in the last layer of the network. The approach is similar to transfer learning, where we used a pre-trained network to extract features, then train a custom model on the features. Here this custom model is Bayesian
+
+<!--
 
 &nbsp;
 
@@ -57,3 +68,5 @@ L_{p_{out}} = \max_{l = 1..K} \log(\frac{e^{f_l(x)}}{\sum^N_{i=1} e^{f_l(x)}})
 $$
 
 This loss function makes sense. Consider 2 inputs, $x_{music}$ and $x_{not\ music}$ that are both predicted as sheet music by the model, $f$. The loss at
+
+-->
