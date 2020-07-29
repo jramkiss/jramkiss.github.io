@@ -8,11 +8,11 @@ math: true
 summary: This post is on my experience dealing with the overconfidence problem in ReLU networks by using a last layer Laplace approximation
 ---
 
+I trained a classifier on images of animals and parsed an image of myself... turns out the model is 97% confident I'm a dog. This is a problem.
+
 This post talks about one way of dealing with wrong and overconfident predictions in neural networks. What makes this problem intriguing is the inability to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
 
-To demonstrate the problem, we'll use transfer learning to train a multi-class classifier with 3 classes: cat, dog and wild. Then we'll feed the classifier images that are not animals and see how it performs. The dataset used for this is taken from Kaggle and can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?)
-
-It will follow the results in [this paper](https://proceedings.icml.cc/static/paper_files/icml/2020/780-Paper.pdf) closely and can act as a practical summary.
+To demonstrate the problem, we'll use transfer learning to train a multi-class image classifier with 3 classes: cat, dog and wild (animal). Then we'll feed the classifier images that it has not seen and are not animals and see how it performs. The dataset used for this is taken from Kaggle and can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?). It will follow the results in [this paper](https://proceedings.icml.cc/static/paper_files/icml/2020/780-Paper.pdf) closely and can act as a practical summary.
 
 For future, there is also [this paper](https://arxiv.org/pdf/1812.05720.pdf) that tries to solve the same problem with a different approach.
 
@@ -29,7 +29,10 @@ Ideally, an image not seen by the training data would be predicted with lower co
 
 &nbsp;
 
-### Formal Problem and Possible Approaches
+
+
+
+### Problem and Possible Approaches
 
 Interestingly, [this paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks.   
 Essentially they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of this is the inability to set softmax thresholds to preserve classifier precision.
@@ -41,6 +44,16 @@ There are a couple ways this problem can be attacked, which generally fall into 
 ### A bit Bayesian?
 
 As described in the paper, an alternative to having a posterior over all parameters of the model (which is infeasible given there are millions of parameters), is to only be Bayesian in the last layer of the network. The approach is similar to transfer learning, where we used a pre-trained network to extract features, then train a custom model on the features. Here this custom model is Bayesian
+
+
+Testing a couple hand picked images wasn't sufficient, I want to make sure that the Laplace approximation wasn't naively scaling down the confidence of predictions, and was actually doing something interesting. Here is a plot of the confidence level of the class predicted using softmax and LLLA
+
+<p align="center">
+  <img src="/assets/overconfident-NN-top-class-prob-distribution.png">
+</p>
+
+It's obvious that LLLA is doing some interesting scaling to the confidence levels, but we can't stop here! What images are predicted with high probability by the softmax model but low probability by LLLA?
+
 
 <!--
 
