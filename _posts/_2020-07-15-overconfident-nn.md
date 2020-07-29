@@ -18,8 +18,9 @@ For future, there is also [this paper](https://arxiv.org/pdf/1812.05720.pdf) tha
 
 &nbsp;
 
+
 <p align="center">
-  <img src="/assets/overconfident-NN-out-of-sample-predictions.png">
+  <img src="/assets/overconfident-NN-softmax-predictions.png">
 </p>
 
 &nbsp;
@@ -28,8 +29,6 @@ Well, turns out these images are both predicted as sheet music with over 95% con
 Ideally, an image not seen by the training data would be predicted with lower confidence.
 
 &nbsp;
-
-
 
 
 ### Problem and Possible Approaches
@@ -45,6 +44,9 @@ There are a couple ways this problem can be attacked, which generally fall into 
 
 As described in the paper, an alternative to having a posterior over all parameters of the model (which is infeasible given there are millions of parameters), is to only be Bayesian in the last layer of the network. The approach is similar to transfer learning, where we used a pre-trained network to extract features, then train a custom model on the features. Here this custom model is Bayesian
 
+<p align="center">
+  <img src="/assets/overconfident-NN-out-of-sample-predictions.png">
+</p>
 
 Testing a couple hand picked images wasn't sufficient, I want to make sure that the Laplace approximation wasn't naively scaling down the confidence of predictions, and was actually doing something interesting. Here is a plot of the confidence level of the class predicted using softmax and LLLA
 
