@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Wrong and Strong Neural Networks"
+title: "Dealing with Overconfidence in Neural Networks: Bayesian Approach"
 date: 2020-07-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
@@ -8,21 +8,18 @@ math: true
 summary: This post is on my experience dealing with the overconfidence problem in ReLU networks by using a last layer Laplace approximation
 ---
 
-This post will mainly walk through my experience building an open ended image classifier and dealing with the overconfidence problem with ReLU networks. By open ended I'm referring to the eligible images that can be parsed to the model being unbounded. For example, instead of building a classifier to differentiate between classes A and B, I'm interested in differentiating between classes A, B and "other". 
+This post talks about one way of dealing with wrong and overconfident predictions in neural networks. What makes this problem intriguing is the inability to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
+
+To demonstrate the problem, we'll use transfer learning to train a multi-class classifier with 3 classes: cat, dog and wild. Then we'll feed the classifier images that are not animals and see how it performs. The dataset used for this is taken from Kaggle and can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?)
 
 It will follow the results in [this paper](https://proceedings.icml.cc/static/paper_files/icml/2020/780-Paper.pdf) closely and can act as a practical summary.
 
 For future, there is also [this paper](https://arxiv.org/pdf/1812.05720.pdf) that tries to solve the same problem with a different approach.
 
-I've been struggling with a seemingly simple problem of building an image classifier to determine if an arbitrary image is sheet music or not. Just like you, on the surface I thought this would be an easy and borderline mundane task - how could this possibly not work??
-
-As a reminder of how "easy" this problem is, here are example images of sheet music and not sheet music.
-
 &nbsp;
 
 <p align="center">
-  <img src="/assets/maybe-sheet-music.jpg" height="450">
-  <img src="/assets/yes-sheet-music.jpg" height="450">
+  <img src="/assets/overconfident-NN-out-of-sample-predictions.png">
 </p>
 
 &nbsp;
