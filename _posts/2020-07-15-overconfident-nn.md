@@ -36,19 +36,24 @@ Now for the fun part, parsing an image of myself to the model. For dramatic effe
 
 ### Possible Solutions
 
-Interestingly, [this paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks.   
+[This paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a nice explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks.   
 Essentially they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
 
-There are a couple ways this problem can be attacked, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. Instead we'll modifying the network directly by injecting Bayesian-ness into the last layer of the model.
+There are a couple ways this problem can be attacked, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. Instead we'll modifying the network directly by only being Bayesian in the last layer.
 
 
-### Injecting Bayesian-ness
+### Last Layer Bayesian-ness
 
-Bayesian methods are perfect for quantifying uncertainty, and that's what we want in this case. The problem is that this model (and all other deep learning models) have way too many parameters to have an appropriate posterior over. **The proposed solution is to only have a posterior over the last layer of weights.** This is perfect for implementation because we can in theory have the best of both worlds - first use the ReLU network as a feature extractor, then a Bayesian layer at the end to quantify uncertainty.
+Bayesian methods are perfect for quantifying uncertainty, and that's what we want in this case. The problem is that this model, and all other deep learning models, have way too many parameters to have an appropriate posterior over. **The proposed solution is to only have a posterior over the last layer of weights.** This is perfect for implementation because we can in theory have the best of both worlds - first use the ReLU network as a feature extractor, then a Bayesian layer at the end to quantify uncertainty.
 
-How do we actually have a posterior over the last layer weights? 
+The posterior over the last layer weights can be approximated with a [Laplace approximation](http://www2.stat.duke.edu/~st118/sta250/laplace.pdf) and can be easily obtained from the trained model with Pytorch autograd. The only parameter we have to focus on is $\sigma^2_0$, the prior variance.
 
-A great explanation of Laplace approximation can be found [here](http://www2.stat.duke.edu/~st118/sta250/laplace.pdf).
+> The result above shows that the “far-away” confidence decreases (up to some limit) as the prior variance increases. Meanwhile, we recover the far-away confidence induced by the MAP estimate as the prior variance goes to zero. One could therefore pick a value of $\sigma^2_0 as high as possible for mitigating overconfidence. However, this is undesirable since it also lowers the confidence of the training data and test data around them (i.e. the so called in-distribution data), thus, causing underconfident predictions.
+> Another common way to set this hyperparameter is by maximizing the validation log-likelihood. This is also inadequate for our purpose since it only considers points close to the training data. Inspired by Hendrycks et al. (2019) and Hein et al. (2019), we simultaneously prefer high confidence on the in-distribution validation set and low confidence (high entropy) on the out of-distribution validation set
+
+$$ p(\theta) = N(0, \sigma^2_0 I) $$
+
+
 
 <p align="center">
   <img src="/assets/overconfident-NN-out-of-sample-predictions.png">
