@@ -5,12 +5,12 @@ date: 2020-07-29 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: I trained a classifier on images of animals and parsed an image of myself it's 97% confident I'm a dog. This is a possible Bayesian fix
+summary: I trained a classifier on images of animals and parsed an image of myself it's 97% confident I'm a dog. This is an exploration of a possible Bayesian fix
 ---
 
 I trained a multi-class classifier on images of cats, dogs and wild animals and parsed an image of myself, it's 97% confident I'm a dog. The problem isn't that I parsed an inappropriate image, because models in the real world are parsed all sorts of garbage. The problem is that the model is overconfident about an image that is far away from the training data instead of having a more uniform distribution over the classes. What makes this particularly interesting is the inability to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
 
-This post talks about a Bayesian method for dealing with overconfident predictions for inputs far away from training data in neural networks. The method is called last layer Laplace approximation (LLLA) and was proposed in [this](https://arxiv.org/abs/2002.10118) paper in ICML 2020.
+In this post I explore a Bayesian method for dealing with overconfident predictions for inputs far away from training data in neural networks. The method is called last layer Laplace approximation (LLLA) and was proposed in [this](https://arxiv.org/abs/2002.10118) paper in ICML 2020.
 
 &nbsp;
 
@@ -39,12 +39,14 @@ Now for the fun part, parsing an image of myself to the model. For dramatic effe
 Interestingly, [this paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks.   
 Essentially they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
 
-There are a couple ways this problem can be attacked, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. Instead we'll modifying the network directly by injecting Bayesian-ness into the model.
+There are a couple ways this problem can be attacked, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. Instead we'll modifying the network directly by injecting Bayesian-ness into the last layer of the model.
 
 
-### A bit Bayesian?
+### Injecting Bayesian-ness
 
-As described in the paper, an alternative to having a posterior over all parameters of the model (which is infeasible given there are millions of parameters), is to only be Bayesian in the last layer of the network. The approach is similar to transfer learning, where we used a pre-trained network to extract features, then train a custom model on the features. Here this custom model is Bayesian
+Bayesian methods are perfect for quantifying uncertainty, and that's what we want in this case. The problem is that this model (and all other deep learning models) have way too many parameters to have an appropriate posterior over. **The proposed solution is to only have a posterior over the last layer of weights.** This is perfect for implementation because we can in theory have the best of both worlds - first use the ReLU network as a feature extractor, then a Bayesian layer at the end to quantify uncertainty.
+
+How do we actually have a posterior over the last layer weights? 
 
 A great explanation of Laplace approximation can be found [here](http://www2.stat.duke.edu/~st118/sta250/laplace.pdf).
 
