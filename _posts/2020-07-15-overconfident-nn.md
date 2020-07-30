@@ -18,10 +18,13 @@ In this post I explore a Bayesian method for dealing with overconfident predicti
 
 The 3-class classifier was trained on images of cats, dogs and wild animals taken from Kaggle that can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?). The model used was Resnet-18, which yields surprisingly good results on the validation data provided.
 
+&nbsp;
+
 <p align="center">
   <img src="/assets/overconfident-NN-training-data.png">
 </p>
 
+&nbsp;
 
 Now for the fun part, parsing an image of myself to the model. For dramatic effect, I also show an image of a dog that the model hasn't seen. Apparently, I'm more dog than this actual dog.
 
@@ -51,7 +54,7 @@ Bayesian methods are perfect for quantifying uncertainty, and that's what we wan
 
 Amazingly, the only parameter we have to focus on is $\sigma^2_0$, the variance of the prior on the weights. As $\sigma^2_0$ increases, the confidence of out-of-distribution predictions decreases, which is what we want. However we cannot naively increase $\sigma^2_0$ as making it too large would cause predictions for images close to the training data to be uniform as well. Decreasing $\sigma^2_0$ causes the predictions to be more and more similar to the softmax predictions. We want a balance between the two extremes.
 
-Now we can use the last layer Laplace approximation to see if it helps our issue. Below I ran the same images of myself and the dog through both models to compare their output. 
+Now we can use the last layer Laplace approximation to see if it helps the overconfidence issue. Below I ran the same images of myself and the dog through both the model using softmax and last layer Laplce. I'm still a dog, but with much lower confidence, allowing us to potentially set a threshold on the output.
 
 &nbsp;
 
@@ -64,13 +67,29 @@ Now we can use the last layer Laplace approximation to see if it helps our issue
 
 ### More Testing
 
-Testing a couple hand picked images wasn't sufficient, I want to make sure that the Laplace approximation wasn't naively scaling down the confidence of predictions, and was actually doing something interesting. Here is a plot of the confidence level of the class predicted using softmax and LLLA
+So far we've only tested the method with two hand selected images. I want to see if this method just scales down all confident predictions, or if it is doing some interesting stuff under the hood. To start more evaluation, below is a plot of the confidence level for the top predicted class from both models.
+
+
+&nbsp;
 
 <p align="center">
   <img src="/assets/overconfident-NN-top-class-prob-distribution.png">
 </p>
 
-It's obvious that LLLA is doing some interesting scaling to the confidence levels, but we can't stop here! What images are predicted with high probability by the softmax model but low probability by LLLA?
+&nbsp;
+
+
+The softmax model is really confident about nearly all the images in the validation set, and LLLA is doing some interesting things to the confidence level. Can't stop now! When does the LLLA model produce high or low confidence predictions?
+
+
+&nbsp;
+<p align="center">
+  <img src="/assets/overconfident-NN-LLLA-high-conf.png">
+</p>
+
+&nbsp;
+
+
 
 
 <!--
