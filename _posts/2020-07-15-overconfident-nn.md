@@ -51,10 +51,9 @@ Bayesian methods are perfect for quantifying uncertainty, and that's what we wan
 
 Amazingly, the only parameter we have to focus on is $\sigma^2_0$, the variance of the prior on the weights. As $\sigma^2_0$ increases, the confidence of out-of-distribution predictions decreases, which is what we want. However we cannot naively increase $\sigma^2_0$ as making it too large would cause predictions for images close to the training data to be uniform as well. Decreasing $\sigma^2_0$ causes the predictions to be more and more similar to the softmax predictions. We want a balance between the two extremes.
 
-> The result above shows that the “far-away” confidence decreases (up to some limit) as the prior variance increases. Meanwhile, we recover the far-away confidence induced by the MAP estimate as the prior variance goes to zero. One could therefore pick a value of $\sigma^2_0$ as high as possible for mitigating overconfidence. However, this is undesirable since it also lowers the confidence of the training data and test data around them (i.e. the so called in-distribution data), thus, causing underconfident predictions.
-> Another common way to set this hyperparameter is by maximizing the validation log-likelihood. This is also inadequate for our purpose since it only considers points close to the training data. Inspired by Hendrycks et al. (2019) and Hein et al. (2019), we simultaneously prefer high confidence on the in-distribution validation set and low confidence (high entropy) on the out of-distribution validation set
+Now we can use the last layer Laplace approximation to see if it helps our issue. Below I ran the same images of myself and the dog through both models to compare their output. 
 
-
+&nbsp;
 
 <p align="center">
   <img src="/assets/overconfident-NN-out-of-sample-predictions.png">
