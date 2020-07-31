@@ -26,7 +26,7 @@ The 3-class classifier was trained on images of cats, dogs and wild animals take
 &nbsp;
 
 Now for the fun part, parsing an image of myself to the model. I also show an image of a dog that the model hasn't seen, and apparently I'm more dog than this actual dog.
-Ideally, predictions for the image of myself should be close to uniform over all classes, not concentrated in one class. Here's a great [article](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) on parsing a chicken through an MNIST model.
+Ideally, predictions for the image of myself should be close to uniform over all classes, not concentrated in one class.
 
 &nbsp;
 
@@ -41,7 +41,7 @@ Ideally, predictions for the image of myself should be close to uniform over all
 
 [This paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a nice explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks. Essentially they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
 
-There are a couple ways this problem can be attacked, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. The [Chicken-MNIST](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) blog post discusses a solution using VAEs. Instead we'll modifying the last layer of the network by putting a posterior over its weights.
+There are a couple ways this problem can be attacked, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. There's a [Chicken-MNIST](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) blog post that discusses a solution using VAEs. Instead we'll modifying the last layer of the network by putting a posterior over its weights.
 
 
 &nbsp;
@@ -52,9 +52,9 @@ There are a couple ways this problem can be attacked, which broadly fall into tw
 Bayesian methods are perfect for quantifying uncertainty, and that's what we want in this case. The problem is that this model, and all other deep learning models, have way too many parameters to have an appropriate posterior over the entire thing. **The proposed solution is to only have a posterior over the last layer of weights.** This is perfect for implementation because we can in theory have the best of both worlds - first use the ReLU network as a feature extractor, then a Bayesian layer at the end to quantify uncertainty.  
 The posterior over the last layer weights can be approximated with a [Laplace approximation](http://www2.stat.duke.edu/~st118/sta250/laplace.pdf) and can be easily obtained from the trained model with Pytorch autograd.
 
-Amazingly, the only parameter we have to focus on is $\sigma^2_0$, the variance of the prior on the weights. $\sigma^2_0$ governs how consrevative the predictions are. As it increases, the confidence of out-of-distribution predictions decreases, which is what we want. However we cannot naively increase $\sigma^2_0$ as making it too large would cause predictions for images close to the training data to be uniform as well. Decreasing $\sigma^2_0$ causes the predictions to be more and more similar to the softmax predictions. We want a balance between the two extremes.
+Amazingly, the only parameter we have to focus on is $\sigma^2_0$, the variance of the prior on the weights. It governs how conservative the predictions are. As $\sigma^2_0$ increases, the confidence of out-of-distribution predictions decreases, which is what we want. However we cannot naively increase $\sigma^2_0$ as making it too large would cause predictions for images close to the training data to be uniform as well. Decreasing $\sigma^2_0$ causes the predictions to be more and more similar to the softmax predictions. We want a balance between the two extremes.
 
-Now we can use the last layer Laplace approximation to see if it helps the overconfidence issue. Below I ran the same images of myself and the dog through both the model using softmax and last layer Laplce. I'm still a dog, but with much lower confidence, allowing us to potentially set a threshold on the output.
+Now we can use the last layer Laplace approximation to see if it helps the overconfidence issue. Below I ran the same images of myself and the dog through both the model using softmax and last layer Laplace. I'm still a dog, but with much lower confidence, allowing us to potentially set a threshold on the output.
 
 &nbsp;
 
@@ -83,7 +83,7 @@ The softmax model is really confident about nearly all the images in the validat
 <p align="center">
   <img src="/assets/overconfident-NN-LLLA-high-conf.png">
 </p>
-  
+
 
 <p align="center">
   <img src="/assets/overconfident-NN-LLLA-low-conf.png">
