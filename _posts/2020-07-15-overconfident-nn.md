@@ -103,7 +103,7 @@ Last thing - what's the top prediction confidence distribution for images that a
 </p>
 &nbsp;
 
-I parsed 300 images of Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and the softmax models. Again, we'd expect this distribution to be closer to 0.33 (random chance).
+I parsed 300 of these Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and softmax models. Again, since these are garbage images, we'd expect this distribution to be closer to 0.33 (random chance).
 
 &nbsp;
 
@@ -113,7 +113,15 @@ I parsed 300 images of Simpsons character faces into the classifier and plotted 
 
 &nbsp;
 
-This is a lot better than just using softmax. Of course its usage will depend on the problem and allowable tradeoff between precision and recall for each class, however these results are promising.
+These results are pretty alarming for the softmax classifier, it almost empirically validates the proof of asymptotic confidence of ReLU networks mentioned ealier in the post. The majority of Simpson faces are predicted as cat/dog/wild with probability greater than 0.8 with the softmax classifier, whereas there are no predictions with greater than 0.5 confidence from the LLLA classifier. This is amazing!  
+
+&nbsp;
+
+### Conclusion
+
+From the light experimentation done here, the last layer Laplace approximation seems to be a good solution to the overconfidence problem. Of course its usage will depend on the problem and allowable tradeoff between precision and recall for each class, however these results are promising none the less. The icing on the LLLA cake is its ease of implementation.
+  
+All the code used in this blog can be found [here](https://www.kaggle.com/jramkiss/overconfident-neural-networks/).
 
 
 
