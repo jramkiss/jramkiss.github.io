@@ -67,7 +67,7 @@ Now we can use the last layer Laplace approximation to see if it helps the overc
 
 ### More Testing
 
-So far we've only tested the method with two hand selected images. I want to see if this method just scales down all confident predictions, or if it is doing some interesting stuff under the hood. To start more evaluation, below is a plot of the confidence level for the top predicted class from both models.
+So far we've only tested the method with two hand selected images. I want to see if this method just scales down all confident predictions, or if it is doing some interesting stuff under the hood. To start more evaluation, we'll plot the confidence level of the top class for the validation data (all animal images, no garbage).
 
 
 <p align="center">
@@ -76,7 +76,8 @@ So far we've only tested the method with two hand selected images. I want to see
 
 &nbsp;
 
-The softmax model is really confident about nearly all the images in the validation set, and LLLA is doing some interesting things to the confidence level. Can't stop now! When does the LLLA model produce high or low confidence predictions?
+The softmax model is really confident about nearly all the images in the validation set, and LLLA is doing some interesting things to the confidence level. Can't stop now! Now I'm interested in when the LLLA model produces high or low confidence predictions.  
+From the plots of the high and low confidence predictions below, the lower confidence levels seem more appropriate. This would allow us to set a threshold by looking at AUC curves, or simple plots of some metric VS thresholds.
 
 
 &nbsp;
@@ -94,7 +95,7 @@ The softmax model is really confident about nearly all the images in the validat
 
 ### Simpsons + Animals
 
-Ok, last thing - what's the confidence level distribution for images that are completely different. This should give us a proxy for how both methods deal with complete garbage thrown at them.  
+Last thing - what's the top prediction confidence distribution for images that are completely different. This should give us a proxy for how both methods deal with complete garbage thrown at them. This is the problem ML models in the wild face - you train them to learn specific patterns and send them into the deep end where they have to deal with completely unseen data.
 
 &nbsp;
 <p align="center">
@@ -102,7 +103,7 @@ Ok, last thing - what's the confidence level distribution for images that are co
 </p>
 &nbsp;
 
-I parsed 250 images of Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and the softmax models. Again, we'd expect this distribution to be closer to 0.33 (random chance).
+I parsed 300 images of Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and the softmax models. Again, we'd expect this distribution to be closer to 0.33 (random chance).
 
 &nbsp;
 
