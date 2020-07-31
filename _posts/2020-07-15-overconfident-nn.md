@@ -89,6 +89,31 @@ The softmax model is really confident about nearly all the images in the validat
 
 &nbsp;
 
+<p align="center">
+  <img src="/assets/overconfident-NN-LLLA-low-conf.png">
+</p>
+
+&nbsp;
+
+<!-- low confidence predictions for LLLA -->
+
+### Other + Animals
+
+Ok, last thing - what's the confidence level distribution for images that are completely different. This should give us a proxy for how both methods deal with complete garbage thrown at them.  
+I parsed 250 images from MNIST into the classifier and plotted the confidence level of the top class for both LLLA and the softmax models. Ideally we'd expect this distribution to be closer to 0.33 (random chance).
+
+
+&nbsp;
+
+### More Random Images
+
+Here are some other random images I tried for fun.
+
+&nbsp;
+
+<p align="center">
+  <img src="/assets/overconfident-NN-LLLA-low-conf.png">
+</p>
 
 
 
