@@ -5,12 +5,12 @@ date: 2020-07-29 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: I trained a classifier on images of animals and parsed an image of myself it's 97% confident I'm a dog. This is an exploration of a possible Bayesian fix
+summary: I trained a classifier on images of animals and gave it an image of myself, it's 97% confident I'm a dog. This is an exploration of a possible Bayesian fix
 ---
 
-I trained a multi-class classifier on images of cats, dogs and wild animals and parsed an image of myself, it's 97% confident I'm a dog. The problem isn't that I parsed an inappropriate image, because models in the real world are parsed all sorts of garbage. The problem is that the model is overconfident about an image that is far away from the training data instead of having a more uniform distribution over the classes. What makes this particularly interesting is the inability to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
+I trained a multi-class classifier on images of cats, dogs and wild animals and parsed an image of myself, it's 97% confident I'm a dog. The problem isn't that I parsed an inappropriate image, because models in the real world are parsed all sorts of garbage. The problem is that the model is overconfident about an image that is far away from the training data instead of having a more uniform distribution over the classes. This makes it difficult to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
 
-In this post I explore a Bayesian method for dealing with overconfident predictions for inputs far away from training data in neural networks. The method is called last layer Laplace approximation (LLLA) and was proposed in [this](https://arxiv.org/abs/2002.10118) paper in ICML 2020.
+In this post I explore a Bayesian method for dealing with overconfident predictions for inputs far away from training data in neural networks. The method is called last layer Laplace approximation (LLLA) and was proposed in [this](https://arxiv.org/abs/2002.10118) paper published in ICML 2020.
 
 &nbsp;
 
@@ -18,7 +18,6 @@ In this post I explore a Bayesian method for dealing with overconfident predicti
 
 The 3-class classifier was trained on images of cats, dogs and wild animals taken from Kaggle that can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?). The model used was Resnet-18, which yields surprisingly good results on the validation data provided.
 
-&nbsp;
 
 <p align="center">
   <img src="/assets/overconfident-NN-training-data.png">
@@ -26,7 +25,8 @@ The 3-class classifier was trained on images of cats, dogs and wild animals take
 
 &nbsp;
 
-Now for the fun part, parsing an image of myself to the model. For dramatic effect, I also show an image of a dog that the model hasn't seen. Apparently, I'm more dog than this actual dog.
+Now for the fun part, parsing an image of myself to the model. I also show an image of a dog that the model hasn't seen, and apparently I'm more dog than this actual dog.
+Ideally, predictions for the image of myself should be close to uniform over all classes, not concentrated in one class. Here's a great [article](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) on parsing a chicken through an MNIST model.
 
 &nbsp;
 
@@ -39,10 +39,9 @@ Now for the fun part, parsing an image of myself to the model. For dramatic effe
 
 ### Possible Solutions
 
-[This paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a nice explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks.   
-Essentially they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
+[This paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a nice explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks. Essentially they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
 
-There are a couple ways this problem can be attacked, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. Instead we'll modifying the network directly by only being Bayesian in the last layer.
+There are a couple ways this problem can be attacked, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network to assign lower probabilities for inputs far from the training data. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. The [Chicken-MNIST](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) blog post discusses a solution using VAEs. Instead we'll modifying the last layer of the network by putting a posterior over its weights.
 
 
 &nbsp;
@@ -50,9 +49,10 @@ There are a couple ways this problem can be attacked, which broadly fall into tw
 
 ### Last Layer Bayesian-ness
 
-Bayesian methods are perfect for quantifying uncertainty, and that's what we want in this case. The problem is that this model, and all other deep learning models, have way too many parameters to have an appropriate posterior over. **The proposed solution is to only have a posterior over the last layer of weights.** This is perfect for implementation because we can in theory have the best of both worlds - first use the ReLU network as a feature extractor, then a Bayesian layer at the end to quantify uncertainty. The posterior over the last layer weights can be approximated with a [Laplace approximation](http://www2.stat.duke.edu/~st118/sta250/laplace.pdf) and can be easily obtained from the trained model with Pytorch autograd.
+Bayesian methods are perfect for quantifying uncertainty, and that's what we want in this case. The problem is that this model, and all other deep learning models, have way too many parameters to have an appropriate posterior over the entire thing. **The proposed solution is to only have a posterior over the last layer of weights.** This is perfect for implementation because we can in theory have the best of both worlds - first use the ReLU network as a feature extractor, then a Bayesian layer at the end to quantify uncertainty.  
+The posterior over the last layer weights can be approximated with a [Laplace approximation](http://www2.stat.duke.edu/~st118/sta250/laplace.pdf) and can be easily obtained from the trained model with Pytorch autograd.
 
-Amazingly, the only parameter we have to focus on is $\sigma^2_0$, the variance of the prior on the weights. As $\sigma^2_0$ increases, the confidence of out-of-distribution predictions decreases, which is what we want. However we cannot naively increase $\sigma^2_0$ as making it too large would cause predictions for images close to the training data to be uniform as well. Decreasing $\sigma^2_0$ causes the predictions to be more and more similar to the softmax predictions. We want a balance between the two extremes.
+Amazingly, the only parameter we have to focus on is $\sigma^2_0$, the variance of the prior on the weights. $\sigma^2_0$ governs how consrevative the predictions are. As it increases, the confidence of out-of-distribution predictions decreases, which is what we want. However we cannot naively increase $\sigma^2_0$ as making it too large would cause predictions for images close to the training data to be uniform as well. Decreasing $\sigma^2_0$ causes the predictions to be more and more similar to the softmax predictions. We want a balance between the two extremes.
 
 Now we can use the last layer Laplace approximation to see if it helps the overconfidence issue. Below I ran the same images of myself and the dog through both the model using softmax and last layer Laplce. I'm still a dog, but with much lower confidence, allowing us to potentially set a threshold on the output.
 
@@ -70,14 +70,11 @@ Now we can use the last layer Laplace approximation to see if it helps the overc
 So far we've only tested the method with two hand selected images. I want to see if this method just scales down all confident predictions, or if it is doing some interesting stuff under the hood. To start more evaluation, below is a plot of the confidence level for the top predicted class from both models.
 
 
-&nbsp;
-
 <p align="center">
   <img src="/assets/overconfident-NN-top-class-prob-distribution.png">
 </p>
 
 &nbsp;
-
 
 The softmax model is really confident about nearly all the images in the validation set, and LLLA is doing some interesting things to the confidence level. Can't stop now! When does the LLLA model produce high or low confidence predictions?
 
@@ -86,8 +83,7 @@ The softmax model is really confident about nearly all the images in the validat
 <p align="center">
   <img src="/assets/overconfident-NN-LLLA-high-conf.png">
 </p>
-
-&nbsp;
+  
 
 <p align="center">
   <img src="/assets/overconfident-NN-LLLA-low-conf.png">
