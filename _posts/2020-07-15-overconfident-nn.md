@@ -17,7 +17,7 @@ In this post I explore a Bayesian method for dealing with overconfident predicti
 
 ### Why is this a problem?
 
-You might argue "You only showed the classifier animals, of course it breaks when you show it a human", and you're right. However, imagine you're tasked with building a classifier to find all images of people on someone's camera roll. The simplest solution is to train a classifier on images of people and "things" (buildings, houses, animals, etc.). However, it is impossible to capture all "thing" images, meaning there will be images that the model has never seen (similar to this animal-human example). In a case like this, the model has to learn what a person looks like and only assign high confidence to images of people (which are close to the training data).
+You might argue "you only trained the classifier on animals, of course it breaks when you show it a human", and you're right. However, imagine you're tasked with building a classifier to find all images of people on someone's camera roll. The simplest solution is to train a binary classifier on images of people and "things" (buildings, houses or whatever is on your camera roll). However, it is impossible to capture all "thing" images, meaning in practice there will be images far away from the training data. This is analogous to the animal-human example. We (as the practitioners training the models) can't be confident in the model's ability to generalize if it assigns high confidence to garbage input. 
 
 &nbsp;
 
