@@ -8,7 +8,7 @@ math: true
 summary: I trained a classifier on images of animals and gave it an image of myself, it's 97% confident I'm a dog. This is an exploration of a possible Bayesian fix
 ---
 
-I trained a multi-class classifier on images of cats, dogs and wild animals and parsed an image of myself, it's 97% confident I'm a dog. The problem isn't that I parsed an inappropriate image, because models in the real world are parsed all sorts of garbage. The problem is that the model is overconfident about an image that is far away from the training data instead of having a more uniform distribution over the classes. This makes it difficult to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
+I trained a multi-class classifier on images of cats, dogs and wild animals and parsed an image of myself, it's 97% confident I'm a dog. The problem isn't that I parsed an inappropriate image, because models in the real world are parsed all sorts of garbage, it's that the model is overconfident about an image far away from the training data. Instead we should expect a more uniform distribution over the classes. The overconfidence makes it difficult to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
 
 In this post I explore a Bayesian method for dealing with overconfident predictions for inputs far away from training data in neural networks. The method is called last layer Laplace approximation (LLLA) and was proposed in [this](https://arxiv.org/abs/2002.10118) paper published in ICML 2020.
 
@@ -120,8 +120,8 @@ These results are pretty alarming for the softmax classifier, it almost empirica
 ### Conclusion
 
 From the light experimentation done here, the last layer Laplace approximation seems to be a good solution to the overconfidence problem. Of course its usage will depend on the problem and allowable tradeoff between precision and recall for each class, however these results are promising none the less. The icing on the LLLA cake is its ease of implementation.
-  
-All the code used in this blog can be found [here](https://www.kaggle.com/jramkiss/overconfident-neural-networks/).
+
+All the code used in this blog can be found [here](https://www.kaggle.com/jramkiss/overconfident-neural-networks).
 
 
 
