@@ -108,7 +108,7 @@ Last thing - what's the confidence distribution for images that are completely d
 </p>
 &nbsp;
 
-I parsed 300 of these Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and softmax models. Again, since these are garbage images, we'd expect this distribution to be closer to 0.33 (random chance).
+I parsed 300 of these Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and softmax models. Again, since these are garbage images, we'd expect this distribution to be closer to 0.33 (random chance). Keep in mind the confidence will never drop below 0.33 as we're only looking at the top class.
 
 &nbsp;
 
@@ -118,13 +118,13 @@ I parsed 300 of these Simpsons character faces into the classifier and plotted t
 
 &nbsp;
 
-These results are pretty alarming for the softmax classifier, it almost empirically validates the proof of asymptotic confidence of ReLU networks mentioned ealier in the post. The majority of Simpson faces are predicted as cat/dog/wild with probability greater than 0.8 with the softmax classifier, whereas there are no predictions with greater than 0.5 confidence from the LLLA classifier. This is amazing!  
+These results are pretty alarming for the softmax classifier. The majority of Simpson faces are predicted as cat/dog/wild with probability greater than 0.8 with the softmax classifier, whereas there are no predictions with greater than 0.5 confidence from the LLLA classifier. This is amazing!  
 
 &nbsp;
 
 ### Conclusion
 
-From the light experimentation done here, the last layer Laplace approximation seems to be a good solution to the overconfidence problem. Of course its usage will depend on the problem and allowable tradeoff between precision and recall for each class, however these results are promising none the less. The icing on the LLLA cake is its ease of implementation.
+From the light experimentation done here, the last layer Laplace approximation seems to be a good solution to the overconfidence problem. Of course its usage will depend on the specific problem and allowable tradeoff between precision and recall for each class, however these results are promising none the less. The icing on the LLLA cake is its ease of implementation and seemless integration with transfer learning.
 
 All the code used in this blog can be found [here](https://www.kaggle.com/jramkiss/overconfident-neural-networks).
 
