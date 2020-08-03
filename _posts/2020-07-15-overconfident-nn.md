@@ -5,18 +5,25 @@ date: 2020-07-29 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: I trained a classifier on images of animals and gave it an image of myself, it's 97% confident I'm a dog. This is an exploration of a possible Bayesian fix
+summary: I trained a classifier on images of animals and gave it an image of myself, it's 98% confident I'm a dog. This is an exploration of a possible Bayesian fix
 ---
 
-I trained a multi-class classifier on images of cats, dogs and wild animals and parsed an image of myself, it's 97% confident I'm a dog. The problem isn't that I parsed an inappropriate image, because models in the real world are parsed all sorts of garbage, it's that the model is overconfident about an image far away from the training data. Instead we should expect a more uniform distribution over the classes. The overconfidence makes it difficult to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
+I trained a multi-class classifier on images of cats, dogs and wild animals and parsed an image of myself, it's 98% confident I'm a dog. The problem isn't that I parsed an inappropriate image, because models in the real world are parsed all sorts of garbage. It's that the model is overconfident about an image far away from the training data. Instead we expect a more uniform distribution over the classes. The overconfidence makes it difficult to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.
 
 In this post I explore a Bayesian method for dealing with overconfident predictions for inputs far away from training data in neural networks. The method is called last layer Laplace approximation (LLLA) and was proposed in [this](https://arxiv.org/abs/2002.10118) paper published in ICML 2020.
 
 &nbsp;
 
+
+### Why is this a problem?
+
+You might argue "You only showed the classifier animals, of course it breaks when you show it a human", and you're right. However, imagine you're tasked with building a classifier to find all images of people on someone's camera roll. The simplest solution is to train a classifier on images of people and "things" (buildings, houses, animals, etc.). However, it is impossible to capture all "thing" images, meaning there will be images that the model has never seen (similar to this animal-human example). In a case like this, the model has to learn what a person looks like and only assign high confidence to images of people (which are close to the training data).
+
+&nbsp;
+
 ### Softmax Classifier
 
-The 3-class classifier was trained on images of cats, dogs and wild animals taken from Kaggle that can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?). The model used was Resnet-18, which yields surprisingly good results on the validation data provided.
+The 3-class classifier was trained on images of cats, dogs and wild animals taken from Kaggle that can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?).
 
 
 <p align="center">
@@ -25,8 +32,7 @@ The 3-class classifier was trained on images of cats, dogs and wild animals take
 
 &nbsp;
 
-Now for the fun part, parsing an image of myself to the model. I also show an image of a dog that the model hasn't seen, and apparently I'm more dog than this actual dog.
-Ideally, predictions for the image of myself should be close to uniform over all classes, not concentrated in one class.
+The model used was Resnet-18, which yields ~99% accuracy on the validation set. Only using this for evaluation would have us believe it's an amazing model, but that's not why we're here. Below is the image of myself and a dog, where apparently I'm more dog than this actual dog. Even worse, it's 98% confident that I'm a dog, so I'd be a dog even if we were only considering predictions with over 95% confidence.
 
 &nbsp;
 
@@ -39,13 +45,11 @@ Ideally, predictions for the image of myself should be close to uniform over all
 
 ### Possible Solutions
 
-[This paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a nice explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks. Essentially they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
+[This paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a nice explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks. Essentially, they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
 
-There are a couple ways so approach this, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network. The generative approach seems like overkill, and doesn't really solve the problem with ReLU networks. There's a great [Chicken-MNIST](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) blog post that discusses a solution using VAEs. We'll opt for modifying the network by injecting Bayesian-ness into the last layer. Another approach suggested [here](https://arxiv.org/pdf/1812.05720.pdf) changes the loss function, but that's not what we're going to do here.
-
+There are a couple ways so approach this, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) and 2) changing the structure of the network. The generative approach doesn't really solve the problem with ReLU networks. There's a great [Chicken-MNIST](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) blog post that discusses a solution using VAEs. We'll opt for modifying the network by injecting Bayesian-ness into the last layer. Another approach suggested [here](https://arxiv.org/pdf/1812.05720.pdf) changes the loss function, but that's not what we're going to do here.
 
 &nbsp;
-
 
 ### Last Layer Bayesian-ness
 
@@ -69,6 +73,7 @@ Now we can use the last layer Laplace approximation to see if it helps the overc
 
 So far we've only tested the method with two hand selected images. I want to see if this method just scales down all confident predictions, or if it is doing some interesting stuff under the hood. To start more evaluation, we'll plot the confidence level of the top class for the validation data (all animal images, no garbage).
 
+&nbsp;
 
 <p align="center">
   <img src="/assets/overconfident-NN-top-class-prob-distribution.png">
@@ -95,7 +100,7 @@ From the plots of the high and low confidence predictions below, the lower confi
 
 ### Simpsons + Animals
 
-Last thing - what's the top prediction confidence distribution for images that are completely different. This should give us a proxy for how both methods deal with complete garbage thrown at them. This is the problem ML models in the wild face - you train them to learn specific patterns and send them into the deep end where they have to deal with completely unseen data.
+Last thing - what's the confidence distribution for images that are completely different. This should give us a proxy for how both methods deal with complete garbage thrown at them. As discussed before, this is the problem ML models in the wild face - you train them to learn specific patterns and send them into the deep end where they have to deal with completely unseen data.
 
 &nbsp;
 <p align="center">
