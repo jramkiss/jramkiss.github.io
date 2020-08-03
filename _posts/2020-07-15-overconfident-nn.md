@@ -15,13 +15,13 @@ In this post I explore a Bayesian method for dealing with overconfident predicti
 &nbsp;
 
 
-### Why is this a problem?
+### **Why is this a problem?**
 
 You might argue "You only showed the classifier animals, of course it breaks when you show it a human", and you're right. However, imagine you're tasked with building a classifier to find all images of people on someone's camera roll. The simplest solution is to train a classifier on images of people and "things" (buildings, houses, animals, etc.). However, it is impossible to capture all "thing" images, meaning there will be images that the model has never seen (similar to this animal-human example). In a case like this, the model has to learn what a person looks like and only assign high confidence to images of people (which are close to the training data).
 
 &nbsp;
 
-### Softmax Classifier
+### **Softmax Classifier**
 
 The 3-class classifier was trained on images of cats, dogs and wild animals taken from Kaggle that can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?).
 
@@ -43,7 +43,7 @@ The model used was Resnet-18, which yields ~99% accuracy on the validation set. 
 &nbsp;
 
 
-### Possible Solutions
+### **Possible Solutions**
 
 [This paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a nice explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks. Essentially, they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
 
