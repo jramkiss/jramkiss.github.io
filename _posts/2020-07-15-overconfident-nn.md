@@ -69,7 +69,7 @@ Now we can use the last layer Laplace approximation to see if it helps the overc
 &nbsp;
 
 
-### More Testing
+### Animal Model + Animal Data
 
 So far we've only tested the method with two hand selected images. I want to see if this method just scales down all confident predictions, or if it is doing some interesting stuff under the hood. To start more evaluation, we'll plot the confidence level of the top class for the validation data (all animal images, no garbage).
 
@@ -81,7 +81,7 @@ So far we've only tested the method with two hand selected images. I want to see
 
 &nbsp;
 
-The softmax model is really confident about nearly all the images in the validation set, and LLLA is doing some interesting things to the confidence level. Can't stop now! Now I'm interested in when the LLLA model produces high or low confidence predictions.  
+The softmax model is really confident about nearly all the images in the validation set, and LLLA is doing some interesting things to the confidence level. Can't stop now! I'm interested in when the LLLA model produces high or low confidence predictions.  
 From the plots of the high and low confidence predictions below, the lower confidence levels seem more appropriate. This would allow us to set a threshold by looking at AUC curves, or simple plots of some metric VS thresholds.
 
 
@@ -94,11 +94,10 @@ From the plots of the high and low confidence predictions below, the lower confi
 <p align="center">
   <img src="/assets/overconfident-NN-LLLA-low-conf.png">
 </p>
-
 &nbsp;
 
 
-### Simpsons + Animals
+### Animal Model + Simpsons Data
 
 Last thing - what's the confidence distribution for images that are completely different. This should give us a proxy for how both methods deal with complete garbage thrown at them. As discussed before, this is the problem ML models in the wild face - you train them to learn specific patterns and send them into the deep end where they have to deal with completely unseen data.
 
