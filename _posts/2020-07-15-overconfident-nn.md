@@ -86,7 +86,6 @@ The softmax model is really confident about nearly all the images in the validat
 It's difficult to come to a general conclusion on this, but interestingly the LLLA model can produce predictions with both high and low confidence even when the softmax prediction confidence is high.
 
 
-&nbsp;
 <p align="center">
   <img src="/assets/overconfident-NN-LLLA-high-conf.png" width="650" height="215">
 </p>
@@ -116,7 +115,6 @@ I passed 300 of these Simpsons character faces into the classifier and plotted t
   <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="750" height="300">
 </p>
 
-&nbsp;
 
 These results are pretty alarming for the softmax classifier. The majority of Simpson faces are predicted as cat/dog/wild with probability greater than $0.8$ with the softmax classifier, whereas there are no predictions with greater than $0.5$ confidence from the LLLA classifier. This is amazing!  
 
@@ -132,7 +130,7 @@ All of this would be for nothing if the model metrics aren't preserved after pos
   <img src="/assets/overconfident-NN-threshold-plot.png" width="510" height="350">
 </p>
 
-  
+
 Even with a threshold value of $0.5$, the LLLA model is more than 95% accurate on the validation set. In addition, using the $0.5$ threshold with the LLLA model excludes all Simpsons characters discussed in the previous section, whereas the softmax model will be mostly unchanged.
 
 &nbsp;
