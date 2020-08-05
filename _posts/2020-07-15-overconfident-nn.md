@@ -104,11 +104,11 @@ Last thing - what's the confidence distribution for images that are completely d
 
 &nbsp;
 <p align="center">
-  <img src="/assets/overconfident-NN-simpsons-data.png">
+  <img src="/assets/overconfident-NN-simpsons-data.png" width="600" height="200">
 </p>
 &nbsp;
 
-I passed 300 of these Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and softmax models. Again, since these are garbage images, we'd expect this distribution to be closer to 0.33 (random chance). Keep in mind the confidence will never drop below 0.33 as we're only looking at the top class.
+I passed 300 of these Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and softmax models. Again, since these are garbage images, we'd expect this distribution to be closer to $0.33$ (random chance). Keep in mind the confidence will never drop below $0.33$ as we're only looking at the top class.
 
 &nbsp;
 
@@ -118,7 +118,7 @@ I passed 300 of these Simpsons character faces into the classifier and plotted t
 
 &nbsp;
 
-These results are pretty alarming for the softmax classifier. The majority of Simpson faces are predicted as cat/dog/wild with probability greater than 0.8 with the softmax classifier, whereas there are no predictions with greater than 0.5 confidence from the LLLA classifier. This is amazing!  
+These results are pretty alarming for the softmax classifier. The majority of Simpson faces are predicted as cat/dog/wild with probability greater than $0.8$ with the softmax classifier, whereas there are no predictions with greater than $0.5$ confidence from the LLLA classifier. This is amazing!  
 
 &nbsp;
 
