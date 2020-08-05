@@ -83,7 +83,7 @@ So far we've only tested the method with two hand selected images. I want to see
 &nbsp;
 
 The softmax model is really confident about nearly all the images in the validation set, whereas the LLLA model has a flatter confidence distribution. Can't stop now! When does the LLLA model produces high or low confidence predictions?  
-It's difficult to come to a general conclusion on this, but interestingly the LLLA model can produce predictions with both high and low confidence even when the softmax prediction confidence is high. 
+It's difficult to come to a general conclusion on this, but interestingly the LLLA model can produce predictions with both high and low confidence even when the softmax prediction confidence is high.
 
 
 &nbsp;
@@ -122,9 +122,25 @@ These results are pretty alarming for the softmax classifier. The majority of Si
 
 &nbsp;
 
+### Confidence Threshold
+
+All of this would be for nothing if the model metrics aren't preserved after post-processing the output. The simplest way to test this is to examine the tradeoff between a confidence threshold and model accuracy. I've taken the validation set, which are appropriate inputs for the classifier, and plotted the model accuracy at different thresholds.
+
+&nbsp;
+
+<p align="center">
+  <img src="/assets/overconfident-NN-threshold-plot.png">
+</p>
+
+&nbsp;
+
+Even with a threshold value of $0.5$, the LLLA model is more than 95% accurate on the validation set. In addition, using the $0.5$ threshold with the LLLA model excludes all Simpsons characters discussed in the previous section, whereas the softmax model will be mostly unchanged.
+
+&nbsp;
+
 ### Conclusion
 
-From the light experimentation done here, the last layer Laplace approximation seems to be a good solution to the overconfidence problem. Of course its usage will depend on the specific problem and allowable tradeoff between precision and recall for each class, however these results are promising none the less. The icing on the LLLA cake is its ease of implementation and seemless integration with transfer learning.
+From the light experimentation done here, the last layer Laplace approximation seems to be a good solution to the overconfidence problem. Of course its usage will depend on the specific problem and allowable tradeoff between precision and recall for each class, however these results are promising none the less. The icing on the LLLA cake is its ease of implementation and seamless integration with transfer learning.
 
 All the code used in this blog can be found [here](https://www.kaggle.com/jramkiss/overconfident-neural-networks).
 
