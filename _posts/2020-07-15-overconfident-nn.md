@@ -38,7 +38,7 @@ The model used was Resnet-18, which yields ~99% accuracy on the validation set. 
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-softmax-predictions.png" width="700" height="300">
+  <img src="/assets/overconfident-NN-softmax-predictions.png" width="700" height="315">
 </p>
 
 &nbsp;
@@ -64,7 +64,7 @@ Now we can use the last layer Laplace approximation to see if it helps the overc
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-out-of-sample-predictions.png">
+  <img src="/assets/overconfident-NN-out-of-sample-predictions.png" width="700" height="315">
 </p>
 
 &nbsp;
