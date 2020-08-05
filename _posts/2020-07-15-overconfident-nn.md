@@ -28,7 +28,7 @@ The 3-class classifier was trained on images of cats, dogs and wild animals take
 
 
 <p align="center">
-  <img src="/assets/overconfident-NN-training-data.png">
+  <img src="/assets/overconfident-NN-training-data.png" width="600" height="200">
 </p>
 
 &nbsp;
@@ -38,7 +38,7 @@ The model used was Resnet-18, which yields ~99% accuracy on the validation set. 
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-softmax-predictions.png">
+  <img src="/assets/overconfident-NN-softmax-predictions.png" width="700" height="300">
 </p>
 
 &nbsp;
@@ -88,32 +88,32 @@ It's difficult to come to a general conclusion on this, but interestingly the LL
 
 &nbsp;
 <p align="center">
-  <img src="/assets/overconfident-NN-LLLA-high-conf.png">
+  <img src="/assets/overconfident-NN-LLLA-high-conf.png" width="600" height="200">
 </p>
 
 
 <p align="center">
-  <img src="/assets/overconfident-NN-LLLA-low-conf.png">
+  <img src="/assets/overconfident-NN-LLLA-low-conf.png" width="600" height="200">
 </p>
 &nbsp;
 
 
 ### Animal Model + Simpsons Data
 
-Last thing - what's the confidence distribution for images that are completely different. This should give us a proxy for how both methods deal with complete garbage thrown at them. As discussed before, this is the problem ML models in the wild face - you train them to learn specific patterns and send them into the deep end where they have to deal with completely unseen data.
+Last thing - what's the confidence distribution for images that are completely different. This should give us a proxy for how both methods deal with complete garbage thrown at them. As discussed before, this is the problem ML models in the wild face - you train them to learn specific patterns and send them into the deep end where they have to deal with completely unseen data.  
 
-&nbsp;
+
 <p align="center">
   <img src="/assets/overconfident-NN-simpsons-data.png" width="600" height="200">
 </p>
-&nbsp;
+
 
 I passed 300 of these Simpsons character faces into the classifier and plotted the confidence level of the top class for both LLLA and softmax models. Again, since these are garbage images, we'd expect this distribution to be closer to $0.33$ (random chance). Keep in mind the confidence will never drop below $0.33$ as we're only looking at the top class.
 
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png">
+  <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="800" height="300">
 </p>
 
 &nbsp;
@@ -129,7 +129,7 @@ All of this would be for nothing if the model metrics aren't preserved after pos
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-threshold-plot.png" width="525" height="350">
+  <img src="/assets/overconfident-NN-threshold-plot.png" width="510" height="350">
 </p>
 
 &nbsp;
