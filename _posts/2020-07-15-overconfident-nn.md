@@ -77,7 +77,7 @@ So far we've only tested the method with two hand selected images. I want to see
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-top-class-prob-distribution.png">
+  <img src="/assets/overconfident-NN-top-class-prob-distribution.png"  width="750" height="300">
 </p>
 
 &nbsp;
@@ -88,12 +88,12 @@ It's difficult to come to a general conclusion on this, but interestingly the LL
 
 &nbsp;
 <p align="center">
-  <img src="/assets/overconfident-NN-LLLA-high-conf.png" width="600" height="200">
+  <img src="/assets/overconfident-NN-LLLA-high-conf.png" width="650" height="215">
 </p>
 
 
 <p align="center">
-  <img src="/assets/overconfident-NN-LLLA-low-conf.png" width="600" height="200">
+  <img src="/assets/overconfident-NN-LLLA-low-conf.png" width="650" height="215">
 </p>
 &nbsp;
 
@@ -113,7 +113,7 @@ I passed 300 of these Simpsons character faces into the classifier and plotted t
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="800" height="300">
+  <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="750" height="300">
 </p>
 
 &nbsp;
@@ -132,8 +132,7 @@ All of this would be for nothing if the model metrics aren't preserved after pos
   <img src="/assets/overconfident-NN-threshold-plot.png" width="510" height="350">
 </p>
 
-&nbsp;
-
+  
 Even with a threshold value of $0.5$, the LLLA model is more than 95% accurate on the validation set. In addition, using the $0.5$ threshold with the LLLA model excludes all Simpsons characters discussed in the previous section, whereas the softmax model will be mostly unchanged.
 
 &nbsp;
