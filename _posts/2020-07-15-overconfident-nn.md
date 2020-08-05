@@ -77,7 +77,7 @@ So far we've only tested the method with two hand selected images. I want to see
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-top-class-prob-distribution.png"  width="750" height="310">
+  <img src="/assets/overconfident-NN-top-class-prob-distribution.png"  width="800" height="350">
 </p>
 
 &nbsp;
@@ -112,7 +112,7 @@ I passed 300 of these Simpsons character faces into the classifier and plotted t
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="750" height="310">
+  <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="800" height="350">
 </p>
 
 
