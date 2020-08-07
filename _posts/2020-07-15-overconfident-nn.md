@@ -28,7 +28,7 @@ The 3-class classifier was trained on images of cats, dogs and wild animals take
 
 
 <p align="center">
-  <img src="/assets/overconfident-NN-training-data.png" width="600" height="200">
+  <img src="/assets/overconfident-NN-training-data.png" width=80% height=80%>
 </p>
 
 &nbsp;
@@ -38,7 +38,7 @@ The model used was Resnet-18, which yields ~99% accuracy on the validation set. 
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-softmax-predictions.png" width="700" height="315">
+  <img src="/assets/overconfident-NN-softmax-predictions.png" width=90% height=85%>
 </p>
 
 &nbsp;
