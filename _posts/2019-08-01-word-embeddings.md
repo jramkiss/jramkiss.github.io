@@ -33,7 +33,11 @@ The main idea behind the skip-gram model is that we take a word in an input sequ
 
 <br/>
 
-![](/assets/word2vec_viz.png)
+<!--![](/assets/word2vec_viz.png)-->
+
+<p align="center">
+  <img src="/assets/word2vec_viz.png" width="90%" height="90%">
+</p>
 
 Figure 1: The skip gram prediction of target word "into" with window size 2. Taken from Stanford's NLP course
 
@@ -136,7 +140,9 @@ Below is the co-occurrence matrix for the corpus containing:
 - "I like NLP."
 - "I enjoy flying."
 
-![](/assets/cooccurrence_matrix.png)
+<p align="center">
+  <img src="/assets/cooccurrence_matrix.png" width="80%" height="80%">
+</p>
 
 &nbsp;
 
@@ -349,11 +355,23 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
             title = "word2vec Embedding")
 # run this again, but changing w2v to glove and fasttext
 ```
-
+<!--
 ![](/assets/word2vec_embedding.png)
 ![](/assets/glove_embedding.png)
 ![](/assets/fasttext_embedding.png)
+-->
 
+<div class="row">
+  <div class="column">
+    <img src="/assets/word2vec_embedding.png" alt="Snow" width="80%" height="80%">
+  </div>
+  <div class="column">
+    <img src="/assets/glove_embedding.png" alt="Forest" width="80%" height="80%">
+  </div>
+  <div class="column">
+    <img src="/assets/fasttext_embedding.png" alt="Mountains" width="80%" height="80%">
+  </div>
+</div>
 
 
 Wrapping up, there are some key differences between word2vec (skip-gram), GloVe and fasttext. The skip-gram iterates over the corpus predicting context words given a target word. GloVe builds on this by incorporating global corpus statistics using word co-occurrences. The results are similar to word2vec. Fasttext also builds on word2vec by breaking each word into a sum of its sub-words. It learns vectors for each subword, then combines them for prediction. This allows out-of-vocabulary prediction, but introduces the risk of misspelled words.
