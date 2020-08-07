@@ -105,7 +105,7 @@ Remember that we're interested in estimating values for $\beta$ so that we can p
 Since we don't know anything about $\beta$, we'll use an uninformative prior (think flat probability distribution) of $N(0, 5)$. For $\sigma$ we'll use $U(0, 10)$, which ensures only positive values. The choice of $10$ as the upper bound here is somewhat arbitrary, the rational is that $\sigma$ probably won't be very high based on the values of our response variable, $y$.
 
 $$p(\beta) \sim N(0, 5)
-\tag{}
+\notag
 $$
 
 $$p(\sigma) \sim U(0, 10)

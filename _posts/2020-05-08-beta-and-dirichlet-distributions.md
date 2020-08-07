@@ -81,15 +81,18 @@ Let's take a Dirichlet distribution with 5 components, meaning that samples from
 
 $$
 X \sim Dir([\alpha_1, \alpha_2, \alpha_3, \alpha_4, \alpha_5])
+\notag
 $$
 
 Two samples from $X$:
 $$
 x_1 = [0.3, 0.15, 0.05, 0.25, 0.25]
+\notag
 $$
-  
+
 $$
 x_2 = [0.13, 0.17, 0.05, 0.2, 0.45]
+\notag
 $$
 
 Two things are consistent: $\sum_{i=1}^{5} x_i = 1$ and len(x) = $5$. So we can imagine that each sample from a Dirichlet distribution is a literal stick of length 1, that is broken into $5$ sections. Each section (or class) has a length, for example section 2 in $x_1$ has length $0.15$. Each sample can have different lengths for each section. The Dirichlet distribution does is proposes different ways of breaking this stick into 5 pieces. Of course, there is a specific way of breaking the stick to generate samples from the Distribution, which is very aptly named the [stick breaking construction](https://www.stats.ox.ac.uk/~teh/research/npbayes/Teh2010a.pdf).
