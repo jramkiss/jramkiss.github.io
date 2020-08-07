@@ -24,7 +24,7 @@ Suppose we have an experiment where we ask $n$ random people if their favourite 
 
 <!-- binomial plot of samples -->
 <p align="center">
-  <img src="/assets/binomial-samples.png" height="350">
+  <img src="/assets/binomial-samples.png" width="85%" height="85%">
 </p>
 &nbsp;
 
@@ -36,7 +36,7 @@ Samples from the Beta distribution can be thought of as potential probabilities 
 
 <!-- beta plot of samples -->
 <p align="center">
-  <img src="/assets/beta-samples.png" height="350">
+  <img src="/assets/beta-samples.png" width="90%" height="90%">
 </p>
 &nbsp;
 
@@ -56,7 +56,7 @@ Now we want more information. We're interested in the distribution of people who
 <!-- beta plot of samples -->
 <!--![](/assets/multinomial-samples.png | width=48)-->
 <p align="center">
-  <img src="/assets/multinomial-samples.png" height="350">
+  <img src="/assets/multinomial-samples.png" width="90%" height="90%">
 </p>
 &nbsp;
 
@@ -70,7 +70,7 @@ A vector of length $k$ parameterizes the Dirichlet distribution, and the paramet
 <!-- dirichlet plot of samples -->
 <!--![](/assets/dirichlet-samples.png)-->
 <p align="center">
-  <img src="/assets/dirichlet-samples.png" height="350">
+  <img src="/assets/dirichlet-samples.png" width="90%" height="90%">
 </p>
 &nbsp;
 
