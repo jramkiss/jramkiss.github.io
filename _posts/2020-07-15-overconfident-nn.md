@@ -28,7 +28,7 @@ The 3-class classifier was trained on images of cats, dogs and wild animals take
 
 
 <p align="center">
-  <img src="/assets/overconfident-NN-training-data.png" width="70% height="70%">
+  <img src="/assets/overconfident-NN-training-data.png" width="70%" height="70%">
 </p>
 
 &nbsp;
@@ -64,7 +64,7 @@ Now we can use the last layer Laplace approximation to see if it helps the overc
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-out-of-sample-predictions.png" width="700" height="315">
+  <img src="/assets/overconfident-NN-out-of-sample-predictions.png" width="90%" height="90%">
 </p>
 
 &nbsp;
@@ -77,7 +77,7 @@ So far we've only tested the method with two hand selected images. I want to see
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-top-class-prob-distribution.png"  width="800" height="350">
+  <img src="/assets/overconfident-NN-top-class-prob-distribution.png"  width="90%" height="90%">
 </p>
 
 &nbsp;
@@ -87,12 +87,12 @@ It's difficult to come to a general conclusion on this, but interestingly the LL
 
 
 <p align="center">
-  <img src="/assets/overconfident-NN-LLLA-high-conf.png" width="650" height="215">
+  <img src="/assets/overconfident-NN-LLLA-high-conf.png" width="75%" height="75%">
 </p>
 
 
 <p align="center">
-  <img src="/assets/overconfident-NN-LLLA-low-conf.png" width="650" height="215">
+  <img src="/assets/overconfident-NN-LLLA-low-conf.png" width="75%" height="75%">
 </p>
 &nbsp;
 
@@ -103,7 +103,7 @@ Last thing - what's the confidence distribution for images that are completely d
 
 
 <p align="center">
-  <img src="/assets/overconfident-NN-simpsons-data.png" width="600" height="200">
+  <img src="/assets/overconfident-NN-simpsons-data.png" width="70%" height="70%">
 </p>
 
 
@@ -112,7 +112,7 @@ I passed 300 of these Simpsons character faces into the classifier and plotted t
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="800" height="350">
+  <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="90%" height="90%">
 </p>
 
 
@@ -127,7 +127,7 @@ All of this would be for nothing if the model metrics aren't preserved after pos
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-threshold-plot.png" width="510" height="350">
+  <img src="/assets/overconfident-NN-threshold-plot.png" width="85%" height="85%">
 </p>
 
 
