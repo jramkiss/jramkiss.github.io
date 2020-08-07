@@ -127,7 +127,7 @@ All of this would be for nothing if the model metrics aren't preserved after pos
 &nbsp;
 
 <p align="center">
-  <img src="/assets/overconfident-NN-threshold-plot.png" width="85%" height="85%">
+  <img src="/assets/overconfident-NN-threshold-plot.png" width="75%" height="75%">
 </p>
 
 
