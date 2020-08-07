@@ -38,16 +38,24 @@ To supplement the model, we'll also add an interaction term between `business_fr
 
 Below is the regression model we have for our data that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$.
 
-$$
+<!--$$
 \begin{equation}
 y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
 \tag{1}
 \end{equation}
+$$-->
+
+$$
+y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
 $$
 
-$$\beta = (\beta_0, \beta_1, \beta_2, \beta_3)$$
+$$
+\beta = (\beta_0, \beta_1, \beta_2, \beta_3)
+$$
 
-$$\epsilon \sim N(0, \sigma^{2})$$
+$$
+\epsilon \sim N(0, \sigma^{2})
+$$
 
 &nbsp;
 
