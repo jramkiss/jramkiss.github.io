@@ -84,7 +84,9 @@ The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/coron
 The virus also starts at different times in different countries. Because we have a regression model, it is inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is better interpreted as the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
 
 &nbsp;
-![](/assets/italy-daily-cases.png)
+<p align="center">
+  <img src="/assets/italy-daily-cases.png" width="90%" height="90%">
+</p>
 &nbsp;
 
 
@@ -167,7 +169,9 @@ $$
 **Posterior Distributions**
 
 <!-- figure 1: daily confirmed cases in Italy -->
-![](/assets/canada-posterior-plots.png)
+<p align="center">
+  <img src="/assets/canada-posterior-plots.png" width="90%" height="90%">
+</p>
 
 &nbsp;
 
@@ -180,7 +184,9 @@ As a side note, with no science attached, my company issued a mandatory work fro
 The model fit along with 95% credible interval bands can be seen in the plot below. On the left is log of the number of daily cases, which is what we used to fit the model, and on the right is the true number of daily cases. It is very difficult to visually determine a change point by simply looking at the number of daily cases, and even more difficult by looking at the total number of confirmed cases.
 
 &nbsp;
-![](/assets/canada-regression-plot.png)
+<p align="center">
+  <img src="/assets/canada-regression-plot.png" width="90%" height="90%">
+</p>
 &nbsp;
 
 ### Assessing Convergence
@@ -190,7 +196,9 @@ When running these experiments, the most important step is to diagnose the MCMCf
 Below are [trace plots](https://stats.stackexchange.com/questions/120936/why-we-need-trace-plot-for-mcmc-results) for each parameter. Each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
 &nbsp;
-![](/assets/canada-trace-plots.png)
+<p align="center">
+  <img src="/assets/canada-trace-plots.png" width="90%" height="90%">
+</p>
 &nbsp;
 
 After convergence, the last thing to check before moving on to other examples is how appropriate the model is for the data. Is it consistent with the assumptions made earlier? To test this we'll use a residual plot and a QQ-plot, as shown below.
@@ -198,7 +206,9 @@ I've outlined the estimated change point in order to compare residuals before an
 The residuals follow a Normal distribution with zero mean, and no have dependence with time, before and after the date of change.
 
 &nbsp;
-![](/assets/canada-resid-plots.png)
+<p align="center">
+  <img src="/assets/canada-resid-plots.png" width="90%" height="90%">
+</p>
 &nbsp;
 
 
@@ -217,7 +227,9 @@ $$
 **Posterior Distributions**
 
 &nbsp;
-![](/assets/canada-march27-posterior-plots.png)
+<p align="center">
+  <img src="/assets/canada-march27-posterior-plots.png" width="90%" height="90%">
+</p>
 &nbsp;
 
 The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the growth rate of the virus hasn't changed significantly. Posteriors for $b_1$ and $b_2$ are also overlapping. These show that the model is struggling to estimate a reasonable $\tau$, which is good validation for us that the priors aren't too strong.
@@ -225,13 +237,17 @@ The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the
 Although we have already concluded that there is no change date for this data, we'll still plot the model out of curiosity.
 
 &nbsp;
-![](/assets/canada-march27-regression-plot.png)
+<p align="center">
+  <img src="/assets/canada-march27-regression-plot.png" width="90%" height="90%">
+</p>
 &nbsp;
 
 Similar to the previous example, the MCMC has converged. The trace plots below show sufficient mixing and stationarity of the chains, and most $\hat{R}$ values less than $1.1$.
 
 &nbsp;
-![](/assets/canada-march27-trace-plots.png)
+<p align="center">
+  <img src="/assets/canada-march27-trace-plots.png" width="90%" height="90%">
+</p>
 &nbsp;
 
 
