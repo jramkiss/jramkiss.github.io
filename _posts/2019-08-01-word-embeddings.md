@@ -379,16 +379,17 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
 ![](/assets/fasttext_embedding.png)
 -->
 
-<div class="row">
-  <div class="column">
-    <img src="/assets/word2vec_embedding.png" alt="Snow" width="80%" height="80%">
-  </div>
-  <div class="column">
-    <img src="/assets/glove_embedding.png" alt="Forest" width="80%" height="80%">
-  </div>
-  <div class="column">
-    <img src="/assets/fasttext_embedding.png" alt="Mountains" width="80%" height="80%">
-  </div>
+
+<div>
+    <div style="float:left;margin-right:5px;">
+        <img src="/assets/word2vec_embedding.png" height="30%" width="30%"/>
+    </div>
+    <div style="float:center;margin-right:5px;">
+        <img class="middle-img" src="/assets/glove_embedding.png" height="30%" width="30%" />
+    </div>
+    <div style="float:right;margin-right:5px;">
+        <img src="/assets/fasttext_embedding.png" height="30%" width="30%" />
+    </div>
 </div>
 
 
