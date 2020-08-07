@@ -387,7 +387,7 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
     <div style="float:center;margin-right:5px;">
         <img class="middle-img" src="/assets/glove_embedding.png" height="200" width="200" />
     </div>
-    <div style="float:right;margin-right:5px;">
+    <div style="float:left;margin-right:5px;">
         <img src="/assets/fasttext_embedding.png" height="200" width="200" />
     </div>
 </div>
