@@ -38,23 +38,19 @@ To supplement the model, we'll also add an interaction term between `business_fr
 
 Below is the regression model we have for our data that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$.
 
-<!--$$
-\begin{equation}
-y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
-\tag{1}
-\end{equation}
-$$-->
-
 $$
 y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
+\tag{1}
 $$
 
 $$
 \beta = (\beta_0, \beta_1, \beta_2, \beta_3)
+\notag
 $$
 
 $$
 \epsilon \sim N(0, \sigma^{2})
+\notag
 $$
 
 &nbsp;
@@ -108,9 +104,13 @@ Remember that we're interested in estimating values for $\beta$ so that we can p
 
 Since we don't know anything about $\beta$, we'll use an uninformative prior (think flat probability distribution) of $N(0, 5)$. For $\sigma$ we'll use $U(0, 10)$, which ensures only positive values. The choice of $10$ as the upper bound here is somewhat arbitrary, the rational is that $\sigma$ probably won't be very high based on the values of our response variable, $y$.
 
-$$p(\beta) \sim N(0, 5)$$
+$$p(\beta) \sim N(0, 5)
+\tag{}
+$$
 
-$$p(\sigma) \sim U(0, 10)$$
+$$p(\sigma) \sim U(0, 10)
+\notag
+$$
 
 Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.
 In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from intractable posterior distributions, so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ is a number (vector of numbers). Well, the distribution gives us more information about $\beta$, then we can find point estimates by finding the mean, median, mode, etc.
