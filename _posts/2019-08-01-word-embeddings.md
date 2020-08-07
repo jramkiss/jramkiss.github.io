@@ -379,18 +379,18 @@ plot_embeds(["dog", "cat", "hamster", "pet"] +                   # animals
 ![](/assets/fasttext_embedding.png)
 -->
 
+<p align="center">
+  <img src="/assets/word2vec_embedding.png" width="80%" height="80%">
+</p>
 
-<div>
-    <div style="float:left;margin-right:5px;">
-        <img src="/assets/word2vec_embedding.png" height="200" width="200"/>
-    </div>
-    <div style="float:center;margin-right:5px;">
-        <img class="middle-img" src="/assets/glove_embedding.png" height="200" width="200" />
-    </div>
-    <div style="float:left;margin-right:5px;">
-        <img src="/assets/fasttext_embedding.png" height="200" width="200" />
-    </div>
-</div>
+<p align="center">
+  <img src="/assets/glove_embedding.png" width="80%" height="80%">
+</p>
+
+<p align="center">
+  <img src="/assets/fasttext_embedding.png" width="80%" height="80%">
+</p>
+
 
 
 Wrapping up, there are some key differences between word2vec (skip-gram), GloVe and fasttext. The skip-gram iterates over the corpus predicting context words given a target word. GloVe builds on this by incorporating global corpus statistics using word co-occurrences. The results are similar to word2vec. Fasttext also builds on word2vec by breaking each word into a sum of its sub-words. It learns vectors for each subword, then combines them for prediction. This allows out-of-vocabulary prediction, but introduces the risk of misspelled words.
