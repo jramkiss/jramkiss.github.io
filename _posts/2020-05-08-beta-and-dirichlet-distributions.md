@@ -84,7 +84,8 @@ X \sim Dir([\alpha_1, \alpha_2, \alpha_3, \alpha_4, \alpha_5])
 \notag
 $$
 
-Two samples from $X$:
+Two samples from $X$:  
+
 $$
 x_1 = [0.3, 0.15, 0.05, 0.25, 0.25]
 \notag
