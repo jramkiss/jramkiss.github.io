@@ -27,8 +27,9 @@ We'll answer the problem by fitting a linear model to the data and comparing the
 To supplement the model, we'll also add an interaction term between `business_freedom` and `is_europe` and call it `business_freedom_x_region`. Here's what the data looks like for countries inside and outside Europe.
 
 <p align="center">
-  <img src="/assets/europe_data_viz.png" height="300">
+  <img src="/assets/europe_data_viz.png" width="80%" height="80%">
 </p>
+
 
 &nbsp;
 
@@ -44,9 +45,9 @@ y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
 \end{equation}
 $$
 
-$$ \beta = (\beta_0, \beta_1, \beta_2, \beta_3) $$
+$$\beta = (\beta_0, \beta_1, \beta_2, \beta_3)$$
 
-$$ \epsilon \sim N(0, \sigma^{2}) $$
+$$\epsilon \sim N(0, \sigma^{2})$$
 
 &nbsp;
 
@@ -78,7 +79,7 @@ print("Slope for non-European Nations: ", round(coef["business_freedom"], 3))
 
 
 <p align="center">
-  <img src="/assets/linear_regression_fit.png" height="350">
+  <img src="/assets/linear_regression_fit.png" width="80%" height="80%">
 </p>
 
 
@@ -91,19 +92,17 @@ Although the slope for non-European countries is twice as large as European coun
 Starting back from the regression model in [(1)](#regression-model), since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So assuming that we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the _likelihood_ distribution.
 
 $$
-\begin{equation}
 p(y | \beta, \sigma) \sim N (X\beta, \sigma^2)
 \tag{2}
-\end{equation}
 $$
 
 Remember that we're interested in estimating values for $\beta$ so that we can plug them back into our model and interpret the regression slopes. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don't know anything about $\beta$ which is fine, but we know that $\sigma$ can't be less than 0 because it is a standard deviation. This step is referred to as _prior specification_.
 
 Since we don't know anything about $\beta$, we'll use an uninformative prior (think flat probability distribution) of $N(0, 5)$. For $\sigma$ we'll use $U(0, 10)$, which ensures only positive values. The choice of $10$ as the upper bound here is somewhat arbitrary, the rational is that $\sigma$ probably won't be very high based on the values of our response variable, $y$.
 
-$$ p(\beta) \sim N(0, 5) $$
+$$p(\beta) \sim N(0, 5)$$
 
-$$ p(\sigma) \sim U(0, 10) $$
+$$p(\sigma) \sim U(0, 10)$$
 
 Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.
 In real world applications, the posterior distribution is usually intractable (cannot be written down). Here's where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from intractable posterior distributions, so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ is a number (vector of numbers). Well, the distribution gives us more information about $\beta$, then we can find point estimates by finding the mean, median, mode, etc.
@@ -169,7 +168,7 @@ bias = pred["linear.bias"]
 
 <!-- space for plot of posterior disitbutrions -->
 <p align="center">
-  <img src="/assets/posteriors.png" height="350">
+  <img src="/assets/posteriors.png" width="85%" height="85%">
 </p>
 
 
@@ -199,7 +198,7 @@ These estimates are different to the ones from Ordinary linear regression. This 
 
 
 <p align="center">
-  <img src="/assets/bayesian_slopes.png" height="350">
+  <img src="/assets/bayesian_slopes.png" width="85%" height="85%">
 </p>
 <!-- space for plot of difference in slopes -->
 
