@@ -89,14 +89,17 @@ The new objective function becomes:
 
 $$
 J(\theta) = \frac{-1}{T} \sum_{t=1}^{T}J_t(\theta)
+\notag
 $$
 
 $$
 J_t(\theta) = log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]
+\notag
 $$
 
 $$
 P(w) = U(w)^{3/4}/Z
+\notag
 $$
 
 Let's look at each component of and try to convince ourselves this makes sense.
@@ -109,6 +112,7 @@ We can first drop the $E_{j \sim P(w)}$ term, since we already know we will be s
 
 $$
 \sum_{i = 1}^{k} log(\sigma(-u_j^T v_c)) = \sum_{i = 1}^{k} log(1 - \sigma(u_j^T v_c))
+\notag
 $$
 
 Now that this is easier to read, we're taking the log of 1 minus the probability that the sampled word, $j$, appears in the context of the target word $c$. This is just log probability that $j$ does **not** appear in the context of the $c$. Since $j$ is randomly drawn out of ~$10^6$ words, there's a very small chance it appears in the context of $c$, so this probability should be high. We do this for each of the $k$ sampled words.
@@ -150,15 +154,24 @@ Below is the co-occurrence matrix for the corpus containing:
 
 We can find global loss using the softmax function, $Q_{ij}$, by summing over all target-context word pairs.
 
-$$J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij}) $$
+$$
+J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij})
+\notag
+$$
 
 Since words $i$ and $j$ appear $X_{ij}$ times in the corpus, we don't need to iterate over all windows in the corpus, but can iterate over the vocabulary and multiply by the co-occurrence count.
 
-$$ J = - \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} log Q_{ij} $$
+$$
+J = - \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} log Q_{ij}
+\notag
+$$
 
 Re-arranging some terms, we can come up with this:
 
-$$ J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij}) $$
+$$
+J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij})
+\notag
+$$
 
 &nbsp;
 
@@ -173,12 +186,14 @@ The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ 
 
 $$
 \hat{J} = \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} (\hat{P}_{ij} - \hat{Q}_{ij})^2
+\notag
 $$
 
 Now we have the squared error, weighted by the number of co-occurrences of words $i$ and $j$. There's one last problem with this, which is that some co-occurrence counts can be massive. This will affect both the weights, $X_i$, and $\hat{P_{ij}} = X_{ij}$. To deal with this explosion in the squared term, we take $log(hat{P})$ and $log(hat{Q})$) and to deal with the explosion of weights, we introduce a function, $f$ that caps the co-occurrence count weight. We'll apply $f$ to each target-context pair, $X_{ij}$ as opposed to only $X_i$. The new loss function becomes:
 
 $$
 \hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2
+\notag
 $$
 
 This is the loss function that the GloVe model minimizes.
@@ -206,7 +221,10 @@ We have no way of determining the difference between the subword "her" and the f
 More formally, suppose we have all n-grams in the vocabulary, $G$, each represented by a vector, $\boldsymbol{z}_g$. We can refer to all the n-grams of some word, $w$, by $G_w$. Then $w$ can be represented as a sum of all n-grams. The new similarity function becomes:
 
 
-$$ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c$$
+$$
+ s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c
+\notag
+$$
 
 We learn the embeddings of each character n-gram and then each word embedding is a sum of its n-gram vectors.
 

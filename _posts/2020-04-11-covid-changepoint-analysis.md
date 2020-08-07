@@ -101,6 +101,7 @@ Next are the bias terms, $b_1$ and $b_2$. Priors for these parameters are especi
 
 $$
 b_1 \sim N(\mu_{q_1}, 1) \qquad \qquad b_2 \sim N(\mu_{q_4}, \frac{\mu_{q_4}}{4})
+\notag
 $$
 
 As for $\tau$, since at this time we don't have access to all the data (the virus is ongoing), we're unable to have a completely flat prior and have the model estimate it. Instead, the assumption is made that the change is more likely to occur in the second half of the date range at hand, so we use $\tau \sim Beta(4, 3)$.
@@ -162,6 +163,7 @@ Since I live in Canada and have exposure to the dates precautions started, model
 
 $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(1.1, 1) \qquad b_2 \sim N(7.2, 1)
+\notag
 $$
 
 &nbsp;
@@ -220,6 +222,7 @@ To test the model's robustness to a country that has not began to flatten the cu
 
 $$
 w_1, w_2 \sim N(0, 0.5) \qquad b_1 \sim N(0.9, 1) \qquad b_2 \sim N(6.4, 1.6)
+\notag
 $$
 
 &nbsp;
