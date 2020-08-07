@@ -79,7 +79,9 @@ A vector of length $k$ parameterizes the Dirichlet distribution, and the paramet
 
 Let's take a Dirichlet distribution with 5 components, meaning that samples from this distribution will be a vector of length 5, whose sum is 1:
 
-$$ X \sim Dir([\alpha_1, \alpha_2, \alpha_3, \alpha_4, \alpha_5]) $$
+$$
+X \sim Dir([\alpha_1, \alpha_2, \alpha_3, \alpha_4, \alpha_5])
+$$
 
 Two samples from $X$:
 $$ x_1 = [0.3, 0.15, 0.05, 0.25, 0.25] $$
