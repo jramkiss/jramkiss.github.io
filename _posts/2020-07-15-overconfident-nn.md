@@ -137,7 +137,7 @@ Even with a threshold value of $0.5$, the LLLA model is more than 95% accurate o
 
 ### Conclusion
 
-From the light experimentation done here, the last layer Laplace approximation seems to be a good solution to the overconfidence problem. Of course its usage will depend on the specific problem and allowable tradeoff between precision and recall for each class, however these results are promising none the less. The icing on the LLLA cake is its ease of implementation and seamless integration with transfer learning.
+From the light experimentation done here, the last layer Laplace approximation seems to be a good solution to the overconfidence problem. Of course its usage will depend on the specific problem and allowable tradeoff between precision and recall for each class, however these results are promising nonetheless. The icing on the LLLA cake is its ease of implementation and seamless integration with transfer learning.
 
 All the code used in this blog can be found [here](https://www.kaggle.com/jramkiss/overconfident-neural-networks).
 
