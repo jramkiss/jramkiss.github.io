@@ -8,6 +8,12 @@ math: true
 summary: Bullet points of ideas for future posts.
 ---
 
+### Evaluation of Fine-Grained Classification for Document Pages
+- How does imagenet pre-training affect document page classification? Does it help?
+- Is a document page classification a fine-grained task? If so, does imagenet accuracy correlate? i.e. Do models that perform well on imagenet also perform well on document pages?
+- Use this dataset: https://www.cs.cmu.edu/~aharley/rvl-cdip/
+-
+
 
 ### Inferring Clusters with Dirichlet Processes
 - Implement a dirichlet process clustering model with MNIST
@@ -15,7 +21,7 @@ summary: Bullet points of ideas for future posts.
 - Can use MNIST with 10 classes, and less than 10 classes and see how it works
 
 ### Interesting Relationships between Probability distributions
-- Binomial and beta, multinomial and whatever is its corresponding continuous distribution 
+- Binomial and beta, multinomial and whatever is its corresponding continuous distribution
 
 
 ### Online Learning with Bayesian Methods

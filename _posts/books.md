@@ -7,6 +7,15 @@ author: "Jonathan Ramkissoon"
 math: true
 ---
 
+## Bayesian Deep Learning
+- [What my deep learning model doesn't know - Gal, Gharamani](http://www.cs.ox.ac.uk/people/yarin.gal/website/blog_3d801aa532c1ce.html#typo:29/09/2015)
+- [Dropout as a Bayesian Approximation - Gal, Gharamani](https://arxiv.org/pdf/1506.02142.pdf)
+-
+
+## Importance Sampling
+- [Parento smoothed importance sampling](http://www.stat.columbia.edu/~gelman/research/unpublished/vgis.pdf)
+-
+
 ## Bayesian Problem Sets
 - [Ben Lambert Bayesian problems 1](https://benlambertdotcom.files.wordpress.com/2016/05/bayesiancourse_problemset_lecture12.pdf)
 - [Ben Lambert Bayesian problems 2](https://benlambertdotcom.files.wordpress.com/2016/05/bayesiancourse_problemset_lecture3_v2.pdf)
@@ -27,6 +36,7 @@ math: true
 - Bayesian Methods for Hackers: [here](https://nbviewer.jupyter.org/github/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/tree/master/)
 - Gaussian Processes for Machine Learning: [here](http://www.gaussianprocess.org/gpml/chapters/RW.pdf)
 - Monte Carlo Sampling: [here](https://www.deeplearningbook.org/contents/monte_carlo.html)
+- [Princeton blog](https://lips.cs.princeton.edu/blog/)
 
 
 ## NLP
