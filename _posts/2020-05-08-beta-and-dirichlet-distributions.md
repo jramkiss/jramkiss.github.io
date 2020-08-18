@@ -5,7 +5,7 @@ date: 2020-05-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Quick notes on the Beta and Dirichlet distributions and their uses.
+summary: Some notes on the Beta and Dirichlet distributions including their relationship and uses.
 ---
 
 This post motivates the Beta and Dirichlet distributions using a simple example. It also relates the Beta and Dirichlet distributions to the Binomial and Multinomial. It's written without any equations for readability.
