@@ -32,12 +32,19 @@ math: true
 
 
 ## Bayesian Statistics
+- [Bayesian Machine Learning Notebooks](https://github.com/krasserm/bayesian-machine-learning)
 - Think Bayes: [here](http://www.greenteapress.com/thinkbayes/thinkbayes.pdf)
 - Bayesian Methods for Hackers: [here](https://nbviewer.jupyter.org/github/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers/tree/master/)
 - Gaussian Processes for Machine Learning: [here](http://www.gaussianprocess.org/gpml/chapters/RW.pdf)
 - Monte Carlo Sampling: [here](https://www.deeplearningbook.org/contents/monte_carlo.html)
-- [Princeton blog](https://lips.cs.princeton.edu/blog/)
+- [Princeton Statistics blog](https://lips.cs.princeton.edu/blog/)
+- [Bayesian Inference Notes](https://jrnold.github.io/bayesian_notes/bayesian-inference.html)
+- [Intro to Variational Autoencoders](https://arxiv.org/pdf/1906.02691.pdf)
+- [Variational Inference](https://www.cs.cmu.edu/~epxing/Class/10708-17/notes-17/10708-scribe-lecture13.pdf)
 
+## Bayesian Non-parameterics
+- [Dirhclet processes, Indian Buffet process](https://www.cs.cmu.edu/~epxing/Class/10708-17/notes-17/10708-scribe-lecture23.pdf)
+-
 
 ## NLP
 - Speech and Language Processing: [here](https://web.stanford.edu/~jurafsky/slp3/)
@@ -49,6 +56,7 @@ math: true
 
 ## Deep Learning
 - Deep Learning Book: [here](https://www.deeplearningbook.org)
+- [Overview of DL Building Blocks](https://www.cs.cmu.edu/~epxing/Class/10708-17/notes-17/10708-scribe-lecture18.pdf)
 
 
 ## Resources
