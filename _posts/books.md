@@ -7,6 +7,9 @@ author: "Jonathan Ramkissoon"
 math: true
 ---
 
+## Blogs
+- [Avi Vehtari](https://avehtari.github.io/)
+
 ## Bayesian Deep Learning
 - [What my deep learning model doesn't know - Gal, Gharamani](http://www.cs.ox.ac.uk/people/yarin.gal/website/blog_3d801aa532c1ce.html#typo:29/09/2015)
 - [Dropout as a Bayesian Approximation - Gal, Gharamani](https://arxiv.org/pdf/1506.02142.pdf)
@@ -28,6 +31,10 @@ math: true
 - [Stan lecture](https://benlambertdotcom.files.wordpress.com/2019/07/bayesiancourse_3.pdf)
 
 
+# General Statistics
+- [Correlation VS Coefficient of Determination](http://danshiebler.com/2017-06-25-metrics/)
+
+
 # Books and Resources
 
 
@@ -41,6 +48,7 @@ math: true
 - [Bayesian Inference Notes](https://jrnold.github.io/bayesian_notes/bayesian-inference.html)
 - [Intro to Variational Autoencoders](https://arxiv.org/pdf/1906.02691.pdf)
 - [Variational Inference](https://www.cs.cmu.edu/~epxing/Class/10708-17/notes-17/10708-scribe-lecture13.pdf)
+- [BDA3 Python demos](https://github.com/avehtari/BDA_py_demos)
 
 ## Bayesian Non-parameterics
 - [Dirhclet processes, Indian Buffet process](https://www.cs.cmu.edu/~epxing/Class/10708-17/notes-17/10708-scribe-lecture23.pdf)
