@@ -9,6 +9,7 @@ math: true
 
 ## Blogs
 - [Avi Vehtari](https://avehtari.github.io/)
+- [Bayesian Inference Notes](https://jrnold.github.io/bayesian_notes/)
 
 ## Bayesian Deep Learning
 - [What my deep learning model doesn't know - Gal, Gharamani](http://www.cs.ox.ac.uk/people/yarin.gal/website/blog_3d801aa532c1ce.html#typo:29/09/2015)
@@ -36,7 +37,8 @@ math: true
 
 
 # Books and Resources
-
+- [Pattern Recognition and Machine Learning](http://users.isr.ist.utl.pt/~wurmd/Livros/school/Bishop%20-%20Pattern%20Recognition%20And%20Machine%20Learning%20-%20Springer%20%202006.pdf)
+- [Information Theory, Inference and Learning Algorithms](https://www.inference.org.uk/itprnn/book.pdf)
 
 ## Bayesian Statistics
 - [Bayesian Machine Learning Notebooks](https://github.com/krasserm/bayesian-machine-learning)
