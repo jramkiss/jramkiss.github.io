@@ -8,6 +8,22 @@ math: true
 summary: Bullet points of ideas for future posts.
 ---
 
+### Hierarchical Models: Where does the flexibility come from?
+- Outline a hierarchical model
+- Try to determine where the flexibility comes from. Why is it so much more flexibile than a non-hierarchical model?
+- Can use the example of the Normal-Inverse-ChiSquared being the t-distribution, which has fatter tails than just the normal. 
+
+### Online Mixture of Gaussians
+- Key Idea: Write code to estimate Gaussian mixture models with Dirichlet process priors using $D$ data. Then have a constant stream of data being added, $D_{t+1}...$ and update the GMM online. Plot all of this happening in real time.
+- Understand and explain GMM's and online estimation of GMM's
+- Figure out how to write an online updating GMM in Python
+- figure out how to plot clusters
+- Figure out how to constantly update the plot with new points and new clusters. If we can get circles around each cluster that would be ideal.
+
+### Effect of Outliers on Regression Tasks
+- Take a dataset, like [this](https://www.kaggle.com/epattaro/brazils-house-of-deputies-reimbursements) and find outliers with simple linear regression. Make a plot and show which points will be considered outliers.
+- Then use a robust method for linear regression and show which points whill be considered outliers. Is there a difference?
+
 ### Evaluation of Fine-Grained Classification for Document Pages
 - How does imagenet pre-training affect document page classification? Does it help?
 - Is a document page classification a fine-grained task? If so, does imagenet accuracy correlate? i.e. Do models that perform well on imagenet also perform well on document pages?
@@ -20,8 +36,6 @@ summary: Bullet points of ideas for future posts.
 - Explain what Dirichlet processes are
 - Can use MNIST with 10 classes, and less than 10 classes and see how it works
 
-### Interesting Relationships between Probability distributions
-- Binomial and beta, multinomial and whatever is its corresponding continuous distribution
 
 
 ### Online Learning with Bayesian Methods
