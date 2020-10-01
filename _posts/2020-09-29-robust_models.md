@@ -10,3 +10,6 @@ summary: Exploring fixes for models robust to outliers. How big of a problem are
 
 ## Plan and Open Questions
 - Build a plotly graph where you can adjust points have see how they change a regression line
+
+
+{% include plotly_test.html %}
