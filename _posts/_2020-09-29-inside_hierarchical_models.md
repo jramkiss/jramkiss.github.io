@@ -18,5 +18,6 @@ May need to use a more complex dataset than just simple linear regression. I wil
   - Normal prior
   - Flat prior, to try to induce flexibility without hierarchy
   - Hierarchical prior
+- In addition to the added flexibility, hierarchical models also help with data pooling. For example in 8 schools. 
 
 The $t_{\nu}(\mu, \sigma^2)$ distribution can be represented with a Gaussian with mean $\mu$ and variance term distributed as an Inverse-$\chi^2$ with $\nu$ degrees of freedom
