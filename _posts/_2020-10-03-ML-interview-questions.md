@@ -21,7 +21,24 @@ I break down the ML interview into 3 sections:
 http://cs229.stanford.edu/notes/cs229-notes1.pdf
 
 #### Decision Trees and Random Forests
-http://cs229.stanford.edu/notes/cs229-notes-dt.pdf
+
+Decision trees split the input space into non-linear regions by minimizing cross-entropy loss between regions. Let $p_c$ be the proportion of samples in region $R$ that are in class $c$, then:
+
+$$ L_{cross}(R) = - \sum_c \hat{p}_c \text{log}(\hat{p}_c) $$
+
+Since cross-entropy is strictly concave, as long as $p_1 \ne p_2$ and regions $R_1$ and $R_2$ are non-empty, then the weighted sum of children losses will always be less than the parent (more on this [here](http://cs229.stanford.edu/notes/cs229-notes-dt.pdf)). This can be a problem for overfitting, which is why we regularize the tree:
+
+- Minimum leaf size: Do not split $R$ if its cardinality (number of points) is below a threshold
+- Max depth: Do not split $R$ if more than a fixed number of splits were already taken
+- Max nodes: Stop after a fixed number of nodes
+
+A main problem with decision trees apart from overfitting is that it struggles to capture additive structure in data. This is demonstrated in the image taken from [here](http://cs229.stanford.edu/notes/cs229-notes-dt.pdf), below:
+
+<p align="center">
+  <img src="/assets/decision-tree-additive-structure.png" width="100%" height="100%">
+</p>
+
+We can reduce overfitting by ensembling trees, resulting in a random forest.
 
 #### Gradient Boosted Machines
 
@@ -64,6 +81,7 @@ $$
 \epsilon_i \ge 0
 $$
 
+More on SVM's [here](http://cs229.stanford.edu/notes/cs229-notes3.pdf).
 
 #### Naive Bayes
 
@@ -98,7 +116,7 @@ When evaluating a classifier, we are interested in two things:
 1) When the model predicts Class A (precision), what % of those predictions are correct?
 2) What % of data in Class A did the model correctly predict (recall) in Class A?
 
-There are cases where one metric is more important than the other. In a spam model for example, we would favour Recall over Precision as we don't want to let spam through. However in models for medical diagnosis, Precision can be favoured over Recall, as we want to limit the number of false positive diagnoses.  
+There are cases where one metric is more important than the other. In a spam model for example, we would favour Recall over Precision as we don't want to let spam through. However in models for medical diagnosis, Precision can be favoured over Recall, as we want to limit the number of false positive diagnoses.
 
 #### Activation Functions
 
