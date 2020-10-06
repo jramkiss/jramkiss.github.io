@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Machine Learning Interview Questions and Answers"
+title: "Machine Learning Interview Prep"
 date: 2020-09-29 2:22
 comments: true
 author: "Jonathan Ramkissoon"
@@ -38,7 +38,8 @@ A main problem with decision trees apart from overfitting is that it struggles t
   <img src="/assets/decision-tree-additive-structure.png" width="100%" height="100%">
 </p>
 
-We can reduce overfitting by ensembling trees, resulting in a random forest.
+Fully grown decision trees are high-variance and low-bias, so bagging can help. A downside to bagging is that we lose the interpretability we had with the single decision tree. However this can be somewhat accounted for by measuring variable importance by counting the number of times variables are split on.
+Bagged decision trees can be taken one step further by only considering a subset of features at each split. This furhter reduces variance but increases bias and is called **random forests**.
 
 #### Gradient Boosted Machines
 
@@ -106,8 +107,20 @@ http://cs229.stanford.edu/notes/cs229-notes4.pdf
 #### Regularization
 http://cs229.stanford.edu/notes/cs229-notes5.pdf
 
-#### Boosting, Bagging, Gradient Boosting
-http://cs229.stanford.edu/notes/cs229-notes-ensemble.pdf
+#### Bagging, Boosting, Gradient Boosting
+
+###### Bagging
+Bagging stands for Bootstrap Aggregation and is a variance reduction technique. We start by bootstrap sampling a dataset into $M$ bootstrap samples. Then we build models, $g_m(X)$, on each sample and aggregate their outputs to make predictions: $g(X) = \sum_m\frac{g_m(X)}{M}$.
+
+Bagging creates less correlated predictors than if we just trained on the whole sample, thus reducing overall variance. However the overall bias is increased because each individual bootstrap sample doesn't contain the full training set. More on bagging [here](http://cs229.stanford.edu/notes/cs229-notes-ensemble.pdf).
+
+###### Boosting
+Boosting is a bias-reduction technique where we iteratively train weak learners (ex: decision trees with only 1 split / decision stumps). At each iteration we give misclassified points higher weight and train another learner. At the end we have an ensemble of weak learners.
+More on boosting [here](http://cs229.stanford.edu/extra-notes/boosting.pdf).
+
+###### Gradient Boosting
+
+Don't fully understand, read about it: [http://cs229.stanford.edu/notes/cs229-notes-ensemble.pdf](http://cs229.stanford.edu/notes/cs229-notes-ensemble.pdf)
 
 #### Precision, Recall and F1 Score
 
