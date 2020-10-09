@@ -92,7 +92,6 @@ http://cs229.stanford.edu/notes/cs229-notes2.pdf
 k-Means: http://cs229.stanford.edu/notes/cs229-notes7a.pdf
 
 #### Principal Component Analysis
-[here](http://cs229.stanford.edu/notes/cs229-notes10.pdf)
 
 Consider a dataset $\{x_i; i = 1..m\}$ that represent pilots of RC helicopters. We can have that $x_{i1}$ measures the pilot's skill and $x_{i2}$ measures thow much he/she enjoys flying. Since RC helicopters are usually difficult to fly, the most skilled pilots are the ones who enjoy flying the most. Therefore we can expect that the data actually lies on a diagonal axis representing the "piloting karma" of a person. And orthogonal to that axis is some noise.
 In addition to this, we may want an automatic way of detecting when 2 covariates have high covariance, so that we can either combine them or exclude them.
@@ -108,7 +107,9 @@ $$\begin{aligned}
 &= u^T (\frac{1}{m} \sum_{i=1}^{m}x_i x_i^T) u
 \end{aligned}$$
 
-Maximizing this subject to $||u||_2=1$ gives the principal eigenvector of $\Sigma = \frac{1}{m} \sum_{i=1}^{m} x_i x_i^T$, which is the empirical covariance of the data, assuming the mean is $0$. More generally, if we wish to project our data into a $k$-dimensional subspace $(k < n)$, we should choose $u_1, ..., u_k$ to be the top $k$ eigenvectors of $\Sigma$. 
+Maximizing this subject to $||u||_2=1$ gives the principal eigenvector of $\Sigma = \frac{1}{m} \sum_{i=1}^{m} x_i x_i^T$, which is the empirical covariance of the data, assuming the mean is $0$. More generally, if we wish to project our data into a $k$-dimensional subspace $(k < n)$, we should choose $u_1, ..., u_k$ to be the top $k$ eigenvectors of $\Sigma$.
+
+More on PCA [here](http://cs229.stanford.edu/notes/cs229-notes10.pdf).
 
 
 #### Convolutional Neural Networks
