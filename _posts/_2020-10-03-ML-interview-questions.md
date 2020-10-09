@@ -103,6 +103,11 @@ http://cs229.stanford.edu/notes/cs229-notes10.pdf
 
 #### Bias / Variance Tradeoff
 http://cs229.stanford.edu/notes/cs229-notes4.pdf
+http://cs229.stanford.edu/notes/cs229-notes-all/error-analysis.pdf
+
+We can forget about bias and variance, and just focus on building a model given some training data. We know that there is a possibility that we overtrain the model on this specific set of training data, so we're careful not to do so. On the flip side, we're aware that if we train too little, the model will predict garbage as it isn't able to capture the signal. This tradeoff between overfitting and underfitting is exactly the bias-variance tradeoff.
+If we over train the model too our training set, when we try to generalize to more data we can expect varying predictions, i.e. high variance. However if we undertrain the model, we can expect more consistent, but wrong predictions.
+
 
 #### Regularization
 http://cs229.stanford.edu/notes/cs229-notes5.pdf
