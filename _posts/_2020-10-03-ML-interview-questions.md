@@ -1,24 +1,21 @@
 ---
 layout: post
-title: "Machine Learning Interview Prep"
+title: "Machine Learning Reference Sheet"
 date: 2020-09-29 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Designed to be a personal reference guide for ML intreview questions
+summary: Designed to be a personal refresher for some ML models and concepts.
 ---
-
-I break down the ML interview into 3 sections:
-
-- Models
-- Concepts
-- Situations
 
 
 ## Models
 
 #### Linear Regression, Logistic Regression and GLM's
 http://cs229.stanford.edu/notes/cs229-notes1.pdf
+
+---
+
 
 #### Decision Trees and Random Forests
 
@@ -41,7 +38,7 @@ A main problem with decision trees apart from overfitting is that it struggles t
 Fully grown decision trees are high-variance and low-bias, so bagging can help. A downside to bagging is that we lose the interpretability we had with the single decision tree. However this can be somewhat accounted for by measuring variable importance by counting the number of times variables are split on.
 Bagged decision trees can be taken one step further by only considering a subset of features at each split. This furhter reduces variance but increases bias and is called **random forests**.
 
-#### Gradient Boosted Machines
+---
 
 #### Support Vector Machines
 
@@ -88,11 +85,31 @@ More on SVM's [here](http://cs229.stanford.edu/notes/cs229-notes3.pdf).
 
 http://cs229.stanford.edu/notes/cs229-notes2.pdf
 
+---
+
+
 #### k-Means and k-NN
 k-Means: http://cs229.stanford.edu/notes/cs229-notes7a.pdf
 
 #### Principal Component Analysis
-http://cs229.stanford.edu/notes/cs229-notes10.pdf
+[here](http://cs229.stanford.edu/notes/cs229-notes10.pdf)
+
+Consider a dataset $\{x_i; i = 1..m\}$ that represent pilots of RC helicopters. We can have that $x_{i1}$ measures the pilot's skill and $x_{i2}$ measures thow much he/she enjoys flying. Since RC helicopters are usually difficult to fly, the most skilled pilots are the ones who enjoy flying the most. Therefore we can expect that the data actually lies on a diagonal axis representing the "piloting karma" of a person. And orthogonal to that axis is some noise.
+In addition to this, we may want an automatic way of detecting when 2 covariates have high covariance, so that we can either combine them or exclude them.
+
+<p align="center">
+  <img src="/assets/PCA-pilot-example.png" width="80%" height="70%">
+</p>
+
+We want to find the directions of the underlying data, $u_1$ and $u_2$. Given a unit vector $u$ and a point, $x$, the length of the projection of $x$ onto direction $u$ is $x^Tu$. i.e. if $x^{(i)}$ is a point in our dataset and we project it onto direction $u$, it is $x^Tu$ distance from the origin. Hence, to maximize the variance of projections, we want to choose $u$ to maximize:
+
+$$\begin{aligned}
+\frac{1}{m} \sum_{i=1}^{m} (x_{i}^Tu)^2 &= \frac{1}{m} \sum_{i=1}^{m} u^T x_i x_i^T u \\
+&= u^T (\frac{1}{m} \sum_{i=1}^{m}x_i x_i^T) u
+\end{aligned}$$
+
+Maximizing this subject to $||u||_2=1$ gives the principal eigenvector of $\Sigma = \frac{1}{m} \sum_{i=1}^{m} x_i x_i^T$, which is the empirical covariance of the data, assuming the mean is $0$. More generally, if we wish to project our data into a $k$-dimensional subspace $(k < n)$, we should choose $u_1, ..., u_k$ to be the top $k$ eigenvectors of $\Sigma$. 
+
 
 #### Convolutional Neural Networks
 
