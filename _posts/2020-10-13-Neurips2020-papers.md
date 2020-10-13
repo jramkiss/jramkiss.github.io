@@ -23,7 +23,7 @@ Now we have pseudo-labels for the unlabelled data and need to select which of th
 Finally, we have the data to train the student model. However if it is uses naively all uncertainty information is lost. To incorporate this info into the student model, the loss function is altered to penalize wrong classifications of low-uncertainty points more than wrong classifications of high-uncertainty points. This is done by adding the inverse posterior variance $Var(y_u)$ to the student model loss function.
 
 
-### [Simple and Principled Uncertainty Estimation with Deterministic Deep Learning via Distance Awareness](https://arxiv.org/abs/2006.10108)
+<!-- ### [Simple and Principled Uncertainty Estimation with Deterministic Deep Learning via Distance Awareness](https://arxiv.org/abs/2006.10108)
 
 The goal of this paper is to build an uncertainty estimation framework based on distance.
 
@@ -34,4 +34,4 @@ The goal of this paper is to build an uncertainty estimation framework based on 
 ### [ClusTR: Clustering Training for Robustness](https://arxiv.org/abs/2006.07682)
 
 
-### [Bayesian Deep Ensembles via the Neural Tangent Kernel](https://arxiv.org/abs/2007.05864)
+### [Bayesian Deep Ensembles via the Neural Tangent Kernel](https://arxiv.org/abs/2007.05864) -->
