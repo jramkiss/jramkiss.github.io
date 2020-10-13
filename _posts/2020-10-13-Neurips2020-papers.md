@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Most interesting papers from NeurIPS 2020"
-date: 2020-09-29 2:22
+title: "Interesting papers from NeurIPS 2020"
+date: 2020-10-10 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Notes on the papers I find most interesting from NeurIPS 2020.
+summary: Notes on some papers I find interesting from NeurIPS 2020.
 ---
 
 <!-- ### Questions to answer:
