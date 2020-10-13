@@ -113,6 +113,7 @@ More on PCA [here](http://cs229.stanford.edu/notes/cs229-notes10.pdf).
 
 
 #### Convolutional Neural Networks
+http://d2l.ai/chapter_convolutional-neural-networks/index.html
 
 #### Sequence Models and LSTM's
 
