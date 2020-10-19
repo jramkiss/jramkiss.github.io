@@ -14,6 +14,9 @@ summary: Notes on some papers I find interesting from NeurIPS 2020.
 - How do they go about doing it?
 - No math / very little math. Meant to just get your foot wet. -->
 
+This post briefly outlines some papers I found interesting in NeruIPS 2020. I'm continuously adding to it to as I find time to read more.
+
+
 ### [Uncertainty-aware Self-training for Text Classification with Few Labels](https://arxiv.org/pdf/2006.15315.pdf)
 
 The goal of this paper is to incorporate uncertainty estimates into a self-training framework to improve both sampling of unlabelled data and training of the student model.
@@ -34,12 +37,7 @@ They propose a method to improve input distance awareness in residual architectu
 Distance is preserved in the hidden space by using spectral normalization. In residual-based architectures, we can regularize the weights of the residual layers, which is proven to preserve distance.
 
 
-
-
 <!--
-### [Hyperparameter Ensembles for Robustness and Uncertainty Quantification](https://arxiv.org/abs/2006.13570)
-
-
 ### [ClusTR: Clustering Training for Robustness](https://arxiv.org/abs/2006.07682)
 
 

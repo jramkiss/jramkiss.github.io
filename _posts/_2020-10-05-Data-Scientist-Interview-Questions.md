@@ -23,7 +23,6 @@ summary: A collection of cool data scientist interview questions that I've come 
 - How do you deal with missing values?
 - What are the relationships between the coefficient in the logistic regression and the odds ratio?
 - How do you validate a machine learning model?
-- What's your favorite kernel function?
 - What’s the difference between l1 and l2 regularization and why would you use each?
 - What features would you use to predict the time spent for a restaurant preparing food from the moment an order comes in?
 - Can you come up with a scenario in which you would rather under-predict versus over-predict?
@@ -33,7 +32,11 @@ summary: A collection of cool data scientist interview questions that I've come 
 - What are the differences between L1 and L2 regularization, why don’t people use L0.5 regularization for instance?
 - Write the equation for building a classifier using Logistic Regression.
 - Why is Rectified Linear Unit a good activation function?
--
+- Explain the central limit theorem
+- How to model cost of renting cars to drivers?
+- What is cross validation?
+- Explain PCA and its assumptions
+- 
 
 
 ### Probability and Statistics
@@ -79,7 +82,7 @@ summary: A collection of cool data scientist interview questions that I've come 
 - How would you design an experiment for a new content recommendation model we’re thinking of rolling out? What metrics would matter?
 - How would you select a representative sample of search queries from five million?
 - If Netflix is looking to expand its presence in Asia, what are some factors that you can use to evaluate the size of the Asia market, and what can Netflix do to capture this market?
-- 
+-
 
 
 

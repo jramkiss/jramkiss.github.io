@@ -115,10 +115,15 @@ More on PCA [here](http://cs229.stanford.edu/notes/cs229-notes10.pdf).
 #### Convolutional Neural Networks
 http://d2l.ai/chapter_convolutional-neural-networks/index.html
 
-#### Sequence Models and LSTM's
-
 
 ## Concepts
+
+#### Central Limit Theorem
+
+The CLT states that with a population with mean, $\mu$ and standard deviation, $\sigma$. If we take sufficiently large samples with replacement then the distribution of the sample means will be approximately Normally distributed.
+
+In practice it helps us assign a distribution for sample estimates, which are used in hypothesis testing.
+
 
 #### Bias / Variance Tradeoff
 http://cs229.stanford.edu/notes/cs229-notes4.pdf
@@ -154,8 +159,6 @@ When evaluating a classifier, we are interested in two things:
 2) What % of data in Class A did the model correctly predict (recall) in Class A?
 
 There are cases where one metric is more important than the other. In a spam model for example, we would favour Recall over Precision as we don't want to let spam through. However in models for medical diagnosis, Precision can be favoured over Recall, as we want to limit the number of false positive diagnoses.
-
-#### Activation Functions
 
 #### Dropout
 
