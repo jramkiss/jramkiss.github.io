@@ -29,7 +29,8 @@ Finally, we have the data to train the student model. However if it is uses naiv
 
 Here the authors argue that distance awareness is a necessary condition for uncertainty calibration. They outline two conditions distance awareness in the model, which are:
 
-1) Making the last layer distance aware, which can be achieved by using a GP with a shift-invariant kernel.
+1) Making the last layer distance aware, which can be achieved by using a GP with a shift-invariant kernel.  
+
 2) Making the hidden layers distance preserving so that the distance in the latent space has a meaningful correspondence in the input space.
 
 They propose a method to improve input distance awareness in residual architectures (ResNet, DenseNet, transformers). It replaces the dense final layer by a Gaussian process with an RBF kernel. The posterior variance for **$x^*$** is given by the $L_2$ distance from the training data in the hidden space, and a Laplace approximation is used to approximate the posterior. I'm still not quite sure how this "distance from the training data" is calculated.
