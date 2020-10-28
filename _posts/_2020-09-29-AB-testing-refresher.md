@@ -13,8 +13,10 @@ summary: Discusses concepts such as p-values, one tailed and two tailed tests, t
 ### P-Values
 The p-value of a statistical test is used to determine whether or not to reject the null hypothesis. It is the probability of observing the data under the null hypothesis. Smaller p-values simply indicate a lower probability of observing the data, given that the null hypothesis is true. If the p-value is low enough, we can say that the observation is improbable enough for us to reject our belief in the null hypothesis.
 
+The p-value can also be a measure of the false positive rate. Meaning it is the probability of observing the data even though there is no change. This is related to the significance level, which is the threshold at which we reject the null hypothesis. 
+
 ### Statistical Power
-The power of a statistical test is the probability of finding an effect if there is an effect to be found. 
+The power of a statistical test is the probability of finding an effect if there is an effect to be found.
 
 ## Statistical Tests
 
