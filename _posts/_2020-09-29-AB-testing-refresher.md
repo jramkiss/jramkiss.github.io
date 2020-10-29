@@ -51,4 +51,4 @@ The more appropriate way to measure multiple variants is using ANOVA.
 
 - [Stanford course on experimental design](https://statweb.stanford.edu/~owen/courses/363/)
 - [Guide to experiments on the web](https://dl.acm.org/doi/10.1145/1281192.1281295)
-- 
+- [Lanarkshire milk experiment](http://www.medicine.mcgill.ca/epidemiology/hanley/Reprints/RCH/06LanarkShireMilk.pdf)
