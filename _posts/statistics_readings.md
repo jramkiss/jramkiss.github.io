@@ -20,9 +20,10 @@ math: true
 ### Experimental Design
 
 - [A/B Testing, Stanford Experimental Design course](https://statweb.stanford.edu/~owen/courses/363/abtest.pdf) - A/B testing on websites, popular questions and difficulties
-- 
+
 
 ### Bayesian Statistics
 
+- [Statistical Rethinking, Python/PyMC3](https://github.com/pymc-devs/resources/tree/master/Rethinking)
 
 ### Miscelaneous
