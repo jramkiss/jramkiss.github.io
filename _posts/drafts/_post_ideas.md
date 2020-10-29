@@ -12,7 +12,7 @@ summary: Bullet points of ideas for future posts.
 ### Gaussian Process Text Classification
 - I want to test out out-of-distribution classification on a simple text classification problem. To do this I want to see if the overarching standard of uncertainty calibration is the Gaussian Process.
 - Also, it will be cool to learn about Gaussian Processes for classification. I should learn and explain how its different to regression
-- Here are some reading resources: [Radford Neal paper](https://www.cs.toronto.edu/~radford/ftp/val6gp.pdf), [GP for ML classification chapter](http://www.gaussianprocess.org/gpml/chapters/RW3.pdf), [GP for classification review](http://www.ideal.ece.utexas.edu/seminar/GP-austin.pdf), [Kaggle thing on GPs](https://www.kaggle.com/residentmario/gaussian-process-regression-and-classification)
+- Here are some reading resources: [Radford Neal paper](https://www.cs.toronto.edu/~radford/ftp/val6gp.pdf), [GP for ML classification chapter](http://www.gaussianprocess.org/gpml/chapters/RW3.pdf), [GP for classification review](http://www.ideal.ece.utexas.edu/seminar/GP-austin.pdf), [Kaggle thing on GPs](https://www.kaggle.com/residentmario/gaussian-process-regression-and-classification), [more notes](https://www.newton.ac.uk/files/seminar/20080218163017001-151449.pdf)
 
 ### Hierarchical Models: Where does the flexibility come from?
 - Outline a hierarchical model
