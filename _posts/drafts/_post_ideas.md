@@ -8,10 +8,16 @@ math: true
 summary: Bullet points of ideas for future posts.
 ---
 
+
+### Gaussian Process Text Classification
+- I want to test out out-of-distribution classification on a simple text classification problem. To do this I want to see if the overarching standard of uncertainty calibration is the Gaussian Process.
+- Also, it will be cool to learn about Gaussian Processes for classification. I should learn and explain how its different to regression
+- Here are some reading resources: [Radford Neal paper](https://www.cs.toronto.edu/~radford/ftp/val6gp.pdf), [GP for ML classification chapter](http://www.gaussianprocess.org/gpml/chapters/RW3.pdf), [GP for classification review](http://www.ideal.ece.utexas.edu/seminar/GP-austin.pdf), [Kaggle thing on GPs](https://www.kaggle.com/residentmario/gaussian-process-regression-and-classification)
+
 ### Hierarchical Models: Where does the flexibility come from?
 - Outline a hierarchical model
 - Try to determine where the flexibility comes from. Why is it so much more flexibile than a non-hierarchical model?
-- Can use the example of the Normal-Inverse-ChiSquared being the t-distribution, which has fatter tails than just the normal. 
+- Can use the example of the Normal-Inverse-ChiSquared being the t-distribution, which has fatter tails than just the normal.
 
 ### Online Mixture of Gaussians
 - Key Idea: Write code to estimate Gaussian mixture models with Dirichlet process priors using $D$ data. Then have a constant stream of data being added, $D_{t+1}...$ and update the GMM online. Plot all of this happening in real time.
