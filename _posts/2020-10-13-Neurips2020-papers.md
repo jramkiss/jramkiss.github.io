@@ -38,6 +38,8 @@ They propose a method to improve input distance awareness in residual architectu
 Distance is preserved in the hidden space by using spectral normalization. In residual-based architectures, we can regularize the weights of the residual layers, which is proven to preserve distance.
 
 
+<!-- ### [Energy Based Out-of-Distribution Detection](https://arxiv.org/pdf/2010.03759.pdf) -->
+
 <!--
 ### [ClusTR: Clustering Training for Robustness](https://arxiv.org/abs/2006.07682)
 
