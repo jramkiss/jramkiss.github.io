@@ -8,6 +8,9 @@ math: true
 summary: Bullet points of ideas for future posts.
 ---
 
+### Hypothesis Testing and Significance Levels
+- Basically a post walking through that interview question I got about significance levels and metrics. The math behind what's really going on. And a couple explanations of p-values.
+- p-value: False positive rate. How is it a false positive rate
 
 ### Gaussian Process Text Classification
 - I want to test out out-of-distribution classification on a simple text classification problem. To do this I want to see if the overarching standard of uncertainty calibration is the Gaussian Process.
