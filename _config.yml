@@ -120,10 +120,11 @@ permalink:    pretty
 paginate:     8
 sass:
   style: compressed
+remote_theme: niklasbuschmann/contrast@v2.8
 plugins:
   - jekyll-paginate
   - jekyll-sitemap
-# https://github.com/jekyll/jekyll/issues/2938
+  - jekyll-remote-theme
 exclude:
   - Gemfile
   - Gemfile.lock
