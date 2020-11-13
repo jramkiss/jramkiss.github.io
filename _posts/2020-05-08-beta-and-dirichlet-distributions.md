@@ -24,7 +24,7 @@ Suppose we have an experiment where we ask $n$ random people if their favourite 
 
 <!-- binomial plot of samples -->
 <p align="center">
-  <img src="/assets/binomial-samples.png" width="65%" height="65%">
+  <img src="/assets/binomial-samples.png" width="55%" height="55%">
 </p>
 &nbsp;
 
