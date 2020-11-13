@@ -17,9 +17,7 @@ summary: Notes on some papers I find interesting from NeurIPS 2020.
 This post briefly outlines some papers I found interesting in NeruIPS 2020. I'm continuously adding to it to as I find time to read more.
 
 
-<a href="https://arxiv.org/pdf/2006.15315.pdf" style="text-decoration: none;" class="h3">Uncertainty-aware Self-training for Text Classification with Few Labels</a>
-
-<!-- ### [Uncertainty-aware Self-training for Text Classification with Few Labels](https://arxiv.org/pdf/2006.15315.pdf) -->
+### [Uncertainty-aware Self-training for Text Classification with Few Labels](https://arxiv.org/pdf/2006.15315.pdf)
 
 The goal of this paper is to incorporate uncertainty estimates into a self-training framework to improve both sampling of unlabelled data and training of the student model.
 The process starts by building a predictive distribution over an unlabelled point, $x_u$. Multiple forward passes are done, each using [MC dropout](https://arxiv.org/pdf/1506.02142.pdf) to get a distribution over $y_u$.
