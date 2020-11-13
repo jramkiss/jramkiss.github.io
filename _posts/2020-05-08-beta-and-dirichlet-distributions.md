@@ -24,7 +24,7 @@ Suppose we have an experiment where we ask $n$ random people if their favourite 
 
 <!-- binomial plot of samples -->
 <p align="center">
-  <img src="/assets/binomial-samples.png" width="80%" height="80%">
+  <img src="/assets/binomial-samples.png" width="65%" height="65%">
 </p>
 &nbsp;
 
@@ -36,7 +36,7 @@ Samples from the Beta distribution can be thought of as potential probabilities 
 
 <!-- beta plot of samples -->
 <p align="center">
-  <img src="/assets/beta-samples.png" width="80%" height="80%">
+  <img src="/assets/beta-samples.png" width="70%" height="70%">
 </p>
 &nbsp;
 
@@ -54,9 +54,8 @@ We used the Binomial distribution to find out if people's favourite colour is bl
 Now we want more information. We're interested in the distribution of people whose favourite colours are either: blue, green, red or yellow. If we ask $n$ people to choose their favourite color from one of these, the number of successes for each colour will follow a Multinomial distribution. Each parameter, $p_{blue}, p_{green}, p_{red}, p_{yellow}$ is the probability of that colour being a random person's favourite. Sampling from this Multinomial will return a vector of length $4$ corresponding to the number of successes for that color. For each sample, the total number of successes sums to $n$.
 
 <!-- beta plot of samples -->
-<!--![](/assets/multinomial-samples.png | width=48)-->
 <p align="center">
-  <img src="/assets/multinomial-samples.png" width="80%" height="80%">
+  <img src="/assets/multinomial-samples.png" width="70%" height="70%">
 </p>
 &nbsp;
 
@@ -68,9 +67,8 @@ Similarly with the Beta and Binomial combo, we need a prior for each $p_i$ in th
 A vector of length $k$ parameterizes the Dirichlet distribution, and the parameters are similar to $(\alpha, \beta)$ for the Beta distribution. Below are samples from 2 Dirichlet distributions with different parameters.
 
 <!-- dirichlet plot of samples -->
-<!--![](/assets/dirichlet-samples.png)-->
 <p align="center">
-  <img src="/assets/dirichlet-samples.png" width="80%" height="80%">
+  <img src="/assets/dirichlet-samples.png" width="70%" height="70%">
 </p>
 &nbsp;
 
