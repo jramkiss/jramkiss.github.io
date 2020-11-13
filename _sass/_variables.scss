@@ -41,6 +41,7 @@ $green: #00cf26 !default;
 $yellow: #efcc00 !default;
 $orange: #ffcc22 !default;
 $purple: #f92080 !default;
+$light-blue: #236cff !default;
 $dark-blue: #00369f !default;
 $green: #00ab37 !default;
 $dark-green: #009f06 !default;
@@ -56,8 +57,8 @@ $darken-3: rgba(#000,.25) !default;
 $darken-4: rgba(#000,.5) !default;
 
 // Links
-$link-color: $blue;
-$link-hover-color: darken($blue, 40%);
+$link-color: $light-blue;
+$link-hover-color: darken($light-blue, 25%);
 
 // Breakpoints
 $breakpoint-md: '(min-width: 65em)';
