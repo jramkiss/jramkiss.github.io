@@ -23,9 +23,8 @@ I was a competitive [swimmer](https://www.swimrankings.net/index.php?page=athlet
 
 You can shoot me an email at _ramkissoon.jonathan@hotmail.com_ <a href="mailto:ramkissoon.jonathan@hotmail.com" title="Email"><i class="fa fa-envelope-square"></i></a>
 
-<a href="https://twitter.com/_jramkissoon" class="twitter-follow-button" data-show-count="false">@_jramkissoon_</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-<div id="social-media">
+<div id="social-media" align="center">
+    <a href="mailto:ramkissoon.jonathan@hotmail.com" title="Email"><i class="fa fa-envelope-square"></i></a>
     <a href="https://www.facebook.com/your-facebook-username" title="Facebook"><i class="fa fa-facebook-square"></i></a>
     <a href="https://github.com/jramkiss" title="Github"><i class="fa fa-github-square"></i></a>
     <a href="https://twitter.com/_JRamkissoon" title="Twitter"><i class="fa fa-twitter-square"></i></a>
