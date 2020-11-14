@@ -22,4 +22,7 @@ I was a competitive [swimmer](https://www.swimrankings.net/index.php?page=athlet
 
 You can shoot me an email at
 
+<div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+
+
 <a href="https://twitter.com/_jramkissoon" class="twitter-follow-button" data-show-count="false">Follow @_jramkissoon_</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
