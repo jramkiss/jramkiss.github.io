@@ -26,3 +26,7 @@ You can shoot me an email at _ramkissoon.jonathan@hotmail.com_ or find me on
 <a href="https://twitter.com/_jramkissoon" class="twitter-follow-button" data-show-count="false">@_jramkissoon_</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <a href="https://www.facebook.com/your-facebook-username" title="Facebook"><i class="fa fa-facebook-square"></i></a>
+
+<a href="https://github.com/jramkiss" title="Github"><i class="fa fa-github-square"></i></a>
+
+<a href="https://twitter.com/_JRamkissoon" title="Twitter"><i class="fa fa-twitter-square"></i></a>
