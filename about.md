@@ -22,4 +22,4 @@ I was a competitive [swimmer](https://www.swimrankings.net/index.php?page=athlet
 
 You can find me on 
 
-<a class="twitter-timeline" data-theme="dark" href="https://twitter.com/_JRamkissoon">Tweets by _jramkissoon</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<a href="https://twitter.com/_jramkissoon" class="twitter-follow-button" data-show-count="false">Follow @_jramkissoon_</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
