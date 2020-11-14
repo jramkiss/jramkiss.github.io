@@ -17,7 +17,7 @@ I am currently a data scientist at [Scribd](https://www.scribd.com) on the Appli
 
 I was a competitive [swimmer](https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=4849767) for 12 years and still enjoy recreational swimming. I've recently picked up tennis, which has proven to be **a lot** harder than it looks on Youtube.
 
-<a href="https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=4849767" title="swimming"><i class="fa fa-swimmer"></i></a>
+<a href="https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=4849767" title="swimming"><i class="fas fa-swimmer"></i></a>
 
 ### Contact 
 
