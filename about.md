@@ -20,6 +20,6 @@ I was a competitive [swimmer](https://www.swimrankings.net/index.php?page=athlet
 
 ### Contact 
 
-You can find me on 
+You can shoot me an email at
 
 <a href="https://twitter.com/_jramkissoon" class="twitter-follow-button" data-show-count="false">Follow @_jramkissoon_</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
