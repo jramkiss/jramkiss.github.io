@@ -8,30 +8,18 @@ tags: about
 <img style="display: block; margin-left: auto; margin-right: auto; object-fit: cover; border-radius:50%;" width="300" height="300" src="/assets/profile.JPG" align="middle" alt="Profile">
 
 
-<table border="0">
- <tr>
-    <td><b style="font-size:30px">Title</b></td>
-    <td><b style="font-size:30px">Title 2</b></td>
- </tr>
- <tr>
-    <td>
-        ### Work
+### Work
 
-        I am currently a data scientist at [Scribd](https://www.scribd.com) on the Applied Research team in Toronto. I'm mainly interested in modelling problems with Bayesian statistics. I also enjoy other problems in deep learning, which is what my day job is centered around.
+I am currently a data scientist at [Scribd](https://www.scribd.com) on the Applied Research team in Toronto. I'm mainly interested in modelling problems with Bayesian statistics. I also enjoy other problems in deep learning, which is what my day job is centered around.
 
 
-        ### Play
+### Play
 
-        I was a competitive [swimmer](https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=4849767) for 12 years and still enjoy recreational swimming. I've recently picked up tennis, which has proven to be **a lot** harder than it looks on Youtube.
-
-
-        ### Contact 
-
-        You can find me on 
-    </td>
-    <td>Lorem ipsum ...</td>
- </tr>
-</table>
+I was a competitive [swimmer](https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=4849767) for 12 years and still enjoy recreational swimming. I've recently picked up tennis, which has proven to be **a lot** harder than it looks on Youtube.
 
 
-<a class="twitter-timeline" data-width="220" data-height="200" data-theme="dark" href="https://twitter.com/TwitterDev?ref_src=twsrc%5Etfw">Tweets by TwitterDev</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+### Contact 
+
+You can find me on 
+
+<a class="twitter-timeline" data-theme="dark" href="https://twitter.com/TwitterDev?ref_src=twsrc%5Etfw">Tweets by TwitterDev</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
