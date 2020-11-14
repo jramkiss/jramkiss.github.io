@@ -1,25 +1,28 @@
-<div class="share-page">
+<div class="share-page" align="center">
   {{ site.text.share_buttons.text | default: "Share this post!" }}
 
   <div class="share-links">
     {% if site.share_facebook %}
-      <a class="fa fa-facebook" href="https://facebook.com/sharer.php?u={{ site.url | cgi_escape }}{{ page.url | cgi_escape }}" rel="nofollow" target="_blank" title="{{ site.text.share_buttons.facebook | default: "Share on Facebook" }}"></a>
+      <a class="fa fa-facebook-square" href="https://facebook.com/sharer.php?u={{ site.url | cgi_escape }}{{ page.url | cgi_escape }}" rel="nofollow" target="_blank" title="{{ site.text.share_buttons.facebook | default: "Share on Facebook" }}"></a>
     {% endif %}
 
     {% if site.share_twitter %}
-      <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?text={{ page.title | cgi_escape }}&amp;url={{ site.url | cgi_escape }}{{ page.url | cgi_escape }}" rel="nofollow" target="_blank" title="{{ site.text.share_buttons.twitter | default: "Share on Twitter" }}"></a>
+      <a class="fa fa-twitter-square" href="https://twitter.com/intent/tweet?text={{ page.title | cgi_escape }}&amp;url={{ site.url | cgi_escape }}{{ page.url | cgi_escape }}" rel="nofollow" target="_blank" title="{{ site.text.share_buttons.twitter | default: "Share on Twitter" }}"></a>
     {% endif %}
 
     {% if site.share_linkedin %}
-      <a class="fa fa-linkedin" href="http://www.linkedin.com/shareArticle?url={{ site.url | cgi_escape }}{{ page.url | cgi_escape }}&amp;title={{ page.title | cgi_escape }}" rel="nofollow" target="_blank" title="{{ site.text.share_buttons.linkedin | default: "Share on LinkedIn" }}"></a>
+      <a class="fa fa-linkedin-square" href="http://www.linkedin.com/shareArticle?url={{ site.url | cgi_escape }}{{ page.url | cgi_escape }}&amp;title={{ page.title | cgi_escape }}" rel="nofollow" target="_blank" title="{{ site.text.share_buttons.linkedin | default: "Share on LinkedIn" }}"></a>
     {% endif %}
 
     {% if site.share_reddit %}
       <a class="fa fa-reddit" href="http://reddit.com/submit?url={{ site.url | cgi_escape }}{{ page.url | cgi_escape }}&amp;title={{ page.title | cgi_escape }}" rel="nofollow" target="_blank" title="{{ site.text.share_buttons.reddit | default: "Share on Reddit" }}"></a>
     {% endif %}
-    
+
     {% if site.share_hackernews %}
       <a class="fa fa-hacker-news" onclick="parent.postMessage('submit','*')" href="https://news.ycombinator.com/submitlink?u={{ site.url | cgi_escape }}{{ page.url | cgi_escape }}&amp;t={{ page.title | cgi_escape }}" rel="nofollow" target="_blank" title="{{ site.text.share_buttons.hackernews | default: "Share on Hacker News" }}"></a>
     {% endif %}
   </div>
 </div>
+
+
+
