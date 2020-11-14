@@ -1,7 +1,7 @@
 ---
 layout: page
 permalink: /about/
-title: About1000100
+title: About
 tags: about
 ---
 
