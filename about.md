@@ -1,6 +1,5 @@
 ---
 layout: page
-title: maldkjfal;kj
 permalink: /about/
 tags: about
 ---
