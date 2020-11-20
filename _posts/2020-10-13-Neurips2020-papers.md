@@ -38,11 +38,19 @@ They propose a method to improve input distance awareness in residual architectu
 Distance is preserved in the hidden space by using spectral normalization. In residual-based architectures, we can regularize the weights of the residual layers, which is proven to preserve distance.
 
 
+### [Energy Based Out-of-Distribution Detection](https://arxiv.org/pdf/2010.03759.pdf)
+
+To better estimate in-distribution and out-of-distribution examples with no re-training, compare the raw logit scores and not softmax scores. The authors show that the softmax score are not proportional to the likelihood, $p(x)$, because each logit is scaled by the largest logit. I found this one of the most interesting parts of the paper.
+
+They also propose a method for incorporating energy into a training regime, which is done by adding 2 regularization terms to the loss function. The first penalizes the model when it assigns high energy scores to an in-distribution input and the second penalizes the model when it assigns low energy scores to an out-distribution input. 
+
+<!-- When you train this model with in-distribution and out-distribution data, in a way you defeat the purpose of out-distribution, since you explicitly show the model what out-distribution looks like. I wonder if there's a way we can find counter examples to this. So I would train a model with an appropriate in and out distribution dataset, then feed it examples and try to break it to prove that all it does is learn how to discriminate between the data it was given, and not truly learn about the in-distribution data.  -->
+
 <!-- ### [Bayesian Deep Learning and a Probabilistic Perspective of Generalization](https://arxiv.org/abs/2002.08791) -->
 
 <!-- ### [Can I Trust My Fairness Metric? Assessing Fairness with Unlabeled Data and Bayesian Inference](https://arxiv.org/abs/2010.09851) -->
 
-<!-- ### [Energy Based Out-of-Distribution Detection](https://arxiv.org/pdf/2010.03759.pdf) -->
+<!-- ### [On the Expressiveness of Approximate Inference in Bayesian Neural Networks](https://arxiv.org/pdf/1909.00719.pdf) -->
 
 <!--
 ### [ClusTR: Clustering Training for Robustness](https://arxiv.org/abs/2006.07682)
