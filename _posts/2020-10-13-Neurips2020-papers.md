@@ -43,7 +43,7 @@ Distance is preserved in the hidden space by using spectral normalization. In re
 
 ### [Energy Based Out-of-Distribution Detection](https://arxiv.org/pdf/2010.03759.pdf)
 
-To better estimate in-distribution and out-of-distribution examples with no re-training, compare the raw logit scores and not softmax scores. The authors show that the softmax score are not proportional to the likelihood, $p(x)$, because each logit is scaled by the largest logit. I found this one of the most interesting parts of the paper.
+To better estimate in-distribution and out-of-distribution examples with no re-training, compare the raw logit scores and not softmax scores. The authors show that the softmax scores are not proportional to the likelihood, $p(x)$, because each logit is scaled by the largest logit. I found this one of the most interesting parts of the paper.
 
 They also propose a method for incorporating energy into a training regime, which is done by adding 2 regularization terms to the loss function. The first penalizes the model when it assigns high energy scores to an in-distribution input and the second penalizes the model when it assigns low energy scores to an out-distribution input. 
 
