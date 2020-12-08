@@ -7,6 +7,9 @@ author: "Jonathan Ramkissoon"
 math: true
 ---
 
+## Time Series Analysis
+- [Upenn Course on TSA](http://www-stat.wharton.upenn.edu/~stine/stat910/index.html)
+
 ## Blogs
 - [Avi Vehtari](https://avehtari.github.io/)
 - [Bayesian Inference Notes](https://jrnold.github.io/bayesian_notes/)
