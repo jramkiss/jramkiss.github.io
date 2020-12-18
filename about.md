@@ -10,11 +10,9 @@ tags: about
 
 ### Work
 
-I am currently a data scientist at [Scribd](https://www.scribd.com) on the Applied Research team in Toronto. I'm mainly interested in modelling problems with Bayesian statistics. I also enjoy other problems in deep learning, which is what my day job is centered around.
+I am currently a data scientist at [Scribd](https://www.scribd.com) on the Applied Research team in Toronto. Before that I did my undergrad in statistics at the University of Waterloo. As you can probably see from my posts, I'm mainly interested in the intersection of Bayesian statistics and machine learning.
 
 
 ### Play
 
-I was a competitive [swimmer](https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=4849767) for 12 years and still enjoy recreational swimming. I've recently picked up tennis, which has proven to be **a lot** harder than it looks on Youtube.
-
-<a href="https://www.swimrankings.net/index.php?page=athleteDetail&athleteId=4849767" title="swimming"><i class="fas fa-swimmer"></i></a>
+I was a competitive swimmer for 12 years and competed for Trinidad and at university. I've recently picked up tennis, which has proven to be **a lot** harder than it looks on Youtube.

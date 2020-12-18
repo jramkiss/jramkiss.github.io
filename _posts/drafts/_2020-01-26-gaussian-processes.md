@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Gaussian Processes"
+title: "Ease into Gaussian Processes"
 date: 2020-01-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
@@ -38,6 +38,11 @@ $$ k(x, x') = \sigma^2 \exp(-\frac{(x - x')^2}{2l^2}) $$
 This is the squared exponential kernel. There are many more kernels and a great writeup on them can be found [here](https://www.cs.toronto.edu/~duvenaud/cookbook/).
 
 &nbsp;
+
+
+### How to fit a Gaussian Processes?
+
+
 
 
 
