@@ -6,7 +6,7 @@ _site
 .ipynb_checkpoints
 
 *_files/
-
+.vscode/*
 # files created from converting notebooks to markdown:
 regression_VS_bayesian_regression.md
 
