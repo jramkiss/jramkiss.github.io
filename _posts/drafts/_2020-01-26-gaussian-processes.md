@@ -1,19 +1,19 @@
 ---
 layout: post
-title: "Gaussian Processes"
+title: "Exaplantion of Gaussian Processes"
 date: 2020-01-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Explanation of Gaussian processes for dummies like myself. Starting with how to think about a Gaussian process, then moves on to simulation from Gaussian process priors and ends with Gaussian process regression 
+summary: An easy explanation of Gaussian processes for dummies like myself. Starting with how to think about a Gaussian process, then moving on to simulating from GP priors and ends with an example of Gaussian process regression with GPyTorch
 ---
 
 
-### Why is this a cool model?
+<!-- ### Why is this a cool model?
 
 Imagine learning about neural networks for the first time, and thinking _"wow, is there anything this thing can't do??"_. And the heartbreak later on, when you realize a [neural network trained to classify cats and dogs](https://jramkiss.github.io/2020/07/29/overconfident-nn/) predicts you're a dog with 98% confidence. Clearly they aren't _that_ good, since they don't even know what they don't know. This is why I find Gaussian Processes so cool, they are the gold standard for "knowing when you don't know".
 
-&nbsp;
+&nbsp; -->
 
 I've found many articles about Gaussian processes that start their explanation by describing stochastic processes, then go on to say that a GP is a distribution over functions, or an infinite dimensional distribution. This may be the "right" way to approach it, but I find it harsh for an introduction. In this post I try to explain GPs in a more approachable manner, and use code to show how simple simulation from GPs are.
 
@@ -65,20 +65,73 @@ X = np.linspace(L, U, n).reshape(-1, 1)
 #  use kernel to calculate the covariance matrix
 K = kernel(X)
 
-# use the covariance matrix and zero-vector for the mean to parametize a multivariate Gaussian
+# parametize a multivariate Gaussian with zero mean and K as the covariance matrix
 ys = multivariate_normal.rvs(mean = np.zeros(n), 
                              cov = K, 
                              size = n_func)
 ```
 
+<p align="center">
+  <img src="/assets/gp_prior_samples.png" width="70%" height="70%">
+</p>
+
+&nbsp;
 
 ### Gaussian Process Regression
 
-So far we have seen how to think of GP's as a prior over functions, and how to sample functions from a GP. The next step is to use a GP as a prior for a modelling problem. In this case, we use 
+1) Make explicit the prior, likelihood and posterior. 
+2) Talk about kernels and hyperparameters in the kernels
+3) Talk about the use of loss functions in the regression problem 
+
+In this section we will use the Gaussian process to approximate some functions for which we only have noisy observations for. This will help make clear how GPs are used in modelling.
+
+Building on GP's as a prior over functions, we can form a posterior distribution, $p(f | X, y)$ by conditioning on data. Intiutively, doing this excludes all functions that don't "pass through" our data, $(X, y)$. The problem with doing this for real world problems, however, is that we don't account for noisy observations. This is important to note, since when we outline the model, $f \ne y$. 
+
+I'll use [GPyTorch](https://gpytorch.ai/) to fit some functions using Gaussian process regression. There are easier ways to use GP's in Python, but GPyTorch looks promising, especially with Pytorch integration, so I'm taking this opportunity to learn it. 
+
+&nbsp;
+
+#### Prior, Likelihood, Posterior
+
+We have already discussed the prior, which is $f \sim GP(\mu(x), k(x, x'))$ but haven't talked about the likelihood or posterior yet. As in any other Bayesian formulation, the likelihood is our assumed model of the data, $p(y | X, f)$ and the posterior is the likelihood times the prior:
+
+$$ p(f | X, y) = p(y | X, f) p(f) $$
+
+&nbsp;
+
+#### Squared Exponential Kernel
+
+Specifying the kernel is very important in real world applications, but I won't go into how to do that here. Instead I want to talk about one kernel in particular, as the next section may not make sense otherwise. 
+
+The kernel we will be using here is the squared exponential kernel / radial basis function kernel / Gaussian kernel. 
+
+$$ k(x, x') = \sigma_f^2 \exp(\frac{(x - x')^2}{2 \iota^2}) $$
+
+There are two parameters in this kernel that need to be estimated from the data, and David Duvenaud describes them well [here](https://www.cs.toronto.edu/~duvenaud/cookbook/): 
+
+- The lengthscale $\iota$ determines the length of the 'wiggles' in your function. In general, you won't be able to extrapolate more than $\iota$ units away from your data.
+- The output variance $sigma_f^2$ determines the average distance of your function away from its mean.
+
+&nbsp;
+
+#### Loss Function
+
+I don't know anything here...
+
+
+&nbsp;
+
+--- 
+
+
+#### 
+
+
 
 ### Questions
 
 - Test out Gaussian Processes on high dimensional data where we don't have the ability to plot. 
+- Can I use GPyTorch for a text classification model with TF-IDF features?
 - What does it mean to "fit a Gaussian process"? What is actually going on in the background? I don't understand how we can simulate draws from the prior.
 - Imagine points on a line. If we divide the line into 5 equal points and each point is Normally distributed, this is what a multivariate gaussian would look like, however if we wanted every single one of the points on the line to be normally distributed, this is what a guassian process would look like.
 - Can I make an active learner using a GP and the embeddings from a NN to learn 
