@@ -121,11 +121,15 @@ model = ExactGP(train_x, train_y, likelihood)
 ```
 
 <p align="center">
-  <img src="/assets/squared_exp_kernel_posterior.png" width="75%" height="70%">
+  <img src="/assets/squared_exp_kernel_posterior.png" width="100%" height="70%">
 </p>
 
 
+#### Marten Kernel
 
+<p align="center">
+  <img src="/assets/marten_kernel_posterior.png" width="100%" height="70%">
+</p>
 
 <!-- #### Noisy Observations
 
