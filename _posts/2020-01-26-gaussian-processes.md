@@ -91,7 +91,7 @@ Here's the function we want to approximate. The points in red are the training d
 
 #### Squared Exponential Kernel
 
-Before we start, a huge decision before fitting a GP is the choice of kernel. This is prior specification in regular Bayesian modelling, but for a Gaussian process. The kernel we will be using here is the squared exponential kernel / radial basis function kernel / Gaussian kernel. 
+Before we start, a big decision is the choice of kernel. This is prior specification in regular Bayesian modelling, but for a Gaussian process. The kernel we will be using here is the squared exponential kernel / radial basis function kernel / Gaussian kernel. 
 
 $$ k(x, x') = \sigma_f^2 \exp(\frac{(x - x')^2}{2 \iota^2}) $$
 
@@ -101,7 +101,6 @@ There are two parameters in this kernel that need to be estimated from the data,
 - The output variance $\sigma_f^2$ determines the average distance of your function away from its mean.
 
 &nbsp;
-
 
 ```python
 class ExactGP(gpytorch.models.ExactGP):
@@ -120,16 +119,32 @@ likelihood = gpytorch.likelihoods.GaussianLikelihood()
 model = ExactGP(train_x, train_y, likelihood)
 ```
 
+&nbsp;
+
 <p align="center">
   <img src="/assets/squared_exp_kernel_posterior.png" width="100%" height="70%">
 </p>
 
 
-#### Marten Kernel
+#### Other Kernels
+
+There are a ton of other kernels, and it'll be interesting to see what their posterior samples look like. 
+
+##### Marten Kernel 
+
+```python
+
+```
 
 <p align="center">
   <img src="/assets/marten_kernel_posterior.png" width="100%" height="70%">
 </p>
+
+
+<p align="center">
+  <img src="/assets/periodic_kernel_posterior.png" width="100%" height="70%">
+</p>
+
 
 <!-- #### Noisy Observations
 
