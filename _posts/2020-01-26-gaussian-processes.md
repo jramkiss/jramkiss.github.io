@@ -79,23 +79,11 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
 
 ### Gaussian Process Regression
 
-1) Make explicit the prior, likelihood and posterior. 
-2) Talk about kernels and hyperparameters in the kernels
-3) Talk about the use of loss functions in the regression problem 
-
 In this section we will use the Gaussian process to approximate some functions for which we only have noisy observations for. This will help make clear how GPs are used in modelling.
 
 Building on GP's as a prior over functions, we can form a posterior distribution, $p(f | X, y)$ by conditioning on data. Intiutively, doing this excludes all functions that don't "pass through" our data, $(X, y)$. The problem with doing this for real world problems, however, is that we don't account for noisy observations. This is important to note, since when we outline the model, $f \ne y$. 
 
 I'll use [GPyTorch](https://gpytorch.ai/) to fit some functions using Gaussian process regression. There are easier ways to use GP's in Python, but GPyTorch looks promising, especially with Pytorch integration, so I'm taking this opportunity to learn it. 
-
-&nbsp;
-
-#### Prior, Likelihood, Posterior
-
-We have already discussed the prior, which is $f \sim GP(\mu(x), k(x, x'))$ but haven't talked about the likelihood or posterior yet. As in any other Bayesian formulation, the likelihood is our assumed model of the data, $p(y | X, f)$ and the posterior is the likelihood times the prior:
-
-$$ p(f | X, y) = p(y | X, f) p(f) $$
 
 &nbsp;
 
@@ -114,27 +102,37 @@ There are two parameters in this kernel that need to be estimated from the data,
 
 &nbsp;
 
-#### Loss Function
+```python
+class ExactGP(gpytorch.models.ExactGP):
+    def __init__(self, train_x, train_y, likelihood):
+        super(ExactGP, self).__init__(train_x, train_y, likelihood)
+        self.mean_module = gpytorch.means.ConstantMean() # mean
+        self.covar_module = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel()) # kernel
 
-I don't know anything here...
+    def forward(self, x):
+        mean_x = self.mean_module(x) 
+        covar_x = self.covar_module(x) 
+        return gpytorch.distributions.MultivariateNormal(mean_x, covar_x)
 
+# initialize likelihood and model
+likelihood = gpytorch.likelihoods.GaussianLikelihood()
+model = ExactGP(train_x, train_y, likelihood)
+```
 
-&nbsp;
+#### Noisy Observations
+
+Now we can go a step further and incorporate noise into our observations, which is more appropriate for modelling real world systems. The details here are a bit unnecessary for practical purposes, and [this](http://gaussianprocess.org/gpml/chapters/RW.pdf) book has way better explanations than I can give. Essentially, until now we have modelled our responed, $y$ directly from $f$, we'll change this to be: $y = f(x) + \epsilon$.
+
 
 --- 
 
+<!-- ### Questions
 
-#### 
-
-
-
-### Questions
-
-- Test out Gaussian Processes on high dimensional data where we don't have the ability to plot. 
+- How are the weights, $w$ integrated out when doing inference on a GP?
 - Can I use GPyTorch for a text classification model with TF-IDF features?
 - What does it mean to "fit a Gaussian process"? What is actually going on in the background? I don't understand how we can simulate draws from the prior.
 - Imagine points on a line. If we divide the line into 5 equal points and each point is Normally distributed, this is what a multivariate gaussian would look like, however if we wanted every single one of the points on the line to be normally distributed, this is what a guassian process would look like.
-- Can I make an active learner using a GP and the embeddings from a NN to learn 
+- Can I make an active learner using a GP and the embeddings from a NN to learn  -->
 
 
 <!-- ## A Note on Regression
