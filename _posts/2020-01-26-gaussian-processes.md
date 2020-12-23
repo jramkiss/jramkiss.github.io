@@ -120,6 +120,10 @@ likelihood = gpytorch.likelihoods.GaussianLikelihood()
 model = ExactGP(train_x, train_y, likelihood)
 ```
 
+<p align="center">
+  <img src="/assets/squared_exp_kernel_posterior.png" width="75%" height="70%">
+</p>
+
 
 
 
