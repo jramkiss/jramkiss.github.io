@@ -17,7 +17,7 @@ In this post I explore a Bayesian method for dealing with overconfident predicti
 
 ### Why is this a problem?
 
-You might argue "you only trained the classifier on animals, of course it breaks when you show it a human", and you're right. However, in the real world, we aren't able to filter out animal images from non-animal images before sending it to the model, so we need it to be robust to garbage input. The animal-human example tries to replicate this on a small scale (one image). Properly quantifying uncertainty is important because we (as the practitioners training the models) can't be confident in the model's ability to generalize if it assigns arbitrarily high confidence to garbage input.
+You might argue that since I only trained the classifier on animals, of course it breaks when you show it a human, and you're right. However, in real world systems, we aren't able to filter out animal images from non-animal images before sending it to the model, so we need it to be robust to garbage input. The animal-human example tries to replicate this on a small scale (one image). Properly quantifying uncertainty is important because we (as practitioners training the models) can't be confident in the model's ability to generalize if it assigns arbitrarily high confidence to garbage input.
 
 
 &nbsp;
