@@ -21,11 +21,23 @@ The Binomial distribution describes the number of successes in a binary task. It
 
 Suppose we have an experiment where we ask $n$ random people if their favourite color is blue. The number of people whose favourite colour is blue, follows a Binomial distribution. The parameter $p$ being the probability of someone's favourite color being blue. Taking $p=0.5$ and $n=1000$, we can sample from this Binomial and each sample is a potential number of people whose favourite color is blue.
 
+```python
+from scipy.stats import binom
 
-<!-- binomial plot of samples -->
+binom_rvs = binom.rvs(n= 1000, p = 0.5, size=5000)
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(6, 4), sharex = True)
+sns.distplot(binom_rvs, kde = False, bins = 20)
+plt.title("Samples from a Binomial(n=1000, p=0.5)")
+plt.xlabel("Number of Successes")
+plt.ylabel("Density")
+plt.yticks([]);
+```
+
 <p align="center">
   <img src="/assets/binomial-samples.png" width="55%" height="55%">
 </p>
+
 &nbsp;
 
 ## Beta Distribution
@@ -34,7 +46,35 @@ In a Bayesian setting, we'll want to use the Binomial distribution as the likeli
 
 Samples from the Beta distribution can be thought of as potential probabilities of success, $p$, for the Binomial. The Beta distribution itself is parameterized by $(\alpha, \beta)$ which determine its location and scale. Below are plots of samples from the Beta distribution with different parameters, notice that all the samples are between $(0, 1)$.
 
-<!-- beta plot of samples -->
+```python
+from scipy.stats import beta
+
+n = int(5e5) # number of samples
+fig, ax = plt.subplots(nrows=2, ncols=2, figsize=(8, 5), sharex = True)
+
+sns.distplot(beta.rvs(2, 2, size = n), 
+             hist = False,
+#             color="r",
+             kde_kws={"shade": True},
+             ax = ax[0, 0]).set_title("Samples from Beta(2,2)")
+
+sns.distplot(beta.rvs(4, 4, size = n), 
+             hist = False,
+             kde_kws={"shade": True},
+             ax = ax[0, 1]).set_title("Samples from Beta(4, 4)")
+
+sns.distplot(beta.rvs(2, 4, size = n), 
+             hist = False,
+             kde_kws={"shade": True},
+             ax = ax[1, 0]).set_title("Samples from Beta(2, 4)")
+
+sns.distplot(beta.rvs(4, 2, size = n), 
+             hist = False,
+             kde_kws={"shade": True},
+             ax = ax[1, 1]).set_title("Samples from Beta(4, 2)");
+
+```
+
 <p align="center">
   <img src="/assets/beta-samples.png" width="70%" height="70%">
 </p>
