@@ -132,9 +132,6 @@ There are a ton of other kernels, and it'll be interesting to see what their pos
 
 ##### Marten Kernel 
 
-```python
-
-```
 
 <p align="center">
   <img src="/assets/marten_kernel_posterior.png" width="100%" height="70%">

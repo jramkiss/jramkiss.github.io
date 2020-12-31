@@ -1,13 +1,13 @@
 // Typography
 $base-font-size: 0.8em !default;
-$code-font-size: 1em !default;
+$code-font-size: 0.8em !default;
 $base-font-weight: 300 !default;
 $bold-font-weight: 400 !default;
-//$font-family: 'Lato' !default;
-//$font-family: 'Merriweather', 'PT Serif', Georgia, 'Times New Roman', serif !default;
-$font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+$font-family: -apple-system, 'PT Serif', ".SFNSText-Regular", "San Francisco";
+// $font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
 $line-height: 1.5 !default;
-$heading-font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
+$heading-font-family: -apple-system, 'PT Serif', ".SFNSText-Regular", "San Francisco";
+// $heading-font-family: -apple-system, ".SFNSText-Regular", "San Francisco", "Roboto", "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;
 // $heading-font-family: 'Lato', 'Helvetica Neue', Helvetica, sans-serif !default;
 $heading-font-weight: 550 !default;
 $heading-line-height: 1.25 !default;

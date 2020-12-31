@@ -26,4 +26,6 @@ math: true
 
 - [Statistical Rethinking, Python/PyMC3](https://github.com/pymc-devs/resources/tree/master/Rethinking)
 
-### Miscelaneous
+### Machine Learning Blogs
+- https://yugeten.github.io/year-archive/
+- 
