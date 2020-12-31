@@ -9,12 +9,6 @@ summary: An easy explanation of Gaussian processes for dummies like myself. Star
 ---
 
 
-<!-- ### Why is this a cool model?
-
-Imagine learning about neural networks for the first time, and thinking _"wow, is there anything this thing can't do??"_. And the heartbreak later on, when you realize a [neural network trained to classify cats and dogs](https://jramkiss.github.io/2020/07/29/overconfident-nn/) predicts you're a dog with 98% confidence. Clearly they aren't _that_ good, since they don't even know what they don't know. This is why I find Gaussian Processes so cool, they are the gold standard for "knowing when you don't know".
-
-&nbsp; -->
-
 I've found many articles about Gaussian processes that start their explanation by describing stochastic processes, then go on to say that a GP is a distribution over functions, or an infinite dimensional distribution. I find it harsh for an introduction. In this post I try to explain GPs in a more approachable manner, and use code to show simulations from Gaussian process priors and posteriors. 
 
 &nbsp;
@@ -121,7 +115,7 @@ model = ExactGP(train_x, train_y, likelihood)
 
 &nbsp;
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/squared_exp_kernel_posterior.png" width="100%" height="70%">
 </p>
 
@@ -140,15 +134,10 @@ There are a ton of other kernels, and it'll be interesting to see what their pos
 
 <p align="center">
   <img src="/assets/periodic_kernel_posterior.png" width="100%" height="70%">
-</p>
+</p> -->
 
 
-<!-- #### Noisy Observations
 
-Now we can go a step further and incorporate noise into our observations, which is more appropriate for modelling real world systems. The details here are a bit unnecessary for practical purposes, and [this](http://gaussianprocess.org/gpml/chapters/RW.pdf) book has way better explanations than I can give. Essentially, until now we have modelled our responed, $y$ directly from $f$, we'll change this to be: $y = f(x) + \epsilon$.
-
-
----  -->
 
 <!-- ### Questions
 

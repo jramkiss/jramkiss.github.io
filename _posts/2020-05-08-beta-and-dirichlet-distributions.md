@@ -116,7 +116,6 @@ sns.distplot(multinom_rvs[:, 2],
 sns.distplot(multinom_rvs[:, 3], 
              hist = False,
              kde_kws={"label": "Class 4", "shade": True}).set_title("Multinomial Samples for class 4, p=[0.1, 0.15, 0.25, 0.5]");
-
 ```
 
 <p align="center">
@@ -149,17 +148,17 @@ sns.distplot(dirich_samples[1],
              color = "blue",
              hist = False,
              ax = ax[0],
-             kde = True);
+             kde = True)
 sns.distplot(dirich_samples[2], 
              kde_kws = {"label": "Alpha = 15", "shade": True}, 
              color = "red",
              hist = False,
              ax = ax[0],
-             kde = True);
-ax[0].set_title("Samples from Dir([1, 5, 15])");
+             kde = True)
+ax[0].set_title("Samples from Dir([1, 5, 15])")
 ax[0].set_yticks([])
-ax[0].set_xlabel("");
-ax[0].set_ylabel("Density");
+ax[0].set_xlabel("")
+ax[0].set_ylabel("Density")
 
 dirich_samples = pd.DataFrame(dirichlet.rvs(alpha = [10, 0.5, 7], size = 10000))
 sns.distplot(dirich_samples[0], 
@@ -173,14 +172,14 @@ sns.distplot(dirich_samples[1],
              color = "blue",
              hist = False,
              ax = ax[1],
-             kde = True);
+             kde = True)
 sns.distplot(dirich_samples[2], 
              kde_kws = {"label": "Alpha = 7", "shade": True}, 
              color = "red",
              hist = False,
              ax = ax[1],
-             kde = True);
-ax[1].set_title("Samples from Dir([10, 0.5, 7])");
+             kde = True)
+ax[1].set_title("Samples from Dir([10, 0.5, 7])")
 ax[1].set_xlabel("Samples")
 ax[1].set_yticks([])
 ax[1].set_ylabel("Density");
