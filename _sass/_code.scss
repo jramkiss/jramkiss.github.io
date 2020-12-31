@@ -17,16 +17,16 @@ code {
 }
 
 pre {
-  padding: 1.125em;
-  line-height: 1.11;
+  padding: 1em;
+  line-height: $code-line-height;
   overflow-x: scroll;
-  margin-bottom: 0.88em;
+  margin-bottom: 0.75em;
   background-color: $pre-background-color;
 }
 
 .highlight .p {
   font-size: $code-font-size;
-  line-height: 1;
+  line-height: $code-line-height;
 }
 
 pre {
