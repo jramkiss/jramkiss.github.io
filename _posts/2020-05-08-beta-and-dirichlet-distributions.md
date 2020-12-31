@@ -93,7 +93,32 @@ A limitation of the Binomial distribution is we only have 2 potential outcomes. 
 We used the Binomial distribution to find out if people's favourite colour is blue, but this didn't give us much information on what other colours people liked.
 Now we want more information. We're interested in the distribution of people whose favourite colours are either: blue, green, red or yellow. If we ask $n$ people to choose their favourite color from one of these, the number of successes for each colour will follow a Multinomial distribution. Each parameter, $p_{blue}, p_{green}, p_{red}, p_{yellow}$ is the probability of that colour being a random person's favourite. Sampling from this Multinomial will return a vector of length $4$ corresponding to the number of successes for that color. For each sample, the total number of successes sums to $n$.
 
-<!-- beta plot of samples -->
+
+```python
+from scipy.stats import multinomial
+
+_p = [0.1, 0.15, 0.25, 0.5]
+multinom_rvs = multinomial.rvs(n=1000, p=_p, size = 10000)
+
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(7, 4), sharex = True)
+sns.distplot(multinom_rvs[:, 0], 
+             hist = False,
+             kde_kws={"label": "Class 1", "shade": True})
+
+sns.distplot(multinom_rvs[:, 1], 
+             hist = False,
+             kde_kws={"label": "Class 2", "shade": True})
+
+sns.distplot(multinom_rvs[:, 2], 
+             hist = False,
+             kde_kws={"label": "Class 3", "shade": True})
+
+sns.distplot(multinom_rvs[:, 3], 
+             hist = False,
+             kde_kws={"label": "Class 4", "shade": True}).set_title("Multinomial Samples for class 4, p=[0.1, 0.15, 0.25, 0.5]");
+
+```
+
 <p align="center">
   <img src="/assets/multinomial-samples.png" width="70%" height="70%">
 </p>
@@ -106,7 +131,61 @@ Similarly with the Beta and Binomial combo, we need a prior for each $p_i$ in th
 
 A vector of length $k$ parameterizes the Dirichlet distribution, and the parameters are similar to $(\alpha, \beta)$ for the Beta distribution. Below are samples from 2 Dirichlet distributions with different parameters.
 
-<!-- dirichlet plot of samples -->
+```python
+from scipy.stats import dirichlet
+
+dirich_samples = pd.DataFrame(dirichlet.rvs(alpha = [1, 5, 15], size = 10000))
+
+fig, ax = plt.subplots(nrows=2, ncols=1, figsize=(8, 5), sharex = True)
+
+sns.distplot(dirich_samples[0], 
+             kde_kws = {"label": "Alpha = 1", "shade": True}, 
+             color = "teal",
+             hist = False,
+             ax = ax[0],
+             kde = True)
+sns.distplot(dirich_samples[1], 
+             kde_kws = {"label": "Alpha = 5", "shade": True}, 
+             color = "blue",
+             hist = False,
+             ax = ax[0],
+             kde = True);
+sns.distplot(dirich_samples[2], 
+             kde_kws = {"label": "Alpha = 15", "shade": True}, 
+             color = "red",
+             hist = False,
+             ax = ax[0],
+             kde = True);
+ax[0].set_title("Samples from Dir([1, 5, 15])");
+ax[0].set_yticks([])
+ax[0].set_xlabel("");
+ax[0].set_ylabel("Density");
+
+dirich_samples = pd.DataFrame(dirichlet.rvs(alpha = [10, 0.5, 7], size = 10000))
+sns.distplot(dirich_samples[0], 
+             kde_kws = {"label": "Alpha = 10", "shade": True}, 
+             color = "teal",
+             hist = False,
+             ax = ax[1],
+             kde = True)
+sns.distplot(dirich_samples[1], 
+             kde_kws = {"label": "Alpha = 0.5", "shade": True}, 
+             color = "blue",
+             hist = False,
+             ax = ax[1],
+             kde = True);
+sns.distplot(dirich_samples[2], 
+             kde_kws = {"label": "Alpha = 7", "shade": True}, 
+             color = "red",
+             hist = False,
+             ax = ax[1],
+             kde = True);
+ax[1].set_title("Samples from Dir([10, 0.5, 7])");
+ax[1].set_xlabel("Samples")
+ax[1].set_yticks([])
+ax[1].set_ylabel("Density");
+```
+
 <p align="center">
   <img src="/assets/dirichlet-samples.png" width="70%" height="70%">
 </p>
