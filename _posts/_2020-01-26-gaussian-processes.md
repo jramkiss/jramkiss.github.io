@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Explantion of Gaussian Processes"
-date: 2020-01-01 19:22
+title: "Gaussian Processes for Dummies"
+date: 2020-12-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: An easy explanation of Gaussian processes for dummies like myself. Starting with how to think about a Gaussian process, then moving on to simulating from GP priors and ends with an example of Gaussian process regression with GPyTorch
+summary: An easy explanation of Gaussian processes for dummies like myself. I sample from a GP in native Python and test GPyTorch on a simple simulated example.
 ---
 
 

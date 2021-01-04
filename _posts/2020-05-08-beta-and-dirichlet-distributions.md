@@ -5,7 +5,7 @@ date: 2020-05-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Some notes on the Beta and Dirichlet distributions including their relationship and uses.
+summary: The Beta and Dirichlet distributions are related to each other in a similar way to the Binomial and Multinomial distributions. This post explains the relationship between these 4 distributions using a simple example and some code. 
 ---
 
 This post motivates the Beta and Dirichlet distributions using a simple example. It also relates the Beta and Dirichlet distributions to the Binomial and Multinomial. It's written without any equations for readability.

@@ -5,7 +5,7 @@ date: "2020-03-01 2:54"
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Walkthrough of the intuition behind Bayesian regression and a comparison with ordinary linear regression using a practical example and Python.
+summary: Walkthrough of the intuition behind Bayesian regression and a comparison with ordinary linear regression using a practical example in Pyro.
 ---
 
 Bayesian methods are usually shrouded in mystery, hidden behind pages of math that no practitioner has the patience to understand. Why should I even use this complicated black magic if other models are better? Also, since when is there a Bayesian version of simple linear regression? And while we're at it, what in the world is [MCMC](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) and should I even care?
