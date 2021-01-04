@@ -24,7 +24,8 @@ p,
 dl,
 ol,
 ul {
-  font-size: $h4;
+  font-size: $base-font-size;
+  font-weight: $base-font-weight;
   margin-top: 0;
   margin-bottom: $space-2;
 }
