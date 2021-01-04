@@ -9,7 +9,7 @@ summary: An easy explanation of Gaussian processes for dummies like myself. Star
 ---
 
 
-I've found many articles about Gaussian processes that start their explanation by describing stochastic processes, then go on to say that a GP is a distribution over functions, or an infinite dimensional distribution. I find it harsh for an introduction. In this post I try to explain GPs in a more approachable manner, and use code to show simulations from Gaussian process priors and posteriors. 
+I've found many articles about Gaussian processes that start their explanation by describing stochastic processes, then go on to say that a GP is a distribution over functions, or an infinite dimensional distribution. I find it harsh for an introduction. In this post I briefly explain GPs in a more approachable manner, and use code to show simulations from Gaussian processes. 
 
 &nbsp;
 
@@ -71,11 +71,32 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
 
 ### Gaussian Process Regression
 
+
 Building on GP's as a prior over functions, we can form a posterior distribution, $p(f \mid X, y)$ by conditioning on data. Intiutively, doing this excludes all functions that don't "pass through" our data, $(X, y)$. In this section we will use a Gaussian process prior to approximate a function. We'll also assume that there is no noise in our function observations, but this is obviously a terrible assumption in modelling real world systems.
 
 I'll use [GPyTorch](https://gpytorch.ai/) for inference. There are easier ways to use GP's in Python but GPyTorch looks promising, especially with Pytorch integration.
 
 Here's the function we want to approximate. The points in red are the training data, and we will try to approximate the blue section using a GP. 
+
+```python
+g = np.vectorize(lambda y: math.exp(-0.4 * y)*math.sin(4*y) + math.log(abs(y) + 1) + 1)
+train_x = np.linspace(0, 4, 750)
+test_x = np.linspace(4.01, 6, 100)
+train_x = torch.tensor(train_x)
+test_x = torch.tensor(test_x)
+
+train_y = g(train_x) 
+test_y = g(test_x) 
+train_y=torch.tensor(train_y)
+test_y=torch.tensor(test_y)
+
+plt.figure(figsize=(6, 4), dpi=100)
+sns.lineplot(train_x, train_y, color = 'red', label = "Train set")
+sns.lineplot(test_x, test_y, color = 'blue', label = "Test set")
+plt.title("Observed and test data")
+plt.legend()
+plt.show();
+```
 
 <p align="center">
   <img src="/assets/exactGP_simulated_function.png" width="70%" height="70%">
@@ -115,11 +136,12 @@ model = ExactGP(train_x, train_y, likelihood)
 
 &nbsp;
 
-<!-- <p align="center">
+<p align="center">
   <img src="/assets/squared_exp_kernel_posterior.png" width="100%" height="70%">
 </p>
 
 
+<!-- 
 #### Other Kernels
 
 There are a ton of other kernels, and it'll be interesting to see what their posterior samples look like. 
