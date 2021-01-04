@@ -1,16 +1,19 @@
 // Typography
-$base-font-size: 0.75em !default;
+// $base-font-size: 0.75em !default;
+$base-font-size: 14px !default;
 $code-font-size: 0.85em !default;
 
 $base-font-weight: normal !default;
 $bold-font-weight: 400 !default;
 $heading-font-weight: normal !default;
 
-$font-family: "PT Sans", -apple-system, ".SFNSText-Regular", "San Francisco";
-$heading-font-family: 'PT Serif', -apple-system, ".SFNSText-Regular", "San Francisco";
-$monospace-font-family: 'Source Code Pro', Consolas, monospace !default;
+// $font-family: "PT Sans", -apple-system, ".SFNSText-Regular", "San Francisco";
+$font-family: -apple-system, Helvetica, arial, sans-serif;
+// $heading-font-family: 'PT Serif', -apple-system, ".SFNSText-Regular", "San Francisco";
+$heading-font-family: -apple-system, Helvetica, arial, sans-serif;
+$monospace-font-family: monospace, 'Source Code Pro', Consolas !default;
 
-$line-height: 1.25 !default;
+$line-height: 1.5 !default;
 $code-line-height: 1.3 !default;
 $heading-line-height: 1.25 !default;
 
