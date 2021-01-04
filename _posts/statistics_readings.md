@@ -28,4 +28,4 @@ math: true
 
 ### Machine Learning Blogs
 - https://yugeten.github.io/year-archive/
-- 
+- [Best one yet](http://gregorygundersen.com/blog/)

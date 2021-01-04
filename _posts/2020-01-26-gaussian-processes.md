@@ -63,9 +63,18 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
                              size = n_func)
 ```
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/gp_prior_samples.png" width="70%" height="70%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/gp_prior_samples.png" 
+         style="height: 70% width: 70%; display: block; margin: 0 auto;">
+    <div class='caption'>
+        <span class='caption-label'>Figure 1.</span> 
+        Samples from a Gaussian process prior.
+    </div>
+</div>
 
 &nbsp;
 
