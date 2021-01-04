@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Detecting Changes in COVID-19 Cases with Bayesian Models"
+title: "Bayesian Changepoint Detection of COVID-19 Cases in Pyro"
 date: 2020-04-15 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Bayesian change point model to estimate the date that flattening of new COVID-19 cases started in different countries.
+summary: Used Pyro and a Bayesian changepoint model to detect the date that COVID-19 cases started to flattern in different countries. 
 ---
 
 ## Problem
