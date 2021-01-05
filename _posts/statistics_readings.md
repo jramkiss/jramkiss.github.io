@@ -7,6 +7,21 @@ author: "Jonathan Ramkissoon"
 math: true
 ---
 
+### Paper reading list
+
+- [Stationary Activations for Uncertainty Calibration in Deep Learning](https://arxiv.org/abs/2010.09494)
+
+
+
+### Machine Learning Blogs
+
+- [Best one yet](http://gregorygundersen.com/blog/)
+- [Similar profile, much better blog](https://teddykoker.com/)
+- [Probability blog - Count Bayesie](https://www.countbayesie.com/)
+- https://yugeten.github.io/year-archive/
+
+--- 
+
 ### Probability
 
 - [Probability Theory, Stanford course notes](http://web.stanford.edu/class/stats310a/lnotes.pdf): Central limit theorem, Law of Large Numbers, etc.)
@@ -25,7 +40,3 @@ math: true
 ### Bayesian Statistics
 
 - [Statistical Rethinking, Python/PyMC3](https://github.com/pymc-devs/resources/tree/master/Rethinking)
-
-### Machine Learning Blogs
-- https://yugeten.github.io/year-archive/
-- [Best one yet](http://gregorygundersen.com/blog/)

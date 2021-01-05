@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Gaussian Processes for Dummies"
+title: "Gaussian Processes and Regression"
 date: 2020-12-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: An easy explanation of Gaussian processes for dummies like myself. I sample from a GP in native Python and test GPyTorch on a simple simulated example.
+summary: A explanation of Gaussian processes, starting with simple intuition and building up to posterior inference. I sample from a GP in native Python and test GPyTorch on a simple simulated example.
 ---
 
 
@@ -15,13 +15,13 @@ I've found many articles about Gaussian processes that start their explanation b
 
 ### How to start thinking about a Gaussian Process?
 
-We can start thinking about Gaussian processes by build up to it from univariate and multivariate Gaussians. Starting with a single random variable, $X_1 \sim N(\mu_1, \sigma_1^2)$, we can append another random variable $X_2 \sim N(\mu_2, \sigma_2^2)$ to get the vector $(X_1, X_2)$. If $X_1$ and $X_2$ have covariance $\sigma_{12}$, this vector will have distribution: 
+We can start thinking about Gaussian processes by building up to it from univariate and multivariate Gaussians. Starting with a single random variable, $X_1 \sim N(\mu_1, \sigma_1^2)$, we can append another random variable $X_2 \sim N(\mu_2, \sigma_2^2)$ to get the vector $(X_1, X_2)$. If $X_1$ and $X_2$ have covariance $\sigma_{12}$, this vector will have distribution: 
 
 $$ \begin{pmatrix} X_1 \\ X_2 \end{pmatrix} \sim N \left(\begin{bmatrix} \mu_1 \\ \mu_2 \end{bmatrix}, \begin{bmatrix} \sigma_1^2 & \sigma_{12} \\ \sigma_{12} & \sigma_2^2 \end{bmatrix} \right)$$
 
-If we continue appending more Normally distributed random variables, $X_3, X_4, ...$ we can construct larger and larger multivariate Gaussians once we have their mean and covariance. To generalize this concept of continuously incorporating Normally distributed RV's into the same distribution, we need a function to describe the mean and another to describe the covariance.
+If we continue appending more Normally distributed random variables, $X_3, X_4, ...$ we can construct larger and larger multivariate Gaussians, once we have their mean and covariance. Then, the multivariate Gaussian will be fully specified by the mean and covariance matrix. To generalize this concept of continuously incorporating Normally distributed RV's into the same distribution, we need a function to describe the mean and another to describe the covariance.
 
-This is exactly what the Gaussian process provides. It is specified by a mean function, $\mu(X)$ and a covariance function (called the kernel function), $k(X, X')$, that returns the covariance between any two points, $X$ and $X'$. Now we can model any amount (possibly infinite) of variables with the GP using the mean and kernel function. Since the GP can model an infinite number of random variables they are considered a distribution over functions, and written as: 
+This is what the Gaussian process provides. It is specified by a mean function, $\mu(X)$ and a covariance function (called the kernel function), $k(X, X')$, that returns the covariance between two points, $X$ and $X'$. Now we can model any amount (possibly infinite) of variables with the GP using the mean and kernel function. Since the GP can model an infinite number of random variables it is considered a distribution over functions, and written as: 
 
 $$ f(x) \sim GP(\mu(x), k(x, x'))$$ 
 
@@ -38,9 +38,9 @@ This is a mathematically loose intro to GP's, to convey the interpretation of "i
 
 Since the Gaussian process is essentially a generalization of the multivariate Gaussian, simulating from a GP is as simple as simulating from a multivariate Gaussian. The steps are below:
 
-- Start with a vector, $x_1, x_2, ..., x_n$. This can be done in Python with `np.linspace`
-- Use a kernel, $k$, to calculate the covariance matrix for each combination of $(x_i, x_j)$. We should end up with a matrix of dimension $(n, n)$. This matrix will act as the covariance matrix for the multivariate Gaussian we are sampling from. We'll use a zero-vector for its mean
-- The resulting sampled paths from this multivariate Gaussian are realizations of the Gaussian process, $GP(0, k)$. We can plot these values and a 95% confidence interval by taking the mean $\pm$ 1.96. 
+- Start with a vector, $x_1, x_2, ..., x_n$ that we will build the GP from. This can be done in Python with `np.linspace`. 
+- Choose a kernel, $k$, and use it to calculate the covariance matrix for each combination of $(x_i, x_j)$. We should end up with a matrix of dimension $(n, n)$. This is the covariance matrix for the multivariate Gaussian we are sampling from. We'll use a zero-vector for its mean
+- The resulting sample paths from this multivariate Gaussian are realizations of the Gaussian process, $GP(0, k)$. We can plot these values and a 95% confidence interval by taking the mean $\pm$ 1.96. 
 
 Code to do this is below: 
 
@@ -71,14 +71,43 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
     <img src="/assets/gp_prior_samples.png" width="70%" height="70%">
     <div class='caption'>
         <span class='caption-label'>Figure 1.</span> 
-        Samples from a Gaussian process prior.
+        7 samples from a Gaussian process prior, along with a 95% confidence interval 
     </div>
 </div>
 
 &nbsp;
 
-### Gaussian Process Regression
+### Gaussian Process + Regression
 
+Nothing so far is groundbreaking, or particularly useful. All we have done is explained a way of generalizing the multivariate Normal, but haven't talked about how it can be used in real life. In order to do this, more background is needed to combine observed data with the GP.
+
+To set the stage, imagine we are interested in modelling a function, $f$, for which we have noisy observations, $(x_i, y_i)$ where $x_i \in \R^D$. In typical Bayesian linear regression, we assume that $y$ is a linear function of $X$ given weights, $y = Xw$. Then we assign priors, $p(w)$, and build a posterior distribution for the weights, $p(w \mid y, X)$. This posterior is used to make future predictions and recreate $f = y + \epsilon$. 
+
+$$ p(w \mid y_N, X_N) = \frac{p(y_N \mid X_N, w) p(w)}{p(y_N \mid X_N)} $$
+
+However, in some cases we're only interested in making predictions, and in a Bayesian setting this boils down to 2 distributions: (1) the posterior predictive distribution in order to actually make a prediction and (2) the marginal likelihood for model comparison. 
+
+$$ \text{Posterior predictive: } p(y_{n+1} \mid y_N, X_N) $$
+
+$$ \text{Marginal likelihood: } p(y_{N} \mid X_N) $$
+
+Expanding the formulations from Bayesian linear regression: 
+
+$$ y = Xw \qquad \qquad \text{where: } w \sim N(0, \sigma_w^2) $$
+
+And since $y$ is a linear function of $w$ (which is a random variable here), its prior is:
+
+$$ y \sim N(0, \sigma_w^2 XX^T) $$
+
+Accounting for noise in our observations, $\sigma^2_{err}$ the prior on our function, $f$, is: 
+
+$$ f \sim N(0, \sigma_w^2 XX_T + \sigma^2_{err} I) $$
+
+
+
+&nbsp;
+
+#### Practical Problem
 
 Building on GP's as a prior over functions, we can form a posterior distribution, $p(f \mid X, y)$ by conditioning on data. Intiutively, doing this excludes all functions that don't "pass through" our data, $(X, y)$. In this section we will use a Gaussian process prior to approximate a function. We'll also assume that there is no noise in our function observations, but this is obviously a terrible assumption in modelling real world systems.
 
