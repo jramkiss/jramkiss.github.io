@@ -15,22 +15,21 @@ I've found many articles about Gaussian processes that start their explanation b
 
 ### How to start thinking about a Gaussian Process?
 
-We can start thinking about Gaussian processes by building up to it from univariate and multivariate Gaussians. Starting with a single random variable, $X_1 \sim N(\mu_1, \sigma_1^2)$, we can append another random variable $X_2 \sim N(\mu_2, \sigma_2^2)$ to get the vector $(X_1, X_2)$. If $X_1$ and $X_2$ have covariance $\sigma_{12}$, this vector will have distribution: 
+We can start by building multivariate Gaussians from univariate Gaussians. With a single random variable, $X_1 \sim N(\mu_1, \sigma_1^2)$, we can append $X_2 \sim N(\mu_2, \sigma_2^2)$ to get the vector $(X_1, X_2)$. If $X_1$ and $X_2$ have covariance $\sigma_{12}$, this vector will have distribution: 
 
 $$ \begin{pmatrix} X_1 \\ X_2 \end{pmatrix} \sim N \left(\begin{bmatrix} \mu_1 \\ \mu_2 \end{bmatrix}, \begin{bmatrix} \sigma_1^2 & \sigma_{12} \\ \sigma_{12} & \sigma_2^2 \end{bmatrix} \right)$$
 
-If we continue appending more Normally distributed random variables, $X_3, X_4, ...$ we can construct larger and larger multivariate Gaussians, once we have their mean and covariance. Then, the multivariate Gaussian will be fully specified by the mean and covariance matrix. To generalize this concept of continuously incorporating Normally distributed RV's into the same distribution, we need a function to describe the mean and another to describe the covariance.
+If we continue appending more Normally distributed random variables, $X_3, X_4, ...$ constructing larger multivariate Gaussians is easy, once we have their mean and covariance. Then, this multivariate Gaussian will be fully specified by the mean vector and covariance matrix. To generalize this concept of continuously incorporating Normally distributed RV's into the same distribution, we need a function to describe the mean and another to describe the covariance.
 
-This is what the Gaussian process provides. It is specified by a mean function, $\mu(X)$ and a covariance function (called the kernel function), $k(X, X')$, that returns the covariance between two points, $X$ and $X'$. Now we can model any amount (possibly infinite) of variables with the GP using the mean and kernel function. Since the GP can model an infinite number of random variables it is considered a distribution over functions, and written as: 
+This is what the Gaussian process provides. It is specified by a mean function, $\mu(x)$ and a covariance function (called the kernel function), $k(x, x')$, that returns the covariance between two points, $x$ and $x'$. Now we are not limited to $n$ variables for a $n$-variate Gaussians, but can model any amount (possibly infinite) with the GP. We write: 
 
 $$ f(x) \sim GP(\mu(x), k(x, x'))$$ 
 
-The kernel function is simply a measure of how similar two inputs are, and an exmaple of one is the squared exponential kernel shown below:
+The kernel function, $k(x, x')$ is simply a measure of how similar $x$ and $x'$ are, and an exmaple of one is the squared exponential kernel:
 
 $$ k(x, x') = \sigma^2 \exp(-\frac{(x - x')^2}{2l^2}) $$
 
-
-This is a mathematically loose intro to GP's, to convey the interpretation of "infinite dimensional" and "distribution over functions". The book [Gaussian Processes for Machine Learning](http://gaussianprocess.org/gpml/chapters/RW.pdf) goes into detail on the mathematics. 
+This is a loose intro to GP's to convey the interpretation of "infinite dimensional" and "distribution over functions". The book [Gaussian Processes for Machine Learning](http://gaussianprocess.org/gpml/chapters/RW.pdf) goes into detail. 
 
 &nbsp;
 
@@ -67,7 +66,7 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
     <img src="/assets/gp_prior_samples.png" width="70%" height="70%">
     <div class='caption' width="70%" height="70%">
         <span class='caption-label'>Figure 1.</span> 
-        7 samples from a Gaussian process prior, along with a 95% confidence interval 
+        <p> 7 samples from a Gaussian process prior, along with a 95% confidence interval </p>
     </div>
 </div>
 
@@ -75,9 +74,11 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
 
 ### Gaussian Process + Regression
 
-Nothing so far is groundbreaking, or particularly useful. All we have done is explained a way of generalizing the multivariate Normal, but haven't talked about how it can be used in real life. However, you could imagine that starting with a prior over functions, we can form a posterior, $p(f \mid X, y)$ by conditioning on our data. Intiutively, doing this excludes all functions that don't "pass through" our data, $(X, y)$. I'll approach Gaussian process regression from a slightly different perspective in this section, building up from Bayesian linear regression. This is a cool approach I found in David MacKay's [book](http://www.inference.org.uk/mackay/itila/book.html), that I haven't seem much elsewhere.
+Nothing so far is groundbreaking, or particularly useful. All we have done is explained a way of generalizing the multivariate Normal, but haven't talked about how it can be used in real life. However, you could imagine that starting with a prior over functions, we can form a posterior, $p(f \mid X, y)$ by conditioning on our data. Intiutively, doing this excludes all functions that don't "pass through" our data, $(X, y)$. 
 
-To set the stage, we are interested in modelling a function, $f$, which we have data, $(X, y)$. We start with a [feature map](https://xavierbourretsicotte.github.io/Kernel_feature_map.html) for the input, $R = \phi(X)$, so that $R$ an $N \times D$ matrix. Then we have $y = Rw$ and can assign priors, $p(w)$ to build a posterior distribution for the weights, $p(w \mid y, X)$. This posterior is used to make future predictions and recreate $f = y + \epsilon$. 
+I'll approach Gaussian process regression from a slightly different perspective in this section, building up from Bayesian linear regression. This is a cool approach I found in David MacKay's [book](http://www.inference.org.uk/mackay/itila/book.html), that I haven't seem much elsewhere.
+
+To set the stage, we are interested in modelling a function, $f$, for which we have data, $(X, y)$. We start with a [feature map](https://xavierbourretsicotte.github.io/Kernel_feature_map.html) for the input, $R = \phi(X)$, so that $R$ an $N \times D$ matrix. Then $y = Rw$ and we can assign priors, $p(w)$, to build a posterior distribution for the weights, $p(w \mid y, X)$. This posterior is used to make future predictions and recreate $f = y + \epsilon$. 
 
 $$ p(w \mid y_N, X_N) = \frac{p(y_N \mid X_N, w) p(w)}{p(y_N \mid X_N)} $$
 
