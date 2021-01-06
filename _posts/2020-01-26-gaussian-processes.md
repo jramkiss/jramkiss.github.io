@@ -5,7 +5,7 @@ date: 2020-12-01 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: A explanation of Gaussian processes, starting with simple intuition and building up to posterior inference. I sample from a GP in native Python and test GPyTorch on a simple simulated example.
+summary: A explanation of Gaussian processes and Gaussian process regression, starting with simple intuition and building up to inference. I sample from a GP in native Python and test GPyTorch on a simple simulated example.
 ---
 
 
@@ -63,13 +63,9 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
                              size = n_func)
 ```
 
-<!-- <p align="center">
-  <img src="/assets/gp_prior_samples.png" width="70%" height="70%">
-</p> -->
-
 <div class='figure' align="center">
     <img src="/assets/gp_prior_samples.png" width="70%" height="70%">
-    <div class='caption'>
+    <div class='caption' width="70%" height="70%">
         <span class='caption-label'>Figure 1.</span> 
         7 samples from a Gaussian process prior, along with a 95% confidence interval 
     </div>
@@ -109,7 +105,7 @@ Before we get to the practical stuff, a note about kernels. There are many ways 
 
 &nbsp;
 
-#### Practical Problem
+#### Simulation Problem
 
 In this section we will use a Gaussian process prior to approximate a function. We'll also assume that there is no noise in our function observations, but this is obviously a terrible assumption in modelling real world systems.
 
@@ -141,18 +137,13 @@ plt.show();
   <img src="/assets/exactGP_simulated_function.png" width="70%" height="70%">
 </p>
 
-&nbsp;
-
-#### Squared Exponential Kernel
-
-Before we start, a big decision is the choice of kernel. This is prior specification in regular Bayesian modelling, but for a Gaussian process. The kernel we will be using here is the squared exponential kernel / radial basis function kernel / Gaussian kernel. 
-
-$$ k(x, x') = \sigma_f^2 \exp(\frac{(x - x')^2}{2 \iota^2}) $$
-
-There are two parameters in this kernel that need to be estimated from the data, and David Duvenaud describes them well [here](https://www.cs.toronto.edu/~duvenaud/cookbook/): 
-
-- The lengthscale $\iota$ determines the length of the 'wiggles' in your function. In general, you won't be able to extrapolate more than $\iota$ units away from your data.
-- The output variance $\sigma_f^2$ determines the average distance of your function away from its mean.
+<!-- <div class='figure' align="center">
+    <img src="/assets/exactGP_simulated_function.png" width="70%" height="70%">
+    <div class='caption' width="70%" height="70%">
+        <span class='caption-label'>Figure 1.</span> 
+        7 samples from a Gaussian process prior, along with a 95% confidence interval 
+    </div>
+</div> -->
 
 &nbsp;
 
