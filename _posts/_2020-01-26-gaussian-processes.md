@@ -25,7 +25,7 @@ This is what the Gaussian process provides. It is specified by a mean function, 
 
 $$ f(x) \sim GP(\mu(x), k(x, x'))$$ 
 
-The kernel function is simply a measure of how similar two random variables are, and an exmaple of one is the squared exponential kernel shown below. There are many more kernels and great writeups on them are [here](https://www.cs.toronto.edu/~duvenaud/cookbook/), [here](http://mlg.eng.cam.ac.uk/tutorials/06/es.pdf) and [here](https://statisticaloddsandends.wordpress.com/2019/06/28/common-covariance-classes-for-gaussian-processes/).
+The kernel function is simply a measure of how similar two inputs are, and an exmaple of one is the squared exponential kernel shown below:
 
 $$ k(x, x') = \sigma^2 \exp(-\frac{(x - x')^2}{2l^2}) $$
 
@@ -79,9 +79,9 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
 
 ### Gaussian Process + Regression
 
-Nothing so far is groundbreaking, or particularly useful. All we have done is explained a way of generalizing the multivariate Normal, but haven't talked about how it can be used in real life. In order to do this, more background is needed to combine observed data with the GP.
+Nothing so far is groundbreaking, or particularly useful. All we have done is explained a way of generalizing the multivariate Normal, but haven't talked about how it can be used in real life. However, you could imagine that starting with a prior over functions, we can form a posterior, $p(f \mid X, y)$ by conditioning on our data. Intiutively, doing this excludes all functions that don't "pass through" our data, $(X, y)$. I'll approach Gaussian process regression from a slightly different perspective in this section, building up from Bayesian linear regression. This is a cool approach I found in David MacKay's [book](http://www.inference.org.uk/mackay/itila/book.html), that I haven't seem much elsewhere.
 
-To set the stage, imagine we are interested in modelling a function, $f$, for which we have noisy observations, $(x_i, y_i)$ where $x_i \in \R^D$. In typical Bayesian linear regression, we assume that $y$ is a linear function of $X$ given weights, $y = Xw$. Then we assign priors, $p(w)$, and build a posterior distribution for the weights, $p(w \mid y, X)$. This posterior is used to make future predictions and recreate $f = y + \epsilon$. 
+To set the stage, we are interested in modelling a function, $f$, which we have data, $(X, y)$. We start with a [feature map](https://xavierbourretsicotte.github.io/Kernel_feature_map.html) for the input, $R = \phi(X)$, so that $R$ an $N \times D$ matrix. Then we have $y = Rw$ and can assign priors, $p(w)$ to build a posterior distribution for the weights, $p(w \mid y, X)$. This posterior is used to make future predictions and recreate $f = y + \epsilon$. 
 
 $$ p(w \mid y_N, X_N) = \frac{p(y_N \mid X_N, w) p(w)}{p(y_N \mid X_N)} $$
 
@@ -93,23 +93,25 @@ $$ \text{Marginal likelihood: } p(y_{N} \mid X_N) $$
 
 Expanding the formulations from Bayesian linear regression: 
 
-$$ y = Xw \qquad \qquad \text{where: } w \sim N(0, \sigma_w^2) $$
+$$ y = Rw \qquad \qquad \text{where: } w \sim N(0, \sigma_w^2) $$
 
-And since $y$ is a linear function of $w$ (which is a random variable here), its prior is:
+And since $y$ is a linear function of $w$ (which is a Normally distributed random variable), its prior is:
 
-$$ y \sim N(0, \sigma_w^2 XX^T) $$
+$$ y \sim N(0, \sigma_w^2 RR^T) $$
 
 Accounting for noise in our observations, $\sigma^2_{err}$ the prior on our function, $f$, is: 
 
-$$ f \sim N(0, \sigma_w^2 XX_T + \sigma^2_{err} I) $$
+$$ f \sim N(0, \sigma_w^2 RR^T + \sigma^2_{err} I) $$
 
+This is how the Gaussian process is a prior over functions. The kernel described in that section is exacly $RR^T = \phi(X)\phi(X)^T$ in this section. Now we can start to create the posterior predictive distribution and marginal likelihood. 
 
+Before we get to the practical stuff, a note about kernels. There are many ways to get confused when first learning about kernels. What helped me is first understanding that a kernel is just a function that accepts 2 inputs and returns how "close" the inputs are to each other. From there, you can go in any direction exploring them, some good articles are: [here](https://www.cs.toronto.edu/~duvenaud/cookbook/), [here](http://mlg.eng.cam.ac.uk/tutorials/06/es.pdf) and [here](https://statisticaloddsandends.wordpress.com/2019/06/28/common-covariance-classes-for-gaussian-processes/).
 
 &nbsp;
 
 #### Practical Problem
 
-Building on GP's as a prior over functions, we can form a posterior distribution, $p(f \mid X, y)$ by conditioning on data. Intiutively, doing this excludes all functions that don't "pass through" our data, $(X, y)$. In this section we will use a Gaussian process prior to approximate a function. We'll also assume that there is no noise in our function observations, but this is obviously a terrible assumption in modelling real world systems.
+In this section we will use a Gaussian process prior to approximate a function. We'll also assume that there is no noise in our function observations, but this is obviously a terrible assumption in modelling real world systems.
 
 I'll use [GPyTorch](https://gpytorch.ai/) for inference. There are easier ways to use GP's in Python but GPyTorch looks promising, especially with Pytorch integration.
 
