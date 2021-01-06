@@ -9,7 +9,7 @@ summary: A explanation of Gaussian processes and Gaussian process regression, st
 ---
 
 
-I've found many articles about Gaussian processes that start their explanation by describing stochastic processes, then go on to say that a GP is a distribution over functions, or an infinite dimensional distribution. I find it harsh for an introduction. In this post I briefly explain GPs in a more approachable manner, and use code to show simulations from Gaussian processes. 
+I've found many articles about Gaussian processes that start their explanation by describing stochastic processes, then go on to say that a GP is a distribution over functions, or an infinite dimensional distribution, etc. etc. I find these harsh for an introduction, so in this post I try to explain GPs in a more approachable manner. Then I talk about Gaussian process regression and its relationship with Bayesian linear regression, with an example using GPyTorch.
 
 &nbsp;
 
