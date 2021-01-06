@@ -66,7 +66,7 @@ ys = multivariate_normal.rvs(mean = np.zeros(n),
     <img src="/assets/gp_prior_samples.png" width="70%" height="70%">
     <div class='caption' width="70%" height="70%">
         <span class='caption-label'>Figure 1.</span> 
-        <p> 7 samples from a Gaussian process prior, along with a 95% confidence interval </p>
+        <p> 7 samples from a Gaussian process prior, along with a 95% confidence interval. Each curve is the result of sampling from a multivariate Gaussian with $n=100$ variables. If we reduce $n$, the samples will look less and less smooth, until $n=2$, where the sample will just be a line. </p>
     </div>
 </div>
 
@@ -134,17 +134,17 @@ plt.legend()
 plt.show();
 ```
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/exactGP_simulated_function.png" width="70%" height="70%">
-</p>
+</p> -->
 
-<!-- <div class='figure' align="center">
+<div class='figure' align="center">
     <img src="/assets/exactGP_simulated_function.png" width="70%" height="70%">
     <div class='caption' width="70%" height="70%">
-        <span class='caption-label'>Figure 1.</span> 
-        7 samples from a Gaussian process prior, along with a 95% confidence interval 
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Simulated function we are interested in modelling with a GP. We will take samples from the red section and see how well the GP can recreate the blue section </p>
     </div>
-</div> -->
+</div>
 
 &nbsp;
 
@@ -167,9 +167,17 @@ model = ExactGP(train_x, train_y, likelihood)
 
 &nbsp;
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/squared_exp_kernel_posterior.png" width="100%" height="70%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/squared_exp_kernel_posterior.png" width="70%" height="70%">
+    <div class='caption' width="70%" height="70%">
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Posterior distribution after fitting the data in red. The graph on the left shows the confidence interval for the test set (blue region). As we get further and further away from the observed data, the confidence band grows. The graph on the right shows samples from the posterior distrubtion. Because we condition on the data and don't add noise, we are forcing the posterior to "pass through" every single one of our observed datapoints.  </p>
+    </div>
+</div>
 
 
 <!-- 
