@@ -34,9 +34,17 @@ plt.ylabel("Density")
 plt.yticks([]);
 ```
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/binomial-samples.png" width="55%" height="55%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/binomial-samples.png" width="85%" height="85%">
+    <div class='caption' width="85%" height="85%">
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Histogram of samples from a Binomial(n=1000, p=0.5) distribution. The mean of this distribution is 500, so we expect histogram to be centered around 500, which it is. This of course corresponds to an average of 500 successes over 1000 tries, with a probability of success of 0.5 </p>
+    </div>
+</div>
 
 &nbsp;
 
@@ -75,9 +83,17 @@ sns.distplot(beta.rvs(4, 2, size = n),
 
 ```
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/beta-samples.png" width="70%" height="70%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/beta-samples.png" width="85%" height="85%">
+    <div class='caption' width="85%" height="85%">
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Plots for 4 different specifications of the Beta distribution. Notice on the x-axis that the support is between [0, 1] </p>
+    </div>
+</div>
 &nbsp;
 
 
@@ -118,9 +134,17 @@ sns.distplot(multinom_rvs[:, 3],
              kde_kws={"label": "Class 4", "shade": True}).set_title("Multinomial Samples for class 4, p=[0.1, 0.15, 0.25, 0.5]");
 ```
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/multinomial-samples.png" width="70%" height="70%">
-</p>
+</p> -->
+<div class='figure' align="center">
+    <img src="/assets/multinomial-samples.png" width="85%" height="85%">
+    <div class='caption' width="85%" height="85%">
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Histogram of samples from a Multinomial distribution with 4 classes, and probabilities: [0.1, 0.15, 0.25, 0.5]. </p>
+    </div>
+</div>
+
 &nbsp;
 
 
@@ -185,9 +209,19 @@ ax[1].set_yticks([])
 ax[1].set_ylabel("Density");
 ```
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/dirichlet-samples.png" width="70%" height="70%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/dirichlet-samples.png" width="85%" height="85%">
+    <div class='caption' width="85%" height="85%">
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Probability distributions for 2 different Dirichlet distributions, one above and another below. Notice that the support of the entire distribution is [0, 1], similar to the Beta. It cannot be seen on the graph, but each sample in the Dirichlet sums to 1. </p>
+    </div>
+</div>
+
+
 &nbsp;
 
 
