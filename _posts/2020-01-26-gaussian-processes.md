@@ -173,7 +173,7 @@ model = ExactGP(train_x, train_y, likelihood)
 
 <div class='figure' align="center">
     <img src="/assets/squared_exp_kernel_posterior.png" width="70%" height="70%">
-    <div class='caption' width="70%" height="70%">
+    <div class='caption' width="85%" height="85%">
         <!-- <span class='caption-label'>Figure 1.</span>  -->
         <p> Posterior distribution after fitting the data in red. The graph on the left shows the confidence interval for the test set (blue region). As we get further and further away from the observed data, the confidence band grows. The graph on the right shows samples from the posterior distrubtion. Because we condition on the data and don't add noise, we are forcing the posterior to "pass through" every single one of our observed datapoints.  </p>
     </div>

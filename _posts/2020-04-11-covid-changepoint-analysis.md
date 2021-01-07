@@ -84,9 +84,16 @@ The data used was downloaded from [Kaggle](https://www.kaggle.com/imdevskp/coron
 The virus also starts at different times in different countries. Because we have a regression model, it is inappropriate to include data prior to the virus being in a particular country. This date is chosen by hand for each country based on the progression of new cases and is never the date the first patient is recorded. The "start" date is better interpreted as the date the virus started to consistently grow, as opposed to the date the patient 0 was recorded.
 
 &nbsp;
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/italy-daily-cases.png" width="90%" height="90%">
-</p>
+</p> -->
+<div class='figure' align="center">
+    <img src="/assets/italy-daily-cases.png" width="90%" height="90%">
+    <div class='caption' width="70%" height="70%">
+        <p> Total confirmed COVID-19 cases in Italy on the left and daily cases on the right, from January 1st to March 15th 2020</p>
+    </div>
+</div>
+
 &nbsp;
 
 
@@ -171,9 +178,16 @@ $$
 **Posterior Distributions**
 
 <!-- figure 1: daily confirmed cases in Italy -->
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/canada-posterior-plots.png" width="90%" height="90%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/canada-posterior-plots.png" width="90%" height="90%">
+    <div class='caption' width="70%" height="70%">
+        <p> Posterior distributions for each parameter in our model using Canada's COVID-19 data. Notice that the posteriors for $w_1$ and $w_2$ don't overlap</p>
+    </div>
+</div>
 
 &nbsp;
 
@@ -186,9 +200,16 @@ As a side note, with no science attached, my company issued a mandatory work fro
 The model fit along with 95% credible interval bands can be seen in the plot below. On the left is log of the number of daily cases, which is what we used to fit the model, and on the right is the true number of daily cases. It is very difficult to visually determine a change point by simply looking at the number of daily cases, and even more difficult by looking at the total number of confirmed cases.
 
 &nbsp;
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/canada-regression-plot.png" width="90%" height="90%">
-</p>
+</p> -->
+<div class='figure' align="center">
+    <img src="/assets/canada-regression-plot.png" width="90%" height="90%">
+    <div class='caption' width="70%" height="70%">
+        <p> Left: log(daily confirmed cases) with the estimated date that the curve started to flatten (March 28th) and the 90% credible interval. Right: Raw data for the daily cases each day, along with a 90% credible interval for the day the curve started to flatten</p>
+    </div>
+</div>
+
 &nbsp;
 
 ### Assessing Convergence
@@ -198,9 +219,15 @@ When running these experiments, the most important step is to diagnose the MCMCf
 Below are [trace plots](https://stats.stackexchange.com/questions/120936/why-we-need-trace-plot-for-mcmc-results) for each parameter. Each chain is stationary and mixes well. Additionally, all $\hat{R}$ values are less than $1.1$.
 
 &nbsp;
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/canada-trace-plots.png" width="90%" height="90%">
-</p>
+</p> -->
+<div class='figure' align="center">
+    <img src="/assets/canada-trace-plots.png" width="90%" height="90%">
+    <div class='caption' width="70%" height="70%">
+        <p> Trace plots and $\hat{R}$ values for all posterior samples, plotten for MCMC diagnostics. </p>
+    </div>
+</div>
 &nbsp;
 
 After convergence, the last thing to check before moving on to other examples is how appropriate the model is for the data. Is it consistent with the assumptions made earlier? To test this we'll use a residual plot and a QQ-plot, as shown below.
@@ -208,9 +235,16 @@ I've outlined the estimated change point in order to compare residuals before an
 The residuals follow a Normal distribution with zero mean, and no have dependence with time, before and after the date of change.
 
 &nbsp;
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/canada-resid-plots.png" width="90%" height="90%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/canada-resid-plots.png" width="90%" height="90%">
+    <div class='caption' width="70%" height="70%">
+        <p> Residual and QQ-plots validating our error assumption. </p>
+    </div>
+</div>
 &nbsp;
 
 
@@ -230,9 +264,16 @@ $$
 **Posterior Distributions**
 
 &nbsp;
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/canada-march27-posterior-plots.png" width="90%" height="90%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/canada-march27-posterior-plots.png" width="90%" height="90%">
+    <div class='caption' width="70%" height="70%">
+        <p> Posterior plots for parameters after selecting a date range where the COVID-19 curve has not began to flatten. Notice the distributions for $w_1$ and $w_2$ overlap </p>
+    </div>
+</div>
 &nbsp;
 
 The posteriors for $w_1$ and $w_2$ have significant overlap, indicating that the growth rate of the virus hasn't changed significantly. Posteriors for $b_1$ and $b_2$ are also overlapping. These show that the model is struggling to estimate a reasonable $\tau$, which is good validation for us that the priors aren't too strong.
@@ -256,7 +297,7 @@ Similar to the previous example, the MCMC has converged. The trace plots below s
 
 ## Next Steps and Open Questions
 
-This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting byproduct of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were. The logical next modelling step would be to fit a hierarchical model in order to use partial pooling of data between countries. I find that the definition of each pool is most interesting for this problem. Some of my ideas about this are: geographic region, virus start time and population size.
+This model is able to describe the data well enough to produce a reliable estimate of the day flattening the curve started. An interesting byproduct of this is the coefficient term for the 2nd regression line, $w_2$. By calculating $w_2$ and $b_2$ for different countries, we can compare how effective their social distancing measures were. The logical next modelling step would be to fit a hierarchical model in order to use partial pooling of data between countries. 
 
 Thank you for reading, and definitely reach out to me by e-mail or other means if you have suggestions or recommendations, or even just to chat!
 
