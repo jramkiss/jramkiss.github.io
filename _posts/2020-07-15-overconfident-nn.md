@@ -27,9 +27,16 @@ You might argue that since I only trained the classifier on animals, of course i
 The 3-class classifier was trained on images of cats, dogs and wild animals taken from Kaggle that can be downloaded [here](https://www.kaggle.com/andrewmvd/animal-faces?).
 
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/overconfident-NN-training-data.png" width="70%" height="70%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/overconfident-NN-training-data.png" width="85%" height="85%">
+    <div class='caption'>
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+    </div>
+</div>
 
 &nbsp;
 
@@ -37,9 +44,18 @@ The model used was Resnet-18, which yields ~99% accuracy on the validation set. 
 
 &nbsp;
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/overconfident-NN-softmax-predictions.png" width="90%" height="90%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/overconfident-NN-softmax-predictions.png" width="85%" height="85%">
+    <div class='caption'>
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Parsed an image of myself through the animcal network and it's 98% confident I'm a dog. 
+        </p>
+    </div>
+</div>
 
 &nbsp;
 
@@ -63,9 +79,17 @@ Now we can use the last layer Laplace approximation to see if it helps the overc
 
 &nbsp;
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/overconfident-NN-out-of-sample-predictions.png" width="90%" height="90%">
-</p>
+</p> -->
+<div class='figure' align="center">
+    <img src="/assets/overconfident-NN-out-of-sample-predictions.png" width="85%" height="85%">
+    <div class='caption'>
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Comparison of outputs from using LLLA and Softmax. The scores seem to be muted with LLLA, so we have to explore whether this happens across the board or only for one image.
+        </p>
+    </div>
+</div>
 
 &nbsp;
 
@@ -76,9 +100,18 @@ So far we've only tested the method with two hand selected images. I want to see
 
 &nbsp;
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/overconfident-NN-top-class-prob-distribution.png"  width="90%" height="90%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/overconfident-NN-top-class-prob-distribution.png" width="85%" height="85%">
+    <div class='caption'>
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Comparison of the top class score for the animal data test set using LLLA and Softmax. There are no out-of-distribution images here, so it's difficult to say how concerning this is.
+        </p>
+    </div>
+</div>
 
 &nbsp;
 
@@ -111,9 +144,18 @@ I passed 300 of these Simpsons character faces into the classifier and plotted t
 
 &nbsp;
 
-<p align="center">
+<!-- <p align="center">
   <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="90%" height="90%">
-</p>
+</p> -->
+
+<div class='figure' align="center">
+    <img src="/assets/overconfident-NN-top-class-prob-out-out-distribution.png" width="85%" height="85%">
+    <div class='caption'>
+        <!-- <span class='caption-label'>Figure 1.</span>  -->
+        <p> Distribution of top-class scores (probabilities) using Simpsons characeters on our animal classifier. This plot is concerning as many of Simpsons characters have been predicted as an animal with high probability. The LLLA scores (right) here are much more reasonable.
+        </p>
+    </div>
+</div>
 
 
 These results are pretty alarming for the softmax classifier. The majority of Simpson faces are predicted as cat/dog/wild with probability greater than $0.8$ with the softmax classifier, whereas there are no predictions with greater than $0.5$ confidence from the LLLA classifier. This is amazing!  
