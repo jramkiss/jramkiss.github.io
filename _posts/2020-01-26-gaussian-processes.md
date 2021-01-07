@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Gaussian Processes and Regression"
-date: 2020-12-01 19:22
+date: 2021-01-02 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
