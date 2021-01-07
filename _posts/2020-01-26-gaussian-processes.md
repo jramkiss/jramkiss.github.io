@@ -172,30 +172,12 @@ model = ExactGP(train_x, train_y, likelihood)
 </p> -->
 
 <div class='figure' align="center">
-    <img src="/assets/squared_exp_kernel_posterior.png" width="85%" height="85%">
-    <div class='caption' width="85%" height="85%">
-        <!-- <span class='caption-label'>Figure 1.</span>  -->
+    <img src="/assets/squared_exp_kernel_posterior.png" width="90%" height="90%">
+    <div class='caption'>
         <p> Posterior distribution after fitting the data in red. The graph on the left shows the confidence interval for the test set (blue region). As we get further and further away from the observed data, the confidence band grows. The graph on the right shows samples from the posterior distrubtion. Because we condition on the data and don't add noise, we are forcing the posterior to "pass through" every single one of our observed datapoints.  </p>
     </div>
 </div>
 
-
-<!-- 
-#### Other Kernels
-
-There are a ton of other kernels, and it'll be interesting to see what their posterior samples look like. 
-
-##### Marten Kernel 
-
-
-<p align="center">
-  <img src="/assets/marten_kernel_posterior.png" width="100%" height="70%">
-</p>
-
-
-<p align="center">
-  <img src="/assets/periodic_kernel_posterior.png" width="100%" height="70%">
-</p> -->
 
 
 
