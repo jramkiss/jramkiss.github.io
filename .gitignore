@@ -5,6 +5,7 @@ _site
 .jekyll-metadata
 .ipynb_checkpoints
 
+*.csv
 *_files/
 .vscode/*
 # files created from converting notebooks to markdown:

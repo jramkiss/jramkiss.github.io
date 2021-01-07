@@ -5,7 +5,7 @@ date: 2020-07-29 12:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: I trained a classifier on images of animals and gave it an image of myself, it's 98% confident I'm a dog. This is an exploration of a possible Bayesian fix
+summary: I trained a classifier on images of animals and gave it an image of myself, it's 98% confident I'm a dog. This is an exploration of a possible Bayesian fix. Code available too
 ---
 
 I trained a multi-class classifier on images of cats, dogs and wild animals and passed an image of myself, it's 98% confident I'm a dog. The problem isn't that I passed an inappropriate image, because models in the real world are passed all sorts of garbage. It's that the model is overconfident about an image far away from the training data. Instead we expect a more uniform distribution over the classes. The overconfidence makes it difficult to post-process model output (setting a threshold on predictions, etc.), which means it needs to be dealt with by the architecture.

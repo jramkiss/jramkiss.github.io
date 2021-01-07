@@ -9,7 +9,7 @@ summary: A explanation of Gaussian processes and Gaussian process regression, st
 ---
 
 
-I've found many articles about Gaussian processes that start their explanation by describing stochastic processes, then go on to say that a GP is a distribution over functions, or an infinite dimensional distribution, etc. etc. I find these harsh for an introduction, so in this post I try to explain GPs in a more approachable manner. Then I talk about Gaussian process regression and its relationship with Bayesian linear regression, with an example using GPyTorch.
+I've found many articles about Gaussian processes that start their explanation by describing stochastic processes, then go on to say that a GP is a distribution over functions, or an infinite dimensional distribution, etc. etc. I find these harsh for an introduction, so in this post I try to explain GPs in a more approachable manner. Then I talk about Gaussian process regression and its relationship with Bayesian linear regression, with a simple example using GPyTorch.
 
 &nbsp;
 
@@ -108,7 +108,7 @@ Before we get to the practical stuff, a note about kernels. There are many ways 
 
 #### Simulation Problem
 
-In this section we will use a Gaussian process prior to approximate a function. We'll also assume that there is no noise in our function observations, but this is obviously a terrible assumption in modelling real world systems.
+In the first couple sentences of the last section I mentioned that we can condition the GP prior on the observed data to get a posterior distribution. All the observed data will then pass through this posterior distribution over functions. This section will use GP's to extrapolate a simulated function. We don't account for noisy observations, which is of course a terrible assumption in the real world.
 
 I'll use [GPyTorch](https://gpytorch.ai/) for inference. There are easier ways to use GP's in Python but GPyTorch looks promising, especially with Pytorch integration.
 
