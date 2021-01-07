@@ -39,8 +39,8 @@ plt.yticks([]);
 </p> -->
 
 <div class='figure' align="center">
-    <img src="/assets/binomial-samples.png" width="85%" height="85%">
-    <div class='caption' width="85%" height="85%">
+    <img src="/assets/binomial-samples.png" width="70%" height="70%">
+    <div class='caption' width="70%" height="70%">
         <!-- <span class='caption-label'>Figure 1.</span>  -->
         <p> Histogram of samples from a Binomial(n=1000, p=0.5) distribution. The mean of this distribution is 500, so we expect histogram to be centered around 500, which it is. This of course corresponds to an average of 500 successes over 1000 tries, with a probability of success of 0.5 </p>
     </div>
@@ -88,8 +88,8 @@ sns.distplot(beta.rvs(4, 2, size = n),
 </p> -->
 
 <div class='figure' align="center">
-    <img src="/assets/beta-samples.png" width="85%" height="85%">
-    <div class='caption' width="85%" height="85%">
+    <img src="/assets/beta-samples.png" width="70%" height="70%">
+    <div class='caption' width="70%" height="70%">
         <!-- <span class='caption-label'>Figure 1.</span>  -->
         <p> Plots for 4 different specifications of the Beta distribution. Notice on the x-axis that the support is between [0, 1] </p>
     </div>
@@ -138,8 +138,8 @@ sns.distplot(multinom_rvs[:, 3],
   <img src="/assets/multinomial-samples.png" width="70%" height="70%">
 </p> -->
 <div class='figure' align="center">
-    <img src="/assets/multinomial-samples.png" width="85%" height="85%">
-    <div class='caption' width="85%" height="85%">
+    <img src="/assets/multinomial-samples.png" width="70%" height="70%">
+    <div class='caption' width="70%" height="70%">
         <!-- <span class='caption-label'>Figure 1.</span>  -->
         <p> Histogram of samples from a Multinomial distribution with 4 classes, and probabilities: [0.1, 0.15, 0.25, 0.5]. </p>
     </div>
