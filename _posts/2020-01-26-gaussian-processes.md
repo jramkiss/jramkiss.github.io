@@ -111,7 +111,7 @@ Before we get to the practical stuff, a note about kernels. There are many ways 
 
 In the first couple sentences of the last section I mentioned that we can condition the GP prior on the observed data to get a posterior distribution. All the observed data will then pass through this posterior distribution over functions. This section will use GP's to extrapolate a simulated function. We don't account for noisy observations, which is of course a terrible assumption in the real world.
 
-I'll use [GPyTorch](https://gpytorch.ai/) for inference. There are easier ways to use GP's in Python but GPyTorch looks promising, especially with Pytorch integration.
+I'll use [GPyTorch](https://gpytorch.ai/) for inference. This is sort of like using a Ferrari to get groceries but GPyTorch looks promising, especially with Pytorch integration. Both [PyMC3](https://docs.pymc.io/Gaussian_Processes.html) and [sklearn](https://scikit-learn.org/stable/modules/gaussian_process.html) have easy-to-use implementations.
 
 Here's the function we want to approximate. The points in red are the training data, and we will try to approximate the blue section using a GP. 
 
