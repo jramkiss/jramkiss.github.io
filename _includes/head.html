@@ -59,7 +59,12 @@
     <meta property="og:url" content="{{ site.url }}{{ page.url }}">
     <meta property="og:site_name" content="{{ site.title | xml_escape }}">
     {% if site.post_preview_image %}
-    <meta property="og:image" content="{{ site.url }}/assets/profile.JPG">
+    <!-- <meta property="og:image" content="{{ site.url }}/assets/profile.JPG"> -->
+    {% if page.image %}
+    <meta property="og:image" content="page.image">
+    {% else %}
+    <meta property="og:image" content="/assets/profile.JPG">
+    {% endif %}
     {% endif %}
 
     <!-- Twitter Card -->
