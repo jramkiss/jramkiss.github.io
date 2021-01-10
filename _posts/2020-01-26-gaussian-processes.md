@@ -1,10 +1,11 @@
 ---
 layout: post
 title: "Gaussian Processes and Regression"
-date: 2021-01-02 19:22
+date: 2021-01-05 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
+image: /assets/squared_exp_kernel_posterior.png
 summary: A explanation of Gaussian processes and Gaussian process regression, starting with simple intuition and building up to inference. I sample from a GP in native Python and test GPyTorch on a simple simulated example.
 ---
 
