@@ -5,6 +5,7 @@ date: "2020-03-01 2:54"
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
+image: /assets/linear_regression_fit.png
 summary: Walkthrough of the intuition behind Bayesian regression and a comparison with ordinary linear regression using a practical example in Pyro.
 ---
 

@@ -5,6 +5,7 @@ date: 2019-08-21 19:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
+image: /assets/word2vec_viz.png
 summary: This post explains word2vec, GloVe and fasttext in detail and shows how to use pre-trained models for each in Python.
 ---
 
