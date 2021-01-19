@@ -10,6 +10,12 @@ math: true
 ### Paper reading list
 
 - [Stationary Activations for Uncertainty Calibration in Deep Learning](https://arxiv.org/abs/2010.09494)
+- [Blog post on Normalizing flows](https://docs.pymc.io/notebooks/normalizing_flows_overview.html)
+- [Probabilistic Backpropagation for Scalable
+Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lobato2015probabilistic.pdf) 
+- [When Did Bayesian Inference Become
+“Bayesian”?](https://projecteuclid.org/download/pdf_1/euclid.ba/1340371071)
+- 
 
 
 
@@ -30,7 +36,7 @@ math: true
 
 - [Applied Statistics, Stanford course notes](https://statweb.stanford.edu/~owen/courses/305a/305MinNotesMarked.pdf) - Linear models and assumptions, Normal, $t$, $\chi^2$ distribution, Correlations, $t$-tests, Random effects models
 - [Monte Carlo methods and examples](http://statweb.stanford.edu/~owen/mc/) - Examples, Gaussian, Poisson, Dirichlet processes, Importance sampling, MCMC
--
+- [Hidden Markov Models](https://probmlcourse.github.io/csc412/lectures/week_6/) and [here](https://www.cs.ubc.ca/~murphyk/Bayes/bnintro.html)
 
 ### Experimental Design
 

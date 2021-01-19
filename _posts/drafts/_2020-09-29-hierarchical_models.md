@@ -10,8 +10,15 @@ summary: Using a hierarchical prior changes Bayesian models a lot more than it i
 
 Hierarchical models are powerful and fascinating. In this post I attempt to introduce hierarchical models with a few examples. 
 
+## Key Questions
+
+- What really makes multi-level / hierarchical modelling so much "better"? 
+- How is a hierarchical model even better? Is it just the change in posterior? What happens if we use flatter priors?
+- What happens to parameter variance when we have hierarchical priors?
+
 ### Reading Material
 
+- Statistical Rethinking - Chapter 13
 - [Multilevel modelling in PyStan](https://widdowquinn.github.io/Teaching-Stan-Hierarchical-Modelling/07-partial_pooling_intro.html): Jupyter notebook with PyStan example
 - [Bayesian Hierarchical Modelling at Scale](https://florianwilhelm.info/2020/10/bayesian_hierarchical_modelling_at_scale/): Post comparing PyMC3 to Pyro and using Pyro for a task with lots of data.
 - [Notes on Hierarchical Models](https://vioshyvo.github.io/Bayesian_inference/hierarchical-models.html)

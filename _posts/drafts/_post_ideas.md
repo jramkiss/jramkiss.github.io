@@ -8,6 +8,22 @@ math: true
 summary: Bullet points of ideas for future posts.
 ---
 
+
+### Can a neural network learn max() and min() functions?
+- I want to know if a regular neural network can learn `max()` and `min()` functions. What about a residual neural network?
+- First plot the max and min function to see what they look like 
+
+### Can you plot distributions from its moments?
+- If you can do this, then we can represent much richer distributinos using variational auto encoders. Instead of learning $(\mu, \sigma)$, you just learn a bunch of moments.
+- May be able to use the method of moments to approximate a distribution. Read about this and understand it pleaes
+- Reading material: 
+    - https://stackoverflow.com/questions/4807398/how-to-generate-distributions-given-mean-sd-skew-and-kurtosis-in-r
+    - https://gist.github.com/josef-pkt/6895915
+    - https://www.statsmodels.org/stable/gmm.html
+    - https://stats.stackexchange.com/questions/375515/can-i-use-moments-of-a-distribution-to-sample-the-distribution
+
+
+
 ### Hypothesis Testing and Significance Levels
 - Basically a post walking through that interview question I got about significance levels and metrics. The math behind what's really going on. And a couple explanations of p-values.
 - p-value: False positive rate. How is it a false positive rate
