@@ -5,6 +5,8 @@ source 'https://rubygems.org'
 # https://github.com/github/pages-gem
 gem 'github-pages'
 
+gem 'jekyll', '~> 3'
+
 gem "rubyzip", ">= 1.3.0"
 
 gem "kramdown", ">= 2.3.0"
