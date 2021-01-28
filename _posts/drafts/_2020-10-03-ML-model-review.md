@@ -9,6 +9,10 @@ summary: Designed to be a personal refresher for some ML models and concepts.
 ---
 
 
+## Resources
+
+- https://maria-antoniak.github.io/2018/11/19/data-science-crash-course.html
+
 ## Models
 
 #### Linear Regression, Logistic Regression and GLM's

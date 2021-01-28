@@ -8,6 +8,9 @@ math: true
 summary: Bullet points of ideas for future posts.
 ---
 
+### Base Rate Fallacy
+- Write a short post on the base rate fallacy to explain it to yourself. 
+- [Wiki page](https://en.wikipedia.org/wiki/Base_rate_fallacy), [Gelman blog post](https://statmodeling.stat.columbia.edu/2020/12/15/literally-a-textbook-problem-if-you-get-a-positive-covid-test-how-likely-is-it-that-its-a-false-positive/), [Decision lab post](https://thedecisionlab.com/biases/base-rate-fallacy/), [paper](https://www.sciencedirect.com/science/article/abs/pii/0001691880900463), 
 
 ### Can a neural network learn max() and min() functions?
 - I want to know if a regular neural network can learn `max()` and `min()` functions. What about a residual neural network?
