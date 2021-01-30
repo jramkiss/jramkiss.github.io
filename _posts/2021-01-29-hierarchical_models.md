@@ -230,10 +230,12 @@ Logistic Regression train set accuracy, children classes:  0.7081788215904409
 Logistic Regression test set accuracy, children classes:  0.6286072772898369
 ```
 
-These results are comparable to the hierarchical model. We now need to see how big of a difference the hierarchical model makes, if any. I'm interested in two things in particular:
+On a macro scale, these results are comparable to the hierarchical model. However, the data is very imbalanced, so accuracy won't suffice. To determine how much of a difference the hierarchical model makes, I'm interested in a coulpe things: 
 
-- Performance of parent categories: The hierarchical model should perform better here, especially for low-data children classes.
-- Out-of-distribution examples: Because the hierarchical model is Bayesian, it should also be able to detect out-of-distribution samples better. We can test this by applying a random text dataset to the models.
+- Performance of parent categories: I expect the hierarchical model to perform well on the parent-level categories, since we implicitly model these in our regression. In particular I'm interested in the parent-level preformance for classes that have few datapoints. 
+- Out-of-distribution examples: Because our model is Bayesian, it should also be able to detect out-of-distribution samples better than the frequentist models. We can test this by applying a random text dataset to the models.
+
+&nbsp;
 
 --- 
 
