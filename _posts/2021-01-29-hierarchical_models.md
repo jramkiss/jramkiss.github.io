@@ -20,7 +20,7 @@ Before we do anything, we should understand the problem better. Below is a plot 
 
 
 <div class='figure' align="center">
-    <img src="/assets/amazon_taxonomy.png" width="90%" height="90%">
+    <img src="/assets/amazon_taxonomy.png" width="80%" height="70%">
     <div class='caption' width="70%" height="70%">
         <p> Taxonomy structure for 2 parent classes (on the left) and 5 of their children classes (on the right). This is a small subset of parent and children classes. </p>
     </div>
@@ -51,14 +51,14 @@ $$ \beta \sim Normal(\beta_0, \sigma_0^2) $$
 $$
 \begin{equation*}
   \begin{split}
-    Z = X \beta + \epsilon
+    Z = X \beta + \epsilon \\[10pt]
     y = \text{softmax(Z)}
   \end{split}
   \text{, } \qquad \qquad
   \begin{split}
-    \beta_p \sim Normal(\beta_p, \sigma_p^2)
-    \beta_c = \beta_p \times \alpha
-    \beta \sim Normal(\beta_c, \sigma_c^2)
+    \beta_p \sim Normal(\beta_p, \sigma_p^2) \\[10pt]
+    \beta_c = \beta_p \times \alpha \\[10pt]
+    \beta \sim Normal(\beta_c, \sigma_c^2) \\[10pt]
     \epsilon \sim N(0, 1) \\[10pt]
   \end{split}
   \\[15pt]
