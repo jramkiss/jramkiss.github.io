@@ -12,6 +12,10 @@ summary: In this post I use Numpyro to build a Bayesian model to classify Amazon
 
 In this post I build a Bayesian hierarchical model to classify [Amazon products from Kaggle](https://www.kaggle.com/kashnitsky/hierarchical-text-classification) into a taxonomy using their titles. The taxonomy is hierarchical in nature and we can benefit from incorporating this structure into a model. First we'll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we'll build the Bayesian model and write it up in Numpyro.
 
+#### Disclaimer: 
+
+In this post I run MCMC on a super high dimensional dataset, which is not the best idea, especially if you have better things to do with your time. I don't.
+
 &nbsp;
 
 ## Hierarchical Class Structure 
