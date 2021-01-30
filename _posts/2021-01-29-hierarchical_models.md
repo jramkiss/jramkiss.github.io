@@ -43,10 +43,6 @@ $$ \text{softmax}(Z) = y $$
 
 Column $i$ of $\beta$ corresponds to the coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has "brothers" which also come from parent class $p_i$. Then each sibling of parent $p_i$ should have the same prior. We can represent that below:
 
-$$ \beta_0 \sim Normal(\, \sigma_0^2) $$
-
-$$ \beta \sim Normal(\beta_0, \sigma_0^2) $$
-
 
 $$
 \begin{equation*}
@@ -54,16 +50,18 @@ $$
     Z = X \beta + \epsilon \\[10pt]
     y = \text{softmax(Z)}
   \end{split}
-  \text{, } \qquad \qquad
+  <!-- \text{, } \qquad \qquad -->
   \begin{split}
-    \beta_p \sim Normal(\beta_p, \sigma_p^2) \\[10pt]
+    \beta_p \sim N(\beta_{\mu_p}, \sigma_{\mu_p}^2) \\[10pt]
     \beta_c = \beta_p \times \alpha \\[10pt]
-    \beta \sim Normal(\beta_c, \sigma_c^2) \\[10pt]
+    \beta \sim N(\beta_c, \sigma_c^2) \\[10pt]
     \epsilon \sim N(0, 1) \\[10pt]
   \end{split}
   \\[15pt]
 \end{equation*}
 $$
+
+Here, $\beta_{\mu_p}$ is the prior mean for each parent class and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $beta_c$ by multiplying by another matrix, $\alpha$. This $\alpha$ is what links the children classes together to their parents. 
 
 
 
