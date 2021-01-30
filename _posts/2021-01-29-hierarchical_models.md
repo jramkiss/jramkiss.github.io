@@ -20,8 +20,8 @@ Before we do anything, we should understand the problem better. Below is a plot 
 
 
 <div class='figure' align="center">
-    <img src="/assets/amazon_taxonomy.png" width="80%" height="40%">
-    <div class='caption' width="70%" height="70%">
+    <img src="/assets/amazon_taxonomy.png" width="60%" height="40%">
+    <div class='caption' width="50%" height="50%">
         <p> Taxonomy structure for 2 parent classes (on the left) and 5 of their children classes (on the right). This is a small subset of parent and children classes. </p>
     </div>
 </div>
@@ -36,7 +36,7 @@ Before we get to the Bayesian model, we should explore simpler ways for this cla
 We'll use TF-IDF scores of item titles to classify them into the taxonomy. Below is our raw data:
 
 <div class='figure' align="center">
-    <img src="/assets/Amazon-taxonomy-data.png" width="80%" height="80%">
+    <img src="/assets/Amazon-taxonomy-data.png" width="90%" height="90%">
 </div>
 
 &nbsp;
