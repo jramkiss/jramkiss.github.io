@@ -67,6 +67,10 @@ $$
 
 
 
+## Helpful Resources
+
+- [Finally! Bayesian Hierarchical Modelling at Scale - Florian Wilhelm](https://florianwilhelm.info/2020/10/bayesian_hierarchical_modelling_at_scale/)
+
 --- 
 
 
