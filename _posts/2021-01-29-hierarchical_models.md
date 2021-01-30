@@ -174,6 +174,54 @@ print("MCMC complete")
 &nbsp;
 
 
+## Comparison to Flat Classification 
+
+Of course, we need to compare this hierarchical model against simpler formulations. One of the simplest approaches to this problem is to flatten the hierarchy, which we do by disregarding the parent classes. We'll compare a Ridge classifier, SVM classifier and logistic regression:
+
+```python
+# rige classifier
+ridge_clf = RidgeClassifier().fit(train_tfidf.T, children_target)
+print("Ridge classifier train set accuracy, children classes: ", ridge_clf.score(train_tfidf.T, children_target))
+print("Ridge classifier test set accuracy, children classes: ", ridge_clf.score(test_tfidf.T, children_target_test))
+
+print('')
+
+# linear SVM
+sgd_clf = SGDClassifier(loss = "hinge", # linear SVM, "log" for logistic regression
+                        max_iter=1000, 
+                        n_jobs = -1, 
+                        random_state = 42,
+                        tol=1e-3).fit(train_tfidf.T, children_target)
+print("SVM classifier train set accuracy, children classes: ", sgd_clf.score(train_tfidf.T, children_target))
+print("SVM classifier test set accuracy, children classes: ", sgd_clf.score(test_tfidf.T, children_target_test))
+
+print('')
+
+# logistic regression
+log_reg = SGDClassifier(loss = "log", # linear SVM, "log" for logistic regression
+                        max_iter=1000, 
+                        n_jobs = -1, 
+                        random_state = 42,
+                        tol=1e-3).fit(train_tfidf.T, children_target)
+# log_reg.predict_proba(test_tfidf.T)
+print("Logistic Regression train set accuracy, children classes: ", log_reg.score(train_tfidf.T, children_target))
+print("Logistic Regression test set accuracy, children classes: ", log_reg.score(test_tfidf.T, children_target_test))
+```
+&nbsp;
+
+```
+Ridge classifier train set accuracy, children classes:  0.7184796044499382
+Ridge classifier test set accuracy, children classes:  0.6273525721455459
+
+SVM classifier train set accuracy, children classes:  0.7481458590852905
+SVM classifier test set accuracy, children classes:  0.6288163948138854
+
+Logistic Regression train set accuracy, children classes:  0.7081788215904409
+Logistic Regression test set accuracy, children classes:  0.6286072772898369
+```
+
+
+
 --- 
 
 
@@ -224,6 +272,7 @@ percentiles = np.percentile(predictions, [5.0, 95.0], axis=0)
 class_predictions = pd.DataFrame(mean_prediction).apply(np.argmax, axis = 1)
 print("Training set accuracy: ", np.mean(class_predictions == parent_target))
 ```
+&nbsp;
 
 
 Now construct the prior mean for the child regression by using the posterior mean of the parent regression.
@@ -241,6 +290,7 @@ for c in children_class_list :
     
 prior_mean.head()
 ```
+&nbsp;
 
 And re-run a similar model, but this time using the children labels as the target:
 
@@ -285,6 +335,7 @@ percentiles = np.percentile(children_predictions, [5.0, 95.0], axis=0)
 child_class_predictions = pd.DataFrame(mean_children_prediction).apply(np.argmax, axis = 1)
 print("Train set accuracy, child categories: ", np.mean(child_class_predictions == children_target))
 ```
+&nbsp;
 
 The test set accuracy of the child model using this formulation was around 44%, significantly worse than both the frequentist models and non-centered hierarchical model.
 
