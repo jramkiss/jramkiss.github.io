@@ -10,7 +10,7 @@ summary: In this post I use Numpyro to build a Bayesian model to classify Amazon
 
 ## Introduction
 
-In this post we'll build a Bayesian model to classify Amazon products into a taxonomy using their titles. This taxonomy, like many others, is hierarchical in nature and we can benefit from incorporating this structure into the model. First we'll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we'll build the Bayesian model and write it up in Numpyro.
+In this post we'll build a Bayesian model to classify [Amazon products from Kaggle](https://www.kaggle.com/kashnitsky/hierarchical-text-classification) into a taxonomy using their titles. This taxonomy, like many others, is hierarchical in nature and we can benefit from incorporating this structure into the model. First we'll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we'll build the Bayesian model and write it up in Numpyro.
 
 &nbsp;
 
@@ -25,11 +25,60 @@ Before we do anything, we should understand the problem better. Below is a plot 
         <p> Taxonomy structure for 2 parent classes (on the left) and 5 of their children classes (on the right). This is a small subset of parent and children classes. </p>
     </div>
 </div>
-&nbsp;
 
+&nbsp;
 
 Before we get to the Bayesian model, we should explore simpler ways for this classification to be done. One approach would be to flatten the taxonomy and only consider the children classes. This turns the probblem into a $64$ class classification problem which can be solved with logistic regression / SVM / anything, really. The main drawback of this approach is that we make the assumption that each class is indepentent, and not only do we know this is incorrect, we have the dependencies. We want to teach the model that "action toy figures" and "baby toddler toys" come from the same parent class. Intuitively, this can help when we don't have a lot of training data for a particular child class, and if we come across an item after training that we don't have a subclass for. For example if we come across an item that should be in the class "adult lego toys", but we don't have that child class defined, we should be able to determine that this item came frm the "toy games" parent class. Thankfully, the way to deal with these problems is hierarchical modelling. 
 
+
+## Data and Preprocessing
+
+We'll use TF-IDF scores of item titles to classify them into the taxonomy. Below is our raw data:
+
+<div class='figure' align="center">
+    <img src="/assets/Amazon-taxonomy-data.png" width="80%" height="80%">
+</div>
+
+&nbsp;
+
+Now for calculating TF-IDF, which we'll use `Gensim` for, but `sklearn` is fine. I found that `Gensim` is much more memory efficient when working with _much_ larger datasets. 
+
+```python
+%%time
+# find tf-idf scores for training set
+
+dct = Dictionary(X_train.map(lambda x: x.split(' ')))
+dct.filter_extremes(no_below=5, no_above=0.7, keep_n = 2 ** 10)
+dct.compactify()
+
+train_corpus = [dct.doc2bow(doc.split(' ')) for doc in X_train]  # convert corpus to BoW format
+tfidf_model = TfIdfTransformer()
+
+train_tfidf = tfidf_model.fit_transform(train_corpus)
+train_tfidf = corpus2dense(train_tfidf, num_terms = len(dct)) # can also use: corpus2csc
+print(train_tfidf.shape)
+
+test_corpus = [dct.doc2bow(doc.split(' ')) for doc in X_test] 
+test_tfidf = corpus2dense(tfidf_model.transform(test_corpus), num_terms = len(dct))
+print(test_tfidf.shape)
+```
+
+The last thing that needs to be done before modeling is encode the parent and children labels. Here we use 2 types of `sklearn` encodings: `labelEncoder` and `labelBinarizer`. The former maps each class into an integer, which we'll use to fit a couple `sklearn` models to compare against our Bayesian model. The latter one-hot encodes the labels into vectors so that we can model them with a Multinomial distribution.  
+
+```python
+le = preprocessing.LabelEncoder()
+parent_target = le.fit_transform(parent_train)
+children_target = le.fit_transform(children_train)
+
+parent_target_test = le.fit_transform(parent_test)
+children_target_test = le.fit_transform(children_test)
+
+lb = LabelBinarizer()
+parent_binr = lb.fit_transform(parent_train)
+children_binr = lb.fit_transform(children_train)
+```
+
+&nbsp;
 
 ## Bayesian Hierarchical Modeling
 
