@@ -349,6 +349,7 @@ percentiles = np.percentile(children_predictions, [5.0, 95.0], axis=0)
 child_class_predictions = pd.DataFrame(mean_children_prediction).apply(np.argmax, axis = 1)
 print("Train set accuracy, child categories: ", np.mean(child_class_predictions == children_target))
 ```
+
 &nbsp;
 
 The test set accuracy of the child model using this formulation was around 44%, significantly worse than both the frequentist models and non-centered hierarchical model.
@@ -358,10 +359,17 @@ The test set accuracy of the child model using this formulation was around 44%, 
 ## Helpful Resources
 
 - [Finally! Bayesian Hierarchical Modelling at Scale - Florian Wilhelm](https://florianwilhelm.info/2020/10/bayesian_hierarchical_modelling_at_scale/)
+- [Massively parallel MCMC with JAX](https://rlouf.github.io/post/jax-random-walk-metropolis/)
 
 
 
 <!-- 
+
+# Outstanding Questions
+- How do we actually share data in the hierarchical model? What happen if we dont have \alpha in this model?
+
+
+
 
 ## Key Questions
 
