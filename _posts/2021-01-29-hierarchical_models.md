@@ -150,6 +150,12 @@ def predict(model, rng_key, samples, X):
 Numpyro provides a `reparam` function, to change hierarchical model specifications from centered to non-centered parameterizations. We'll use this to help with inference.
 
 ```python
+# constructing \alpha
+alpha = np.zeros((len(parent_class_list), len(children_class_list)))
+
+for i, c in enumerate(children_class_list) :
+    alpha[:, i] = parent_class_list == class_tree[c]
+
 num_parent_classes = len(parent_class_list)
 X = jnp.asarray(train_tfidf.T, dtype = "float32")
 Y = jnp.asarray(children_binr, dtype = "float32") # binarized labels
@@ -172,6 +178,11 @@ print("MCMC complete")
 ```
 
 &nbsp;
+
+```
+Train set accuracy, child categories:  0.7351668726823238
+Test set accuracy, child categories:  0.6277708071936429
+```
 
 
 ## Comparison to Flat Classification 
@@ -220,12 +231,15 @@ Logistic Regression train set accuracy, children classes:  0.7081788215904409
 Logistic Regression test set accuracy, children classes:  0.6286072772898369
 ```
 
+These results are comparable to the hierarchical model. We now need to see how big of a difference the hierarchical model makes, if any. I'm interested in two things in particular:
 
+- Performance of parent categories: The hierarchical model should perform better here, especially for low-data children classes.
+- Out-of-distribution examples: Because the hierarchical model is Bayesian, it should also be able to detect out-of-distribution samples better. We can test this by applying a random text dataset to the models.
 
 --- 
 
 
-## Parent Posterior as Children Prior Experiment
+## Bloopers: Parent Posterior as Children Prior
 
 I also experimented with another formulation where I first fit a logistic regression to predict the parent classes, and obtained the posterior mean for $\beta_p$. This was then used as the prior mean for another regression, where I predict the children classes. Th formulation turned out to not work as well as the traditional hierarchical model, and I suspect it is because when using the posterior mean of $\beta_p$, the posterior variance was disregarded. This no longer made the model hierarchical, but simply just changed the prior mean for $\beta_c$.
 
