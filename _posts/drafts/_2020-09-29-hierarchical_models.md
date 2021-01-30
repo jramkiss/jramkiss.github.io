@@ -1,14 +1,76 @@
 ---
 layout: post
-title: "Hierarchical Models"
-date: 2020-09-29 2:22
+title: "Bayesian Hierarchical Classification in Numpyro"
+date: 2021-01-29 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Using a hierarchical prior changes Bayesian models a lot more than it initially appears. Here I explore why
+summary: In this post I use Numpyro to build a Bayesian model to classify Amazon products into a hierarchical taxonomy.
 ---
 
-Hierarchical models are powerful and fascinating. In this post I attempt to introduce hierarchical models with a few examples. 
+## Introduction
+
+In this post we'll build a Bayesian model to classify Amazon products into a taxonomy using their titles. This taxonomy, like many others, is hierarchical in nature and we can benefit from incorporating this structure into the model. First we'll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we'll build the Bayesian model and write it up in Numpyro.
+
+&nbsp;
+
+## Hierarchical Class Structure 
+
+Before we do anything, we should understand the problem better. Below is a plot of a subset of classes to see their structure. It's pretty self explanatory, but each item is a member of a child class, and each child class is a member of a parent class. In this particular problem we have $6$ parent classes and $64$ child classes.
+
+
+<div class='figure' align="center">
+    <img src="/assets/amazon_taxonomy.png" width="90%" height="90%">
+    <div class='caption' width="70%" height="70%">
+        <p> Taxonomy structure for 2 parent classes (on the left) and 5 of their children classes (on the right). This is a small subset of parent and children classes. </p>
+    </div>
+</div>
+&nbsp;
+
+
+Before we get to the Bayesian model, we should explore simpler ways for this classification to be done. One approach would be to flatten the taxonomy and only consider the children classes. This turns the probblem into a $64$ class classification problem which can be solved with logistic regression / SVM / anything, really. The main drawback of this approach is that we make the assumption that each class is indepentent, and not only do we know this is incorrect, we have the dependencies. We want to teach the model that "action toy figures" and "baby toddler toys" come from the same parent class. Intuitively, this can help when we don't have a lot of training data for a particular child class, and if we come across an item after training that we don't have a subclass for. For example if we come across an item that should be in the class "adult lego toys", but we don't have that child class defined, we should be able to determine that this item came frm the "toy games" parent class. Thankfully, the way to deal with these problems is hierarchical modelling. 
+
+
+## Bayesian Hierarchical Modeling
+
+The class structure can be explicitly represented by our priors in a Bayesian hierarchical model, so let's do that. 
+
+First assume that the underlying model is a logistic regression with target, $y$, being the children classes. Therefore $\beta \in R^{p \times c}$, where $p$ is the number of features in the regression and $c$ is the number of children classes, so $64$ in this problem.
+
+$$ Z = X \beta + \epsilon $$
+
+$$ \text{softmax}(Z) = y $$ 
+
+Column $i$ of $\beta$ corresponds to the coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has "brothers" which also come from parent class $p_i$. Then each sibling of parent $p_i$ should have the same prior. We can represent that below:
+
+$$ \beta_0 \sim Normal(\, \sigma_0^2) $$
+
+$$ \beta \sim Normal(\beta_0, \sigma_0^2) $$
+
+
+$$
+\begin{equation*}
+  \begin{split}
+    Z = X \beta + \epsilon
+    y = \text{softmax(Z)}
+  \end{split}
+  \text{, } \qquad \qquad
+  \begin{split}
+    \beta_p \sim Normal(\beta_p, \sigma_p^2)
+    \beta_c = \beta_p \times \alpha
+    \beta \sim Normal(\beta_c, \sigma_c^2)
+    \epsilon \sim N(0, 1) \\[10pt]
+  \end{split}
+  \\[15pt]
+\end{equation*}
+$$
+
+
+
+--- 
+
+
+<!-- 
 
 ## Key Questions
 
@@ -95,4 +157,4 @@ Hierarchical models also work because the resulting posterior is changed complet
 
 - In addition to the added flexibility, hierarchical models also help with data pooling. For example in 8 schools.
 
-The $t_{\nu}(\mu, \sigma^2)$ distribution can be represented with a Gaussian with mean $\mu$ and variance term distributed as an Inverse-$\chi^2$ with $\nu$ degrees of freedom
+The $t_{\nu}(\mu, \sigma^2)$ distribution can be represented with a Gaussian with mean $\mu$ and variance term distributed as an Inverse-$\chi^2$ with $\nu$ degrees of freedom -->
