@@ -10,14 +10,13 @@ summary: In this post I use Numpyro to build a Bayesian model to classify Amazon
 
 ## Introduction
 
-In this post we'll build a Bayesian model to classify [Amazon products from Kaggle](https://www.kaggle.com/kashnitsky/hierarchical-text-classification) into a taxonomy using their titles. This taxonomy, like many others, is hierarchical in nature and we can benefit from incorporating this structure into the model. First we'll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we'll build the Bayesian model and write it up in Numpyro.
+In this post I build a Bayesian hierarchical model to classify [Amazon products from Kaggle](https://www.kaggle.com/kashnitsky/hierarchical-text-classification) into a taxonomy using their titles. The taxonomy is hierarchical in nature and we can benefit from incorporating this structure into a model. First we'll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we'll build the Bayesian model and write it up in Numpyro.
 
 &nbsp;
 
 ## Hierarchical Class Structure 
 
-Before we do anything, we should understand the problem better. Below is a plot of a subset of classes to see their structure. It's pretty self explanatory, but each item is a member of a child class, and each child class is a member of a parent class. In this particular problem we have $6$ parent classes and $64$ child classes.
-
+Below is a diagram of a subset of parent classes on the left, and child classes on the right. For this problem we have $6$ parent classes and $64$ child classes.
 
 <div class='figure' align="center">
     <img src="/assets/amazon_taxonomy.png" width="50%" height="30%">
@@ -28,12 +27,14 @@ Before we do anything, we should understand the problem better. Below is a plot 
 
 &nbsp;
 
-Before we get to the Bayesian model, we should explore simpler ways for this classification to be done. One approach would be to flatten the taxonomy and only consider the children classes. This turns the probblem into a $64$ class classification problem which can be solved with logistic regression / SVM / anything, really. The main drawback of this approach is that we make the assumption that each class is indepentent, and not only do we know this is incorrect, we have the dependencies. We want to teach the model that "action toy figures" and "baby toddler toys" come from the same parent class. Intuitively, this can help when we don't have a lot of training data for a particular child class, and if we come across an item after training that we don't have a subclass for. For example if we come across an item that should be in the class "adult lego toys", but we don't have that child class defined, we should be able to determine that this item came frm the "toy games" parent class. Thankfully, the way to deal with these problems is hierarchical modelling. 
+A simple way of assigning categories to our data would be to flatten the hierarchy and only consider the child classes. This would turn our problem into a $64$ class classification problem which can be solved with logistic regression / SVM / many other things. The drawback of this approach is that we make the assumption that each class is independednt, which we know is incorrect. 
+
+We want to teach the model that "action toy figures" and "baby toddler toys" come from the same parent class. Intuitively, this can help when we don't have a lot of training data for a particular child class, and if we come across an item at inference time that we don't have a subclass for. Thankfully, one way to deal with these problems is by using hierarchical modelling. 
 
 
 ## Data and Preprocessing
 
-We'll use TF-IDF scores of item titles to classify them into the taxonomy. Below is our raw data:
+Before diving into the model, here is the data we're working with:
 
 <div class='figure' align="center">
     <img src="/assets/Amazon-taxonomy-data.png" width="90%" height="90%">
@@ -41,7 +42,8 @@ We'll use TF-IDF scores of item titles to classify them into the taxonomy. Below
 
 &nbsp;
 
-I used `Gensim` for calculating TF-IDF, but `sklearn` is fine. I found that `Gensim` is much more memory efficient when working with _much_ larger datasets. 
+We'll use TF-IDF scores of item titles to classify them into the taxonomy. I used `Gensim` for calculating TF-IDF, but `sklearn` is fine. I found that `Gensim` is more memory efficient when working with _much_ larger datasets. 
+
 
 ```python
 %%time
@@ -63,7 +65,7 @@ print(test_tfidf.shape)
 ```
 &nbsp;
 
-The last thing that needs to be done before modeling is encode the parent and children labels. Here we use 2 types of `sklearn` encodings: `labelEncoder` and `labelBinarizer`. The former maps each class into an integer, which we'll use to fit a couple `sklearn` models to compare against our Bayesian model. The latter one-hot encodes the labels into vectors so that we can model them with a Multinomial distribution.  
+Finally we encode the labels for parent and children classes in 2 different ways: `labelEncoder` and `labelBinarizer`. The former maps each class into an integer, which we'll use to fit a couple `sklearn` models to compare against our Bayesian model. The latter one-hot encodes.  
 
 ```python
 le = preprocessing.LabelEncoder()
@@ -82,11 +84,11 @@ children_binr = lb.fit_transform(children_train)
 
 ## Bayesian Hierarchical Modeling
 
-The class structure can be explicitly represented by our priors in a Bayesian hierarchical model, so let's do that. First assume that the underlying model is a logistic regression with target, $y$, being the children classes. Therefore $\beta \in R^{p \times c}$, where $p$ is the number of features in the regression and $c$ is the number of children classes, so $64$ in this problem.
+The class structure can be explicitly represented by our priors in a hierarchical model, so let's do that. First assume that the underlying model is a logistic regression with target, $y$, being the children classes. Therefore $\beta \in R^{p \times c}$, where $p$ is the number of features in the regression and $c$ is the number of children classes, so $64$ in this problem.
 
 $$ Z = X \beta + \epsilon $$
 
-$$ \text{softmax}(Z) = y $$ 
+$$ y = \text{softmax}(Z) $$ 
 
 Column $i$ of $\beta$ corresponds to the coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has "brothers" which also come from parent class $p_i$. We want each child of parent $p_i$ to have the same prior, which we can represent below:
 
@@ -101,7 +103,7 @@ $$
 $$
 
 
-Here, $\beta_{\mu_p}$ is the prior mean for each parent class and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $\beta_c$ by multiplying by another matrix, $\alpha \in R^{p \times c}$. This $\alpha$ is what links the children classes together, and to their parents. 
+Here, $\beta_{\mu_p}$ is the prior mean for each parent class, which we set by hand and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $\beta_c$ by multiplying by another matrix, $\alpha \in R^{p \times c}$. This $\alpha$ is what links the children classes together, and to their parents. 
 
 
 ## Inference in Numpyro
@@ -152,7 +154,6 @@ Numpyro provides a `reparam` function, to change hierarchical model specificatio
 ```python
 # constructing \alpha
 alpha = np.zeros((len(parent_class_list), len(children_class_list)))
-
 for i, c in enumerate(children_class_list) :
     alpha[:, i] = parent_class_list == class_tree[c]
 
@@ -176,8 +177,6 @@ non_centered_mcmc = run_inference(model = reparam_model,
 nc_samples = non_centered_mcmc.get_samples()
 print("MCMC complete")
 ```
-
-&nbsp;
 
 ```
 Train set accuracy, child categories:  0.7351668726823238
@@ -241,7 +240,7 @@ These results are comparable to the hierarchical model. We now need to see how b
 
 ## Bloopers: Parent Posterior as Children Prior
 
-I also experimented with another formulation where I first fit a logistic regression to predict the parent classes, and obtained the posterior mean for $\beta_p$. This was then used as the prior mean for another regression, where I predict the children classes. Th formulation turned out to not work as well as the traditional hierarchical model, and I suspect it is because when using the posterior mean of $\beta_p$, the posterior variance was disregarded. This no longer made the model hierarchical, but simply just changed the prior mean for $\beta_c$.
+I also experimented with another formulation where I first fit a logistic regression to predict the parent classes, and obtained the posterior mean for $\beta_p$. I then used $\beta_p$ as the prior mean for another regression, where I predict the children classes. Th formulation turned out to not work as well as the traditional hierarchical model, and I suspect it is because when using the posterior mean of $\beta_p$, the posterior variance was disregarded. This no longer made the model hierarchical, but simply just changed the prior mean for $\beta_c$.
 
 The code I used to run this is below:
 
