@@ -20,7 +20,7 @@ Before we do anything, we should understand the problem better. Below is a plot 
 
 
 <div class='figure' align="center">
-    <img src="/assets/amazon_taxonomy.png" width="80%" height="70%">
+    <img src="/assets/amazon_taxonomy.png" width="80%" height="55%">
     <div class='caption' width="70%" height="70%">
         <p> Taxonomy structure for 2 parent classes (on the left) and 5 of their children classes (on the right). This is a small subset of parent and children classes. </p>
     </div>
@@ -46,24 +46,86 @@ Column $i$ of $\beta$ corresponds to the coefficients for class $i$. We know tha
 
 $$
 \begin{equation*}
-  \begin{split}
-    Z = X \beta + \epsilon \\[10pt]
-    y = \text{softmax(Z)}
-  \end{split}
-  <!-- \text{, } \qquad \qquad -->
-  \begin{split}
-    \beta_p \sim N(\beta_{\mu_p}, \sigma_{\mu_p}^2) \\[10pt]
-    \beta_c = \beta_p \times \alpha \\[10pt]
-    \beta \sim N(\beta_c, \sigma_c^2) \\[10pt]
-    \epsilon \sim N(0, 1) \\[10pt]
-  \end{split}
-  \\[15pt]
+  \beta_p \sim N(\beta_{\mu_p}, \sigma_{\mu_p}^2) \\[10pt]
+  \beta_c = \beta_p \times \alpha \\[10pt]
+  \beta \sim N(\beta_c, \sigma_c^2) \\[10pt]
+  \epsilon \sim N(0, 1) \\[10pt]
 \end{equation*}
 $$
 
-Here, $\beta_{\mu_p}$ is the prior mean for each parent class and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $beta_c$ by multiplying by another matrix, $\alpha$. This $\alpha$ is what links the children classes together to their parents. 
+
+Here, $\beta_{\mu_p}$ is the prior mean for each parent class and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $\beta_c$ by multiplying by another matrix, $\alpha$. This $\alpha$ is what links the children classes together, and to their parents. 
 
 
+## Inference in Numpyro
+
+[Numpyro](http://num.pyro.ai/en/latest/getting_started.html) is another probabilistic programming language built on Pyro and [JAX](https://jax.readthedocs.io/en/latest/). It's supposed to blazing fast thanks to speed ups provided by JAX, so we'll try it out here. 
+
+
+```python
+def hierarchical_model (X, Y=None):
+    dim_X = X.shape[1]
+    # hierarchical prior: beta_0 ~ N(0, 1) 
+    beta_0 = numpyro.sample("beta_0", dist.Normal(jnp.zeros((dim_X, np.array([num_parent_classes])[0])), 
+                                                  jnp.ones((dim_X, np.array([num_parent_classes])[0]))))
+    # construct prior for $\beta$ by multiplying with \alpha 
+    jnp_prior_mean = jnp.matmul(beta_0, alpha)
+    # now we can sample beta        
+    beta = numpyro.sample("beta", dist.Normal(jnp_prior_mean, jnp.ones(jnp_prior_mean.shape)))
+    err = numpyro.sample("err", dist.Normal(0., 0.5))
+    resp = jnp.matmul(X, beta) + err
+    probs = softmax(resp) 
+    numpyro.sample("Y", dist.Multinomial(probs = probs), obs = Y)
+
+
+# functions for inference and prediction: 
+# helper function for HMC inference
+def run_inference(model, rng_key, X, Y, num_warmup = 10, num_samples = 100, num_chains = 2):
+    start = time.time()
+    kernel = NUTS(model)
+    print("Starting MCMC: ")
+    mcmc = MCMC(kernel, num_warmup = num_warmup, 
+                num_samples = num_samples, 
+                num_chains = num_chains)
+    mcmc.run(rng_key, X, Y)
+    print('\nMCMC elapsed time:', time.time() - start)
+    return mcmc
+
+# helper function for prediction
+def predict(model, rng_key, samples, X):
+    model = handlers.substitute(handlers.seed(model, rng_key), samples)
+    # note that Y will be sampled in the model because we pass Y=None here
+    model_trace = handlers.trace(model).get_trace(X=X, Y=None)
+    return model_trace['Y']['value']
+```
+
+Numpyro provides a `reparam` function, to change hierarchical model specifications from centered to non-centered parameterizations. We'll use this to help with inference.
+
+```python
+num_parent_classes = len(parent_class_list)
+X = jnp.asarray(train_tfidf.T, dtype = "float32")
+Y = jnp.asarray(children_binr, dtype = "float32") # binarized labels
+
+_num_chains = 4
+_num_samples = 200
+numpyro.set_host_device_count(_num_chains)
+rng_key, rng_key_predict = random.split(random.PRNGKey(0))
+
+reparam_model = reparam(hierarchical_model, config={'beta': LocScaleReparam(0)})
+
+non_centered_mcmc = run_inference(model = reparam_model, 
+                           rng_key = rng_key, 
+                           X = X, Y = Y, 
+                           num_warmup = 50, 
+                           num_samples = _num_samples, 
+                           num_chains = _num_chains)
+nc_samples = non_centered_mcmc.get_samples()
+print("MCMC complete")
+```
+
+
+
+---
 
 ## Helpful Resources
 
