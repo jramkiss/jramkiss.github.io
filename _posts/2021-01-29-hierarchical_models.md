@@ -41,7 +41,7 @@ We'll use TF-IDF scores of item titles to classify them into the taxonomy. Below
 
 &nbsp;
 
-Now for calculating TF-IDF, which we'll use `Gensim` for, but `sklearn` is fine. I found that `Gensim` is much more memory efficient when working with _much_ larger datasets. 
+I used `Gensim` for calculating TF-IDF, but `sklearn` is fine. I found that `Gensim` is much more memory efficient when working with _much_ larger datasets. 
 
 ```python
 %%time
@@ -61,6 +61,7 @@ test_corpus = [dct.doc2bow(doc.split(' ')) for doc in X_test]
 test_tfidf = corpus2dense(tfidf_model.transform(test_corpus), num_terms = len(dct))
 print(test_tfidf.shape)
 ```
+&nbsp;
 
 The last thing that needs to be done before modeling is encode the parent and children labels. Here we use 2 types of `sklearn` encodings: `labelEncoder` and `labelBinarizer`. The former maps each class into an integer, which we'll use to fit a couple `sklearn` models to compare against our Bayesian model. The latter one-hot encodes the labels into vectors so that we can model them with a Multinomial distribution.  
 
@@ -81,15 +82,13 @@ children_binr = lb.fit_transform(children_train)
 
 ## Bayesian Hierarchical Modeling
 
-The class structure can be explicitly represented by our priors in a Bayesian hierarchical model, so let's do that. 
-
-First assume that the underlying model is a logistic regression with target, $y$, being the children classes. Therefore $\beta \in R^{p \times c}$, where $p$ is the number of features in the regression and $c$ is the number of children classes, so $64$ in this problem.
+The class structure can be explicitly represented by our priors in a Bayesian hierarchical model, so let's do that. First assume that the underlying model is a logistic regression with target, $y$, being the children classes. Therefore $\beta \in R^{p \times c}$, where $p$ is the number of features in the regression and $c$ is the number of children classes, so $64$ in this problem.
 
 $$ Z = X \beta + \epsilon $$
 
 $$ \text{softmax}(Z) = y $$ 
 
-Column $i$ of $\beta$ corresponds to the coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has "brothers" which also come from parent class $p_i$. Then each sibling of parent $p_i$ should have the same prior. We can represent that below:
+Column $i$ of $\beta$ corresponds to the coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has "brothers" which also come from parent class $p_i$. We want each child of parent $p_i$ to have the same prior, which we can represent below:
 
 
 $$
@@ -102,7 +101,7 @@ $$
 $$
 
 
-Here, $\beta_{\mu_p}$ is the prior mean for each parent class and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $\beta_c$ by multiplying by another matrix, $\alpha$. This $\alpha$ is what links the children classes together, and to their parents. 
+Here, $\beta_{\mu_p}$ is the prior mean for each parent class and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $\beta_c$ by multiplying by another matrix, $\alpha \in R^{p \times c}$. This $\alpha$ is what links the children classes together, and to their parents. 
 
 
 ## Inference in Numpyro
@@ -146,6 +145,7 @@ def predict(model, rng_key, samples, X):
     model_trace = handlers.trace(model).get_trace(X=X, Y=None)
     return model_trace['Y']['value']
 ```
+&nbsp;
 
 Numpyro provides a `reparam` function, to change hierarchical model specifications from centered to non-centered parameterizations. We'll use this to help with inference.
 
@@ -171,7 +171,122 @@ nc_samples = non_centered_mcmc.get_samples()
 print("MCMC complete")
 ```
 
+&nbsp;
 
+
+--- 
+
+
+## Parent Posterior as Children Prior Experiment
+
+I also experimented with another formulation where I first fit a logistic regression to predict the parent classes, and obtained the posterior mean for $\beta_p$. This was then used as the prior mean for another regression, where I predict the children classes. Th formulation turned out to not work as well as the traditional hierarchical model, and I suspect it is because when using the posterior mean of $\beta_p$, the posterior variance was disregarded. This no longer made the model hierarchical, but simply just changed the prior mean for $\beta_c$.
+
+The code I used to run this is below:
+
+```python
+# first fit parent regression
+def parent_model(X, Y=None):
+    if Y == None : 
+        dim_Y = 6
+    else :
+        dim_Y = Y.shape[1]
+    beta = numpyro.sample("beta", dist.Normal(jnp.zeros((X.shape[1], dim_Y)), jnp.ones((X.shape[1], dim_Y))*2)) 
+    err = numpyro.sample("err", dist.Normal(0., 1.))
+    resp = jnp.matmul(X, beta) + err
+    probs = softmax(resp) # jax softmax, not scipy
+    numpyro.sample("Y", dist.Multinomial(probs = probs), obs = Y)
+
+
+X = jnp.asarray(train_tfidf.T, dtype = "float32")
+Y = jnp.asarray(parent_binr, dtype = "float32") # binarized labels
+
+_num_chains = 4
+_num_samples = 200
+numpyro.set_host_device_count(_num_chains)
+rng_key, rng_key_predict = random.split(random.PRNGKey(0))
+mcmc = run_inference(model = parent_model, 
+                     rng_key = rng_key, 
+                     X = X, Y = Y,
+                     num_warmup = 50, 
+                     num_samples = _num_samples, 
+                     num_chains = _num_chains)
+parent_samples = mcmc.get_samples()
+print("MCMC complete")
+
+# predict Y_test at inputs X_test
+vmap_args = (parent_samples, random.split(rng_key_predict, _num_chains * _num_samples))
+predictions = vmap(lambda samples, rng_key: predict(parent_model, rng_key, samples, X))(*vmap_args)
+
+# compute mean prediction and confidence interval around median
+mean_prediction = jnp.mean(predictions, axis=0)
+percentiles = np.percentile(predictions, [5.0, 95.0], axis=0)
+
+class_predictions = pd.DataFrame(mean_prediction).apply(np.argmax, axis = 1)
+print("Training set accuracy: ", np.mean(class_predictions == parent_target))
+```
+
+
+Now construct the prior mean for the child regression by using the posterior mean of the parent regression.
+
+```python
+# use the posterior of the parent regression as the prior mean for the child regression
+beta_posterior = parent_samples["beta"]
+posterior_mean = np.apply_along_axis(np.mean, 0, beta_posterior)
+
+posterior_mean_df = pd.DataFrame(posterior_mean, columns = parent_class_list)
+
+prior_mean = pd.DataFrame()
+for c in children_class_list :
+    prior_mean[c] = posterior_mean_df[class_tree[c]]
+    
+prior_mean.head()
+```
+
+And re-run a similar model, but this time using the children labels as the target:
+
+```python
+# model for the child classes
+def child_model(X, Y=None):
+    beta = numpyro.sample("beta", dist.Normal(jnp_prior_mean, jnp.ones(jnp_prior_mean.shape)*2))
+    err = numpyro.sample("err", dist.Normal(0., 0.5))
+    resp = jnp.matmul(X, beta) + err
+    probs = softmax(resp) # jax softmax, not scipy
+    numpyro.sample("Y", dist.Multinomial(probs = probs), obs = Y)
+
+X = jnp.asarray(train_tfidf.T, dtype = "float32")
+Y = jnp.asarray(children_binr, dtype = "float32") # binarized labels
+jnp_prior_mean = jnp.asarray(prior_mean, dtype = "float32")
+
+_num_chains = 4
+_num_samples = 200
+numpyro.set_host_device_count(_num_chains)
+rng_key, rng_key_predict = random.split(random.PRNGKey(0))
+
+child_model_reparam = reparam(child_model, config={'beta': LocScaleReparam(0)})
+
+child_mcmc = run_inference(model = child_model_reparam, 
+                           rng_key = rng_key, 
+                           X = X, Y = Y,
+                           num_warmup = 50, 
+                           num_samples = _num_samples, 
+                           num_chains = _num_chains)
+child_samples = child_mcmc.get_samples()
+print("MCMC complete")
+
+
+# predict Y_test at inputs X_test
+vmap_args = (child_samples, random.split(rng_key_predict, _num_chains * _num_samples))
+children_predictions = vmap(lambda samples, rng_key: predict(child_model, rng_key, samples, X))(*vmap_args)
+
+# compute mean prediction and confidence interval around median
+mean_children_prediction = jnp.mean(children_predictions, axis=0)
+percentiles = np.percentile(children_predictions, [5.0, 95.0], axis=0)
+
+child_class_predictions = pd.DataFrame(mean_children_prediction).apply(np.argmax, axis = 1)
+print("Train set accuracy, child categories: ", np.mean(child_class_predictions == children_target))
+```
+
+The test set accuracy of the child model using this formulation was around 44%, significantly worse than both the frequentist models and non-centered hierarchical model.
 
 ---
 
@@ -179,7 +294,6 @@ print("MCMC complete")
 
 - [Finally! Bayesian Hierarchical Modelling at Scale - Florian Wilhelm](https://florianwilhelm.info/2020/10/bayesian_hierarchical_modelling_at_scale/)
 
---- 
 
 
 <!-- 
