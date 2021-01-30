@@ -327,7 +327,7 @@ Y = jnp.asarray(children_binr, dtype = "float32") # binarized labels
 jnp_prior_mean = jnp.asarray(prior_mean, dtype = "float32")
 
 _num_chains = 4
-_num_samples = 200
+_num_samples = 500
 numpyro.set_host_device_count(_num_chains)
 rng_key, rng_key_predict = random.split(random.PRNGKey(0))
 
@@ -372,6 +372,7 @@ The test set accuracy of the child model using this formulation was around 44%, 
 
 # Outstanding Questions
 - How do we actually share data in the hierarchical model? What happen if we dont have \alpha in this model?
+- Are hierarchical model overparametrized?
 
 
 
