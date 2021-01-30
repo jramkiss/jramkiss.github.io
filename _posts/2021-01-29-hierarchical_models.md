@@ -20,7 +20,7 @@ Before we do anything, we should understand the problem better. Below is a plot 
 
 
 <div class='figure' align="center">
-    <img src="/assets/amazon_taxonomy.png" width="80%" height="55%">
+    <img src="/assets/amazon_taxonomy.png" width="80%" height="40%">
     <div class='caption' width="70%" height="70%">
         <p> Taxonomy structure for 2 parent classes (on the left) and 5 of their children classes (on the right). This is a small subset of parent and children classes. </p>
     </div>
@@ -46,12 +46,11 @@ Now for calculating TF-IDF, which we'll use `Gensim` for, but `sklearn` is fine.
 ```python
 %%time
 # find tf-idf scores for training set
-
 dct = Dictionary(X_train.map(lambda x: x.split(' ')))
 dct.filter_extremes(no_below=5, no_above=0.7, keep_n = 2 ** 10)
 dct.compactify()
 
-train_corpus = [dct.doc2bow(doc.split(' ')) for doc in X_train]  # convert corpus to BoW format
+train_corpus = [dct.doc2bow(doc.split(' ')) for doc in X_train]  # BoW format
 tfidf_model = TfIdfTransformer()
 
 train_tfidf = tfidf_model.fit_transform(train_corpus)
