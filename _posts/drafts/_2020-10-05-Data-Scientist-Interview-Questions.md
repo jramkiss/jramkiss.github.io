@@ -10,7 +10,9 @@ summary: A collection of cool data scientist interview questions that I've come 
 
 
 ### Machine Learning
-- What is the difference between K-mean and EM?
+- https://www.nicksingh.com/posts/30-machine-learning-interview-questions-ml-interview-study-guide
+- https://towardsdatascience.com/data-science-interviews-machine-learning-d9080e7185fb
+
 - Why use feature selection? If two predictors are highly correlated, what is the effect on the coefficients in the logistic regression? What are the confidence intervals of the coefficients?
 - What is the function of p-values in high dimensional linear regression?
 - Describe linear regression to a child, to a first-year college student, and to a seasoned mathematician.
@@ -40,12 +42,12 @@ summary: A collection of cool data scientist interview questions that I've come 
 
 
 ### Probability and Statistics
+- https://www.nicksingh.com/posts/40-probability-statistics-data-science-interview-questions-asked-by-fang-wall-street#section1
+
 - For a sample size of N, the margin of error is 3. How many more samples do we need for the margin of error to hit 0.3?
 - What is the assumption of error in linear regression?
 - How can you tell if a given coin is biased?
-- Explain how a probability distribution could be not normal and give an example scenario.
 - You have a deck and you take one card at random and guess what the card is. What is the probability you guess right?
-- What is the difference between parametric and non-parametric testing?
 - Given a random Bernoulli trial generator, write a function to return a value sampled from a normal distribution.
 - Given three random variables independent and identically distributed from a uniform distribution of 0 to 4, what is the probability that the median is greater than 3?
 - What is a standard deviation?
@@ -96,9 +98,10 @@ summary: A collection of cool data scientist interview questions that I've come 
 - Given a list of all followers in format: 123, 345;234, 678;345, 123;…where the first column contains the ID of the follower, and the second one is the ID of who’s followed, find all mutual follows(pair 123, 345 in the example above). Do the same in the case, when this list does not fit into the memory.
 - Given a list of characters, a list of prior of probabilities for each character, and a matrix of probabilities for each character combination, return the optimal sequence for the highest probability.
 - Write a function that can take a string and return a list of bigrams.
--
+- Fibonacci with 3 numbers
 
 ### SQL
+- https://www.nicksingh.com/posts/30-sql-and-database-design-questions-from-real-data-science-interviews
 - Given a payment transactions table and a customers table, return the customer’s name and the first transaction that the customer made.
 - Given a payments transactions table, return a frequency distribution of the number of payments each customer made. (I.E. 1 transaction — 100 customers, 2 transactions — 50 customers, etc…)
 - Given the same payments table, return the cumulative distribution. (At least one transaction, at least two transactions, etc…)
