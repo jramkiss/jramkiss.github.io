@@ -139,6 +139,16 @@ If we over train the model too our training set, when we try to generalize to mo
 Bias is the model's tendency to consistently learn the same wrong thing, whereas variance is the tenddedncy to consistently learn random things. Simple models have high bias because they are not able to properly induce the properties of the data, however more complex models have a tendency to have high variance because their hypothesis spaces are much larger. This can be thought of as simple models only considering a small set of possible outcomes (ex of an outcome is a linear boundary), however complex models consider a much larger set of possible outcomes (neural nets can represent any function).
 
 
+#### Coefficient of Determination, $R^2$ and Adjusted $R^2$
+
+$R^2$ is the percentage of variance in the target variable explained by the covariates. The variance in the target variable can be thought of as variance along the $y$ axis. Low variance in the target variable would imply data points are close to the regression line, and vice versa for high variance. High variance likely means the covariates are inappropriate for the problem and that there are other drivers of the target variable. 
+
+$$R^2 = \frac{\text{Variance explained by the model}}{\text{Total variance}}$$
+
+$R^2$ necessarily increases as we add more covariates. Ideal behaviour would be for us to penalize additional covariates, which is what adjusted $R^2$ does. 
+
+
+
 #### Regularization
 http://cs229.stanford.edu/notes/cs229-notes5.pdf
 

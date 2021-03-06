@@ -13,7 +13,7 @@ When training a deep neural network, or any model using gradient descent, it's e
 
 ## Regularization with Maximum Likelihood and MAP 
 
-To start, I took a step back and thought about how we would deal with overfitting in another model that doesn't need optimization from gradient descent - simple linear regression. Of course, the easiest thing to do here is to add a penalty to the loss function, and if we still want a closed form solution we add the L2 norm. Parameter estimation from here is relatively straightforward, and in their respective solutions, its easy to see the influence of . 
+To start, I took a step back and thought about how we would deal with overfitting in another model that doesn't need optimization from gradient descent - simple linear regression. Of course, the easiest thing to do here is to add a penalty to the loss function, and if we still want a closed form solution we add the L2 norm. Parameter estimation from here is relatively straightforward, and in their [respective solutions](https://math.stackexchange.com/questions/2917109/map-solution-for-linear-regression-what-is-a-gaussian-prior), its easy to see the influence of . 
 
 
 
@@ -27,3 +27,4 @@ Adding L1 and L2 penalties to the loss function in MLE regression simply restric
 ## Overfitting a Bayesian Regression Example
 
 Here we'll look at 2 very similar models, one with flat priors and another with strong priors and test their ability to generalize to unseen data. This ability to generalize will be a proxy for how much the model is overfit to the training data. 
+

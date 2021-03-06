@@ -52,7 +52,7 @@ The model used was Resnet-18, which yields ~99% accuracy on the validation set. 
     <img src="/assets/overconfident-NN-softmax-predictions.png" width="85%" height="85%">
     <div class='caption'>
         <!-- <span class='caption-label'>Figure 1.</span>  -->
-        <p> Parsed an image of myself through the animcal network and it's 98% confident I'm a dog. 
+        <p> Parsed an image of myself through the animal network and it's 98% confident I'm a dog. 
         </p>
     </div>
 </div>
@@ -64,7 +64,7 @@ The model used was Resnet-18, which yields ~99% accuracy on the validation set. 
 
 [This paper](https://arxiv.org/pdf/1812.05720.pdf) proposes a nice explanation and proof for the over-confidence of out-of-distribution examples in ReLU networks. Essentially, they prove that for a given class $k$, there exists a scaling factor $\alpha > 0$ such that the softmax value of input $\alpha x$ as $\alpha \to \infty$ is equal to 1. This means that there are infinitely many inputs that obtain arbitrarily high confidence in ReLU networks. A bi-product of which is the inability to set softmax thresholds to preserve classifier precision.
 
-There are a couple ways so approach this, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) or 2) changing the structure of the network. The generative approach doesn't really solve the problem with ReLU networks. There's a great [Chicken-MNIST](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) blog post that discusses a potential solution using VAEs. Another approach, that would fall into the category of changing the network structure is to change the loss function, which was done in [this paper](https://arxiv.org/pdf/1812.05720.pdf). Instead, we'll opt for changing the network by putting a posterior over the weights of the last layer, as decsribed in [this paper](https://arxiv.org/abs/2002.10118).
+There are a couple of ways to approach this, which broadly fall into two categories: 1) building a generative model for the data (VAE, GAN, etc.) or 2) changing the structure of the network. The generative approach doesn't really solve the problem with ReLU networks. There's a great [Chicken-MNIST](https://emiliendupont.github.io/2018/03/14/mnist-chicken/) blog post that discusses a potential solution using VAEs. Another approach, that would fall into the category of changing the network structure is to change the loss function, which was done in [this paper](https://arxiv.org/pdf/1812.05720.pdf). Instead, we'll opt for changing the network by putting a posterior over the weights of the last layer, as decsribed in [this paper](https://arxiv.org/abs/2002.10118).
 
 &nbsp;
 
@@ -115,7 +115,7 @@ So far we've only tested the method with two hand selected images. I want to see
 
 &nbsp;
 
-The softmax model is really confident about nearly all the images in the validation set, whereas the LLLA model has a flatter confidence distribution. Can't stop now! When does the LLLA model produces high or low confidence predictions?  
+The softmax model is really confident about nearly all the images in the validation set, whereas the LLLA model has a flatter confidence distribution. Can't stop now! When does the LLLA model produce high or low confidence predictions?  
 It's difficult to come to a general conclusion on this, but interestingly the LLLA model can produce predictions with both high and low confidence even when the softmax prediction confidence is high.
 
 

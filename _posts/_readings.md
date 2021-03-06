@@ -15,7 +15,8 @@ math: true
 Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lobato2015probabilistic.pdf) 
 - [When Did Bayesian Inference Become
 “Bayesian”?](https://projecteuclid.org/download/pdf_1/euclid.ba/1340371071)
-- 
+-  [Bayesian Hierarchical Stacking](https://arxiv.org/pdf/2101.08954.pdf)
+- [A Conceptual Introduction to Hamiltonian Monte Carlo](https://arxiv.org/pdf/1701.02434.pdf)
 
 
 
