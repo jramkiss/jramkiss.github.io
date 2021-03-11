@@ -17,7 +17,13 @@ Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lob
 “Bayesian”?](https://projecteuclid.org/download/pdf_1/euclid.ba/1340371071)
 -  [Bayesian Hierarchical Stacking](https://arxiv.org/pdf/2101.08954.pdf)
 - [A Conceptual Introduction to Hamiltonian Monte Carlo](https://arxiv.org/pdf/1701.02434.pdf)
+- [Neural network overparametization and generalization](https://arxiv.org/pdf/2001.07384.pdf)
+- [Smooth adversarial training, making more robust neural networks. Interesting](https://arxiv.org/pdf/2006.14536.pdf)
 
+### Blog Reading List
+- [Neural network overfitting](https://lilianweng.github.io/lil-log/2019/03/14/are-deep-neural-networks-dramatically-overfitted.html)
+- [Things that can go wrong in ML project](https://towardsdatascience.com/51-things-that-can-go-wrong-in-a-real-world-ml-project-c36678065a75)
+- [Monitoring ML performance in production](https://towardsdatascience.com/the-playbook-to-monitor-your-models-performance-in-production-ec06c1cc3245)
 
 
 ### Machine Learning Blogs
