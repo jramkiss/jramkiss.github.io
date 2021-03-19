@@ -24,6 +24,7 @@ Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lob
 - [Neural network overfitting](https://lilianweng.github.io/lil-log/2019/03/14/are-deep-neural-networks-dramatically-overfitted.html)
 - [Things that can go wrong in ML project](https://towardsdatascience.com/51-things-that-can-go-wrong-in-a-real-world-ml-project-c36678065a75)
 - [Monitoring ML performance in production](https://towardsdatascience.com/the-playbook-to-monitor-your-models-performance-in-production-ec06c1cc3245)
+- [Code reviews](https://www.kevinlondon.com/2015/05/05/code-review-best-practices.html)
 
 
 ### Machine Learning Blogs

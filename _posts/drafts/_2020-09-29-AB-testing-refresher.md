@@ -18,6 +18,14 @@ The p-value can also be a measure of the false positive rate. Meaning it is the 
 ### Statistical Power
 The power of a statistical test is the probability of finding an effect if there is an effect to be found.
 
+### Type 1 and Type 2 Errors
+
+A type 1 error occurs when we wrongly reject the null hypothesis when it is actually true. In plain language: we accept $H_A$ but $H_0$ is true. The probability of this happening will depend on our significance level, $\alpha$, because we automatically reject $H_0$ for $p < \alpha$. Visually, this is the region where distributions for $H_A$ and $H_0$ overlap, so it is also the probability that wrongly reject $H_0$.
+
+A type 2 error occurs when we wrongly fail to reject the null, when the alternative hypothesis is true. In plain language: we accept $H_0$ when $H_A$ is true. The probability of this happening depends on the power of our test, which is the probability of observing an effect given there is one present. This probability is $\beta = p(R | H_A)$. So the probability of wrongly choosing $H_0$ when $H_A$ is true is $1 - \beta$.
+
+More reading [here](https://www.stat.berkeley.edu/~hhuang/STAT141/Lecture-FDR.pdf).
+
 ## Statistical Tests
 
 ### One Sample t-Tests

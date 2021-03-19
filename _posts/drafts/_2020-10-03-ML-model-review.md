@@ -122,6 +122,26 @@ http://d2l.ai/chapter_convolutional-neural-networks/index.html
 
 ## Concepts
 
+#### Precision and Recall
+
+- Precision is the fraction of points predicted to be class $k$ that are correct
+- Recall is the fraction of class $k$ that are predicted correctly 
+
+High precision low recall example: We have 10 data points in class $k$ and run our classifier on them. It predicts 1 point to be in class $k$ and the others in class $j$. Then the recall is 10% but the precision is 100%.
+
+When evaluating a classifier, we are interested in two things:
+
+1) When the model predicts Class A (precision), what % of those predictions are correct?
+2) What % of data in Class A did the model correctly predict (recall) in Class A?
+
+There are cases where one metric is more important than the other. In a spam model for example, we would favour Recall over Precision as we don't want to let spam through. However in models for medical diagnosis, Precision can be favoured over Recall, as we want to limit the number of false positive diagnoses.
+
+
+#### k-Fold Cross Validation
+
+Cross validation is simply holding out part of out data to be used for testing. In its most basic form, 1-fold cross validation, we make 1 split in the data and use part for training and the rest for testing, however we can extend this to multiple splits. 
+We can use k-fold cross validation to determine the robustness of our model. Here we divide the data into $k$ "folds", train on $k-1$ and evaluate on the $k$th. Be careful to do any data cleaning / transformations on the $k-1$ folds so that you don't allow data leakage.
+
 #### Central Limit Theorem
 
 The CLT states that with a population with mean, $\mu$ and standard deviation, $\sigma$. If we take sufficiently large samples with replacement then the distribution of the sample means will be approximately Normally distributed.
@@ -167,14 +187,6 @@ More on boosting [here](http://cs229.stanford.edu/extra-notes/boosting.pdf).
 
 Don't fully understand, read about it: [http://cs229.stanford.edu/notes/cs229-notes-ensemble.pdf](http://cs229.stanford.edu/notes/cs229-notes-ensemble.pdf)
 
-#### Precision, Recall and F1 Score
-
-When evaluating a classifier, we are interested in two things:
-
-1) When the model predicts Class A (precision), what % of those predictions are correct?
-2) What % of data in Class A did the model correctly predict (recall) in Class A?
-
-There are cases where one metric is more important than the other. In a spam model for example, we would favour Recall over Precision as we don't want to let spam through. However in models for medical diagnosis, Precision can be favoured over Recall, as we want to limit the number of false positive diagnoses.
 
 #### Dropout
 
