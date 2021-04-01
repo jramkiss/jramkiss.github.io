@@ -18,3 +18,9 @@ With this in mind, it seems as though neural networks infer epistemic (PLZ CONFI
 ## Proposed Solution
 
 One proposed solution is an active learning / self-supervised approach, where we iteratively train models on increasingly larger datasets, but with a key difference in the training scheme. Instead of one-hot encoding model predictions, we use the raw model output as training data for the next cycle. This way we are able to teach the model subtle differences between classes, if overlap exists. For example, a $3$ that looks like an $8$. We ideally want the model to be confused about whether or not this is a $3$ or an $8$, and not overconfident in either one. 
+
+
+## Resources
+
+- [Aleatoric and Epistemic Uncertainty in Machine Learning: An Introduction to Concepts and Methods](https://arxiv.org/pdf/1910.09457.pdf)
+- 

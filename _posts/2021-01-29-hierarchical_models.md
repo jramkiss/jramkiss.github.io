@@ -12,15 +12,16 @@ summary: In this post I use Numpyro to build a Bayesian model to classify Amazon
 
 In this post I build a Bayesian hierarchical model to classify [Amazon products from Kaggle](https://www.kaggle.com/kashnitsky/hierarchical-text-classification) into a taxonomy using their titles. The taxonomy is hierarchical in nature and we can benefit from incorporating this structure into a model. First we'll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we'll build the Bayesian model and write it up in Numpyro.
 
-#### Disclaimer: 
+#### Disclaimer
 
-In this post I run MCMC on a super high dimensional dataset, which is not the best idea, especially if you have better things to do with your time. I don't.
+In this post I run MCMC on a pretty high dimensional dataset, which is not the best idea if you have better things to do with your time. Luckily, I don't.
 
 &nbsp;
 
 ## Hierarchical Class Structure 
 
-Below is a diagram of a subset of parent classes on the left, and child classes on the right. For this problem we have $6$ parent classes and $64$ child classes.
+Below is a diagram of the class structure. Each product (datapoint) is a member of a child category, which is in turn a member of a parent category. For example a broom is a member of the "household supplies" child category, which is in turn a member of the "health personal care" parent category. 
+For this problem we have $6$ parent classes and $64$ child classes.
 
 <div class='figure' align="center">
     <img src="/assets/amazon_taxonomy.png" width="50%" height="30%">
@@ -33,7 +34,7 @@ Below is a diagram of a subset of parent classes on the left, and child classes 
 
 A simple way of assigning categories to our data would be to flatten the hierarchy and only consider the child classes. This would turn our problem into a $64$ class classification problem which can be solved with logistic regression / SVM / many other things. The drawback of this approach is that we make the assumption that each class is independednt, which we know is incorrect. 
 
-We want to teach the model that "action toy figures" and "baby toddler toys" come from the same parent class. Intuitively, this can help when we don't have a lot of training data for a particular child class, and if we come across an item at inference time that we don't have a subclass for. Thankfully, one way to deal with these problems is by using hierarchical modelling. 
+We want to leverage the fact that "action toy figures" and "baby toddler toys" come from the same parent class, "toy games". Intuitively, this can help when we don't have a lot of training data for a particular child class, or if we come across an item at inference time that we don't have a subclass for. One way to deal with this problem is by using hierarchical modelling. 
 
 
 ## Data and Preprocessing
@@ -46,14 +47,14 @@ Before diving into the model, here is the data we're working with:
 
 &nbsp;
 
-We'll use TF-IDF scores of item titles to classify them into the taxonomy. I used `Gensim` for calculating TF-IDF, but `sklearn` is fine. I found that `Gensim` is more memory efficient when working with _much_ larger datasets. 
+I use TF-IDF scores of item titles to classify them into the taxonomy. `Gensim` was used to calculate TF-IDF scores, but `sklearn` is fine. I found that `Gensim` is more memory efficient when working with _much_ larger datasets. 
 
 
 ```python
 %%time
 # find tf-idf scores for training set
 dct = Dictionary(X_train.map(lambda x: x.split(' ')))
-dct.filter_extremes(no_below=5, no_above=0.7, keep_n = 2 ** 10)
+dct.filter_extremes(no_below=5, no_above=0.7, keep_n = 2 ** 5)
 dct.compactify()
 
 train_corpus = [dct.doc2bow(doc.split(' ')) for doc in X_train]  # BoW format
@@ -67,9 +68,10 @@ test_corpus = [dct.doc2bow(doc.split(' ')) for doc in X_test]
 test_tfidf = corpus2dense(tfidf_model.transform(test_corpus), num_terms = len(dct))
 print(test_tfidf.shape)
 ```
+
 &nbsp;
 
-Finally we encode the labels for parent and children classes in 2 different ways: `labelEncoder` and `labelBinarizer`. The former maps each class into an integer, which we'll use to fit a couple `sklearn` models to compare against our Bayesian model. The latter one-hot encodes.  
+Finally we encode the labels for parent and children classes in 2 different ways: `labelEncoder` and `labelBinarizer`. The former maps each class into an integer, which we'll use to fit a couple `sklearn` models to compare against our Bayesian model. The latter one-hot encodes the target variable, which we'll use for the Bayesian model.  
 
 ```python
 le = preprocessing.LabelEncoder()
@@ -88,13 +90,13 @@ children_binr = lb.fit_transform(children_train)
 
 ## Bayesian Hierarchical Modeling
 
-The class structure can be explicitly represented by our priors in a hierarchical model, so let's do that. First assume that the underlying model is a logistic regression with target, $y$, being the children classes. Therefore $\beta \in R^{p \times c}$, where $p$ is the number of features in the regression and $c$ is the number of children classes, so $64$ in this problem.
+The class structure can be explicitly represented by our priors in a hierarchical model, so let's do that. Our underlying model will be a logistic regression with target, $y$, being the children classes. Therefore $\beta \in R^{p \times c}$, where $p$ is the length of the TF-IDF vector and $c$ is the number of children classes, $64$ in this case.
 
 $$ Z = X \beta + \epsilon $$
 
 $$ y = \text{softmax}(Z) $$ 
 
-Column $i$ of $\beta$ corresponds to the coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has "brothers" which also come from parent class $p_i$. We want each child of parent $p_i$ to have the same prior, which we can represent below:
+Column $i$ of $\beta$ are the regression coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has siblings which also come from parent class $p_i$. We want each child of parent $p_i$ to have the same prior, which we can represent below:
 
 
 $$
@@ -107,33 +109,42 @@ $$
 $$
 
 
-Here, $\beta_{\mu_p}$ is the prior mean for each parent class, which we set by hand and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $\beta_c$ by multiplying by another matrix, $\alpha \in R^{p \times c}$. This $\alpha$ is what links the children classes together, and to their parents. 
+Here, $\beta_{\p}$ is the hierarchical prior for each parent class and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $\beta_c$ by multiplying by another matrix, $\alpha \in R^{p \times c}$. This $\alpha$ is a matrix that links each children class to its parent. 
 
 
 ## Inference in Numpyro
 
-[Numpyro](http://num.pyro.ai/en/latest/getting_started.html) is another probabilistic programming language built on Pyro and [JAX](https://jax.readthedocs.io/en/latest/). It's supposed to blazing fast thanks to speed ups provided by JAX, so we'll try it out here. 
+[Numpyro](http://num.pyro.ai/en/latest/getting_started.html) is another probabilistic programming language built on Pyro and [JAX](https://jax.readthedocs.io/en/latest/). It's supposed to blazing fast thanks to speed ups provided by JAX, so this is a good opportunity to try it out.
 
 
 ```python
-def hierarchical_model (X, Y=None):
-    dim_X = X.shape[1]
-    # hierarchical prior: beta_0 ~ N(0, 1) 
-    beta_0 = numpyro.sample("beta_0", dist.Normal(jnp.zeros((dim_X, np.array([num_parent_classes])[0])), 
-                                                  jnp.ones((dim_X, np.array([num_parent_classes])[0]))))
-    # construct prior for $\beta$ by multiplying with \alpha 
-    jnp_prior_mean = jnp.matmul(beta_0, alpha)
-    # now we can sample beta        
-    beta = numpyro.sample("beta", dist.Normal(jnp_prior_mean, jnp.ones(jnp_prior_mean.shape)))
-    err = numpyro.sample("err", dist.Normal(0., 0.5))
+def hierarchical_model(X, Y=None):
+    """ hierarchical model definition """
+    num_features = X.shape[1]
+    num_samples = X.shape[0]
+
+    beta_0_mean = jnp.zeros((dim_X, np.array([num_parent_classes])[0]))
+    beta_0_sd = jnp.ones((dim_X, np.array([num_parent_classes])[0]))
+    beta_0 = numpyro.sample("beta_0", dist.Normal(beta_0_mean, beta_0_sd))
+
+    jnp_prior_mean = jnp.matmul(beta_0, self.alpha)
+    beta = numpyro.sample("beta", dist.Normal(
+        jnp_prior_mean, jnp.ones(jnp_prior_mean.shape)))
+    
+    err = numpyro.sample("err", dist.StudentT(df=1))
     resp = jnp.matmul(X, beta) + err
-    probs = softmax(resp) 
-    numpyro.sample("Y", dist.Multinomial(probs = probs), obs = Y)
+    probs = softmax(resp)
+    
+    numpyro.sample("Y", dist.Multinomial(probs=probs), obs=Y)
+        
 
 
 # functions for inference and prediction: 
 # helper function for HMC inference
-def run_inference(model, rng_key, X, Y, num_warmup = 10, num_samples = 100, num_chains = 2):
+def run_inference(model, rng_key, X, Y, 
+                  num_warmup = 10, 
+                  num_samples = 100, 
+                  num_chains = 2):
     start = time.time()
     kernel = NUTS(model)
     print("Starting MCMC: ")
@@ -151,17 +162,12 @@ def predict(model, rng_key, samples, X):
     model_trace = handlers.trace(model).get_trace(X=X, Y=None)
     return model_trace['Y']['value']
 ```
+
 &nbsp;
 
 Numpyro provides a `reparam` function, to change hierarchical model specifications from centered to non-centered parameterizations. We'll use this to help with inference.
 
 ```python
-# constructing \alpha
-alpha = np.zeros((len(parent_class_list), len(children_class_list)))
-for i, c in enumerate(children_class_list) :
-    alpha[:, i] = parent_class_list == class_tree[c]
-
-num_parent_classes = len(parent_class_list)
 X = jnp.asarray(train_tfidf.T, dtype = "float32")
 Y = jnp.asarray(children_binr, dtype = "float32") # binarized labels
 
@@ -171,14 +177,15 @@ numpyro.set_host_device_count(_num_chains)
 rng_key, rng_key_predict = random.split(random.PRNGKey(0))
 
 reparam_model = reparam(hierarchical_model, config={'beta': LocScaleReparam(0)})
-
 non_centered_mcmc = run_inference(model = reparam_model, 
-                           rng_key = rng_key, 
-                           X = X, Y = Y, 
-                           num_warmup = 50, 
-                           num_samples = _num_samples, 
-                           num_chains = _num_chains)
+                                  rng_key = rng_key, 
+                                  X = X, Y = Y, 
+                                  num_warmup = 50, 
+                                  num_samples = _num_samples, 
+                                  num_chains = _num_chains,
+                                  chain_method = 'vectorized')
 nc_samples = non_centered_mcmc.get_samples()
+
 print("MCMC complete")
 ```
 
@@ -234,10 +241,13 @@ Logistic Regression train set accuracy, children classes:  0.7081788215904409
 Logistic Regression test set accuracy, children classes:  0.6286072772898369
 ```
 
-On a macro scale, these results are comparable to the hierarchical model. However, the data is very imbalanced, so accuracy won't suffice. To determine how much of a difference the hierarchical model makes, I'm interested in a coulpe things: 
+## Next Steps
+
+There is where this post stops because of time constraints, but to really understand the differences in models, I'm writing some interesting areas to look into in the future.  
 
 - Performance of parent categories: I expect the hierarchical model to perform well on the parent-level categories, since we implicitly model these in our regression. In particular I'm interested in the parent-level preformance for classes that have few datapoints. 
 - Out-of-distribution examples: Because our model is Bayesian, it should also be able to detect out-of-distribution samples better than the frequentist models. We can test this by applying a random text dataset to the models.
+
 
 &nbsp;
 
