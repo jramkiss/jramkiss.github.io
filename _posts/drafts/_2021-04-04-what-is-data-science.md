@@ -20,15 +20,8 @@ These questions prompted me to take a step back and think about what a data scie
 
 I think of a data scientist as someone who solves problems with data. If you've done this, congrats, you're a data scientist (not joking, but sort of joking). These problems could be anything, from "what is the effect of two 5 second ads versus one 10 second ad?" to "what are the most similar songs to this song?". 
 
-"Good" data scientists take the time to understand the problem they are solving. This usually means answering general questions using the data, such as "how many users spend more than 1 hour per week on our site?"
+An experienced data scientist will take the time to understand the underlying problem they are solving. This usually means answering general questions using the data, such as "how many users spend more than 1 hour per week on our site?". This is where technical skills start to merge with softer problem solving skills. Answering these questions require a certain level of proficiency in Spark/SQL/data querying frameworks. The more familiar these frameworks are is the more brain power that can be spent on ansering pertenant questions as opposed to thinking about syntax. 
+
+Following the answers to these questions is the brainstorming of potential solutions to the problem. Niche problems warrant niche skillsets. 
 
 Unfortunately, using machine learning to solve data problems is glorified these days, which brings a host of problems. 
-
-
-### Checklist of what not to do 
-
-I've come across some questonable decisions made by data scientists over the years, and here are some of them. I'm guilty of nearly every single one of these!
-
-- **Machine learning first**: This is the token exmaple of "what not to do as a data scientist" and even though it's so well publicized it still happens. I guess combination of management wanting AI/ML solutions and some managers wanting better branding for their team is deadly? 
-
-- **Jumping to complex models too quickly**: Imagine learning how to drive for the first time, but instead of going on a quiet country road in a small car you throw yourself on a highway in a truck. This just ins't the way. The time spent playing with simple models will give you a better idea of your data and the problem. Similar to how driving on a quiet road can help you focus on driving. 
