@@ -32,8 +32,14 @@ Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lob
 - [Best one yet](http://gregorygundersen.com/blog/)
 - [Similar profile, much better blog](https://teddykoker.com/)
 - [Probability blog - Count Bayesie](https://www.countbayesie.com/)
-- https://yugeten.github.io/year-archive/
+- [HUGE PyTorch Resources](https://github.com/ritchieng/the-incredible-pytorch)
 
+
+### Deep Learning Resources
+
+- [HUGE PyTorch Resources](https://github.com/ritchieng/the-incredible-pytorch)
+- [Logging and hyperparameters](https://cs230.stanford.edu/blog/hyperparameters/)
+- [Machine Learning Yearning](https://d2wvfoqc9gyqzf.cloudfront.net/content/uploads/2018/09/Ng-MLY01-13.pdf)
 --- 
 
 ### Probability
