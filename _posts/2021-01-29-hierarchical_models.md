@@ -12,9 +12,6 @@ summary: In this post I use Numpyro to build a Bayesian model to classify Amazon
 
 In this post I build a Bayesian hierarchical model to classify [Amazon products from Kaggle](https://www.kaggle.com/kashnitsky/hierarchical-text-classification) into a taxonomy using their titles. The taxonomy is hierarchical in nature and we can benefit from incorporating this structure into a model. First we'll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we'll build the Bayesian model and write it up in Numpyro.
 
-#### Disclaimer
-
-In this post I run MCMC on a pretty high dimensional dataset, which is not the best idea if you have better things to do with your time. Luckily, I don't.
 
 &nbsp;
 
@@ -116,30 +113,26 @@ Here, $\beta_{\p}$ is the hierarchical prior for each parent class and $\beta_c$
 
 [Numpyro](http://num.pyro.ai/en/latest/getting_started.html) is another probabilistic programming language built on Pyro and [JAX](https://jax.readthedocs.io/en/latest/). It's supposed to blazing fast thanks to speed ups provided by JAX, so this is a good opportunity to try it out.
 
-
-```python
-def hierarchical_model(X, Y=None):
-    """ hierarchical model definition """
+<!-- def hierarchical_model (X, Y=None):
     num_features = X.shape[1]
     num_samples = X.shape[0]
-
+    
     beta_0_mean = jnp.zeros((dim_X, np.array([num_parent_classes])[0]))
     beta_0_sd = jnp.ones((dim_X, np.array([num_parent_classes])[0]))
     beta_0 = numpyro.sample("beta_0", dist.Normal(beta_0_mean, beta_0_sd))
-
-    jnp_prior_mean = jnp.matmul(beta_0, self.alpha)
-    beta = numpyro.sample("beta", dist.Normal(
-        jnp_prior_mean, jnp.ones(jnp_prior_mean.shape)))
     
-    err = numpyro.sample("err", dist.StudentT(df=1))
-    resp = jnp.matmul(X, beta) + err
-    probs = softmax(resp)
-    
-    numpyro.sample("Y", dist.Multinomial(probs=probs), obs=Y)
-        
+    jnp_prior_mean = jnp.matmul(beta_0, alpha) 
+    beta = numpyro.sample("beta", dist.Normal(jnp_prior_mean, jnp.ones(jnp_prior_mean.shape)))
 
+    resp = numpyro.deterministic("X_est", jnp.matmul(X, beta))
+    with numpyro.plate("data", size = num_samples):
+        err = numpyro.sample("err", dist.StudentT(df = 1)) 
+        probs = softmax(resp + err.reshape(-1, 1))
+        numpyro.sample("Y", dist.Multinomial(probs = probs), obs = Y)
+         -->
 
-# functions for inference and prediction: 
+```python
+# functions for inference and prediction. Will post the model code soon.
 # helper function for HMC inference
 def run_inference(model, rng_key, X, Y, 
                   num_warmup = 10, 
