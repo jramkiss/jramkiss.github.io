@@ -93,6 +93,7 @@ $$ Z = X \beta + \epsilon $$
 
 $$ y = \text{softmax}(Z) $$ 
 
+
 Column $i$ of $\beta$ are the regression coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has siblings which also come from parent class $p_i$. We want each child of parent $p_i$ to have the same prior, which we can represent below:
 
 
