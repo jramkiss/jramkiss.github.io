@@ -10,17 +10,20 @@ math: true
 ### Paper reading list
 
 - [Stationary Activations for Uncertainty Calibration in Deep Learning](https://arxiv.org/abs/2010.09494)
-- [Blog post on Normalizing flows](https://docs.pymc.io/notebooks/normalizing_flows_overview.html)
-- [Probabilistic Backpropagation for Scalable
-Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lobato2015probabilistic.pdf) 
-- [When Did Bayesian Inference Become
-“Bayesian”?](https://projecteuclid.org/download/pdf_1/euclid.ba/1340371071)
+- [Probabilistic Backpropagation for Scalable Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lobato2015probabilistic.pdf) 
+- [When Did Bayesian Inference Become “Bayesian”?](https://projecteuclid.org/download/pdf_1/euclid.ba/1340371071)
 -  [Bayesian Hierarchical Stacking](https://arxiv.org/pdf/2101.08954.pdf)
 - [A Conceptual Introduction to Hamiltonian Monte Carlo](https://arxiv.org/pdf/1701.02434.pdf)
 - [Neural network overparametization and generalization](https://arxiv.org/pdf/2001.07384.pdf)
 - [Smooth adversarial training, making more robust neural networks. Interesting](https://arxiv.org/pdf/2006.14536.pdf)
+- [Introduction to Graph Neural networks](https://arxiv.org/abs/1812.08434)
+- [What are Bayesian Neural Network Posteriors really like? - ICML 2021](https://arxiv.org/abs/2104.14421) and [code](https://github.com/google-research/google-research/tree/master/bnn_hmc)
+- [Deep Neural Networks as Point Estimates for Deep Gaussian Processes](https://arxiv.org/abs/2105.04504)
+
+
 
 ### Blog Reading List
+- [Normalizing Flows](https://docs.pymc.io/notebooks/normalizing_flows_overview.html)
 - [Neural network overfitting](https://lilianweng.github.io/lil-log/2019/03/14/are-deep-neural-networks-dramatically-overfitted.html)
 - [Things that can go wrong in ML project](https://towardsdatascience.com/51-things-that-can-go-wrong-in-a-real-world-ml-project-c36678065a75)
 - [Monitoring ML performance in production](https://towardsdatascience.com/the-playbook-to-monitor-your-models-performance-in-production-ec06c1cc3245)
@@ -40,6 +43,7 @@ Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lob
 - [HUGE PyTorch Resources](https://github.com/ritchieng/the-incredible-pytorch)
 - [Logging and hyperparameters](https://cs230.stanford.edu/blog/hyperparameters/)
 - [Machine Learning Yearning](https://d2wvfoqc9gyqzf.cloudfront.net/content/uploads/2018/09/Ng-MLY01-13.pdf)
+
 --- 
 
 ### Probability
