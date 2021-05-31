@@ -27,6 +27,10 @@ Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lob
 - [Code reviews](https://www.kevinlondon.com/2015/05/05/code-review-best-practices.html)
 
 
+### Interview Resources
+
+- [ML Cheatsheet](https://sites.google.com/view/datascience-cheat-sheets)
+
 ### Machine Learning Blogs
 
 - [Best one yet](http://gregorygundersen.com/blog/)

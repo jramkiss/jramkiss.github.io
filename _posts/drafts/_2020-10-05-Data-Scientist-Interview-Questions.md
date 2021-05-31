@@ -10,8 +10,14 @@ summary: A collection of cool data scientist interview questions that I've come 
 
 
 ### Machine Learning
+
+#### Interview Resources 
+
 - https://www.nicksingh.com/posts/30-machine-learning-interview-questions-ml-interview-study-guide
 - https://towardsdatascience.com/data-science-interviews-machine-learning-d9080e7185fb
+- https://sites.google.com/view/datascience-cheat-sheets
+
+---
 
 - Why use feature selection? If two predictors are highly correlated, what is the effect on the coefficients in the logistic regression? What are the confidence intervals of the coefficients?
 - What is the function of p-values in high dimensional linear regression?
