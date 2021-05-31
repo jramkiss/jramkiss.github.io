@@ -7,6 +7,7 @@ author: "Jonathan Ramkissoon"
 math: true
 ---
 
+<<<<<<< HEAD
 ### Paper reading list
 
 - [Stationary Activations for Uncertainty Calibration in Deep Learning](https://arxiv.org/abs/2010.09494)
@@ -31,6 +32,8 @@ Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lob
 
 - [ML Cheatsheet](https://sites.google.com/view/datascience-cheat-sheets)
 
+=======
+>>>>>>> cd3b22653667d29759d3b4277e7fecfd8f5acee1
 ### Machine Learning Blogs
 
 - [Best one yet](http://gregorygundersen.com/blog/)
@@ -44,6 +47,7 @@ Learning of Bayesian Neural Networks](https://www.cs.princeton.edu/~rpa/pubs/lob
 - [HUGE PyTorch Resources](https://github.com/ritchieng/the-incredible-pytorch)
 - [Logging and hyperparameters](https://cs230.stanford.edu/blog/hyperparameters/)
 - [Machine Learning Yearning](https://d2wvfoqc9gyqzf.cloudfront.net/content/uploads/2018/09/Ng-MLY01-13.pdf)
+
 --- 
 
 ### Probability
