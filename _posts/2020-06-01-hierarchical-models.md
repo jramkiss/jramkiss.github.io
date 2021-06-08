@@ -16,9 +16,7 @@ In a repeated Bernoully / binary trial, our data consists of $n$ units where eac
 - Baseball batters: Every pitch faced is a trial and every hit is a success. Each batter is a unit
 - Basketball players taking free throws: Every free throw is a trial and everytime they make it is a success. Each player is a unit
 
-There are also some heavier examples about mortality rates. 
-
-Before we start, what is meant by `pooling`? The concept of pooling is core to hierarchical models and is analogous to sharing in real life, only in the context of data. The goal is to estimate paramters such as chance of a hit for a baseball player. There are 3 ways we can go about doing this, each of which requires a different amount of pooling / data sharing. We can share data between all players which would assume that each player is the same (complete pooling), not share data between any player which implicitly assumes that no player is related at all, or we can share data in some cases (i.e. to estimate some parameters but not others). 
+<!-- Before we start, what is meant by `pooling`? The concept of pooling is core to hierarchical models and is analogous to sharing in real life, only in the context of data. The goal is to estimate paramters such as chance of a hit for a baseball player. There are 3 ways we can go about doing this, each of which requires a different amount of pooling / data sharing. We can share data between all players which would assume that each player is the same (complete pooling), not share data between any player which implicitly assumes that no player is related at all, or we can share data in some cases (i.e. to estimate some parameters but not others).  -->
 
 
 ## Problem and Data
@@ -30,6 +28,7 @@ I'll use [NBA free throw data](https://www.kaggle.com/sebastianmantey/nba-free-t
   <img src="/assets/NBA-free-throw-data.png" width="60%" height="60%">
 </p>
 
+&nbsp;
 
 ## Overall Model
 
@@ -47,6 +46,7 @@ $$ p(y_i \mid K_i, \alpha_i) = \text{BinomialLogit}(K_i, \alpha) $$
 
 We are interested in estimating $\theta_i = \text{sigmoid}(\alpha_i)$, and our 3 formulations make different assumptions to do this. 
 
+&nbsp;
 
 ### Complete Pooling - Same $\theta$ for every player
 
@@ -79,7 +79,7 @@ Posterior distribution for $\theta$ is below. This model is both wrong and usele
   <img src="/assets/NBA-free-throw-fully-pooled-theta.png" width="75%" height="75%">
 </p>
 
-
+&nbsp;
 
 ### No Pooling - Independent $\theta_i$ for each player
 
@@ -108,6 +108,8 @@ The posterior distributions for each $\theta$ are below:
 <p align="center">
   <img src="/assets/NBA-free-throw-no-pooling-theta.png" width="100%" height="100%">
 </p>
+
+&nbsp;
 
 
 ### Partial Pooling - Use all players to estimate base $\theta$
