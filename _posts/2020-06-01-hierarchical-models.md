@@ -1,15 +1,15 @@
 ---
 layout: post
-title: "Estimating NBA Free Throw % with Hierarchical Models"
+title: "Estimating NBA Free Throw Percentage with Hierarchical Models"
 date: 2021-01-29 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Exploring pooling and hierarchical models with Numpyro by estimating the free throw % for NBA players
+summary: Exploring pooling and hierarchical models with Numpyro by estimating the free throw percentage for NBA players
 ---
 
 
-In this post I explore 3 different formulations for modeling repeated Bernoully / binary trail data: complete pooling where all items have the same chance of success, no pooling where each item has in independent chance of success and partial pooling where data across items are shared to estimate parameters. To do this I use an example where I try to estimate the batting average of baseball players, with inference in Numpyro. 
+In this post I explore 3 different formulations for modeling repeated Bernoully / binary trail data: complete pooling where all items have the same chance of success, no pooling where each item has in independent chance of success and partial pooling where data across items are shared to estimate parameters. To do this I use an example where I try to estimate the batting average of baseball players, with inference in Numpyro. All the code for this post is available [here](https://www.kaggle.com/jramkiss/pooling-in-hierarchical-models-with-numpyro).
 
 In a repeated Bernoully / binary trial, our data consists of $n$ units where each unit, $i$, records $y_i$ successes in $K_i$ trials / attempts. It essnetialy consists of a series of attempts with binary outcomes and is easiest explained with examples:
 
@@ -72,7 +72,7 @@ def fully_pooled(ft_attempts, ft_makes=None):
                        obs=ft_makes)
 ```
 
-Posterior distribution for $\theta$ is below. This model is both wrong and useless beacuse it doesn't account for differences in shooting ability. 
+The posterior distribution for $\theta$ is below. Judging from the interval, we would be hard-pressed to find a player with a free throw percentage over $83.5\%$, however $9$ out of the $16$ players analyzed have a free throw percentage higher than $83.5\%$. Aside from the assumptions of this model being completely wrong, it seems like the bi-product is gross underestimation of players' abilities. I guess this is expected since there will also be some overestimation for lower-ability players. 
 
 
 <p align="center">
@@ -106,15 +106,21 @@ def no_pooling (ft_attempts, ft_makes = None):
 The posterior distributions for each $\theta$ are below:
 
 <p align="center">
-  <img src="/assets/NBA-free-throw-no-pooling-theta.png" width="100%" height="100%">
+  <img src="/assets/NBA-free-throw-no-pooling-theta(1).png" width="100%" height="100%">
+  <img src="/assets/NBA-free-throw-no-pooling-theta(2).png" width="100%" height="100%">
 </p>
 
 &nbsp;
 
+It's difficult to evaluate these estimates using only this graph, but one thing we can note is the size of the intervals. Many of them overlap significantly with a free throw percentage of $90\%$ and higher. This is an extremely high percentage, close to getting you on the top [50 all-time list](http://www.iweblists.com/sports/basketball/FreeThrowPercent_s.html). So it seems like the no-pooling formulation overestimates player's abilities. 
+
+Now is a good time to say that I know very little about what a "good" free throw percentage is, meaning that you don't need to be a basketball connoisseur to verify whether these predictions make sense. 
+
+&nbsp;
 
 ### Partial Pooling - Use all players to estimate base $\theta$
 
-We ideally want a balance between the two extremes of no-pooling and complete-pooling, and this comes in the form of a partially pooled model. This model has a very subtle but important difference to the `no pooling` model. The difference is in how we generate $\alpha_i$. Instead of sampling $\alpha_i$ directly from $N(-1, 1)$, we estimate the mean, $\mu$, and standard deviation, $\sigma$, of $p(\alpha_i)$ using hyper-priors. Here, $\mu$ can be interpreted as the population chance of success. 
+We ideally want a balance between the two extremes of no-pooling and complete-pooling, and this comes in the form of a partially pooled model. This model has a very subtle but important difference to the `no pooling` model which is in how we generate $\alpha_i$. Instead of sampling $\alpha_i$ directly from $N(1, 1)$, we estimate the mean, $\mu$, and standard deviation, $\sigma$, of $p(\alpha_i)$ using hyper-priors. Here, $\mu$ can be interpreted as the population chance of success. 
 
 $$ p(y_i \mid K_i, \theta_i) = \text{Binomial}(K_i, \theta) $$
 
@@ -143,26 +149,45 @@ def partial_pooling (ft_attempts, ft_makes = None):
 
 &nbsp;
 
-We can compare the posterior densities for the no-pooling and partial pooling models. 
+The plots below compare the posterior densities for the partial pooled and no-pooled models. The intervals from the partial pooled are narrower and seem better calibrated to what we expect to see in real life. Only three intervals overlap with $90\%$, and based on the players they seem reasonable. 
+
 
 <p align="center">
-  <img src="/assets/NBA-free-throw-partial-pooling-theta.png" width="100%" height="100%">
+  <img src="/assets/NBA-free-throw-partial-pooling-theta(1).png" width="100%" height="100%">
+  <img src="/assets/NBA-free-throw-partial-pooling-theta(2).png" width="100%" height="100%">
 </p>
 
 &nbsp;
 
-
 ### Where does the difference come from?
 
-The partially pooled and non-pooled models have very similar formulations, but produce very different posterior distributions. The most obvious difference for me is the prior on $\alpha_i$. The partial pooling formulation has more flexibility here as both $\mu$ an $\sigma$ are estimated from the data. Below I compare $p(\alpha)$ for the partially pooled and non-pooled models and it seems like the partially pooled prior has more variance than the non-pooled model.
+The partially pooled and non-pooled models have very similar formulations, but produce very different posterior distributions. The most obvious difference in the formulation the prior on $\alpha_i$. The partial pooling formulation has more flexibility here as both $\mu$ an $\sigma$ are estimated from the data. Below I compare $p(\alpha)$ for the partially pooled and non-pooled models and it seems like the partially pooled prior has more variance than the non-pooled model.
 
-Now I'm interested to see what the impact of flatter priors would have on the model. After increasing the prior variance for the non-pooled model, interval estimates were too wide to be useful, this is because we have such small data on each player. On the other hand, the interval estimates produced by the hierarchical model were very similar to before, this is because the hyperpriors are estimated using population data, which we have more of because of pooling. 
+I was also interested to see the impact of flatter priors on the model. However, after increasing the prior variance for the non-pooled model, interval estimates were too wide to be useful, this is because we have such small data on each player. On the other hand, the interval estimates produced by the hierarchical model were very similar to before, this is because the hyperpriors are estimated using population data, which we have more of because of pooling. It turns out that as we collect more and more data, the no-pooling and partially pooled formulations converge to the same solutions. 
 
 
 <p align="center">
   <img src="/assets/NBA-free-throw-priors.png" width="100%" height="100%">
 </p>
 
+&nbsp;
+
+### Checking Model Interpretation 
+
+Above I mentioned that an interpretation of $\mu$ in the hierarchical model is the population chance of success. In our complete pooling formulation, $\theta$ is exactly the population chance of success. Here I compare the posterior distributions of these two parameters to see how similar they really are. Before this is done, $\mu$ needs to be transformed from a log-odds paramters to a probability with $\text{sigmoid}(\mu)$.
+
+
+<p align="center">
+  <img src="/assets/NBA-free-throw-mu-and-sigma.png" width="75%" height="75%">
+</p>
+
+&nbsp;
+
+## Resources
+
+- [Hierarchical Partial Pooling for Repeated Binary Trials](https://cran.r-project.org/web/packages/rstanarm/vignettes/pooling.html)
+- [Numpyro with Arviz](https://arviz-devs.github.io/arviz/getting_started/CreatingInferenceData.html#from-numpyro)
+- [Bayesian hierarchical model for the prediction of football results](https://discovery.ucl.ac.uk/id/eprint/16040/1/16040.pdf)
 
 
 <!-- 
