@@ -76,12 +76,12 @@ Posterior distribution for $\theta$ is below. This model is both wrong and usele
 
 
 <p align="center">
-  <img src="/assets/NBA-free-throw-fully-pooled-theta.png" width="90%" height="75%">
+  <img src="/assets/NBA-free-throw-fully-pooled-theta.png" width="75%" height="60%">
 </p>
 
 
 
-### No Pooling - Independent $\theta_i for each player
+### No Pooling - Independent $\theta_i$ for each player
 
 The no pooling model is the exact opposite of the complete pooling model, where each player has a separate and independent chance of success. The formulation looks similar with a subtle difference, $\theta$ now becomes $\theta_i$ because there is a separate one for each player.
 
