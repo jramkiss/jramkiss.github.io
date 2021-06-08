@@ -27,7 +27,7 @@ I'll use [NBA free throw data](https://www.kaggle.com/sebastianmantey/nba-free-t
 
 
 <p align="center">
-  <img src="/assets/NBA-free-throw-data.png" width="90%" height="75%">
+  <img src="/assets/NBA-free-throw-data.png" width="60%" height="60%">
 </p>
 
 
@@ -112,11 +112,26 @@ The posterior distributions for each $\theta$ are below:
 
 ### Partial Pooling - Use all players to estimate base $\theta$
 
-In the partial pooling formulation, we try to leverage the characteristics of the population to better estimate the chance of success for each player. 
+We ideally want a balance between the two extremes of no-pooling and complete-pooling, and this comes in the form of a partially pooled model. This model has a very subtle but important difference to the `no pooling` model. The difference is in how we generate $\alpha_i$. Instead of sampling $\alpha_i$ directly from $N(-1, 1)$, we estimate the mean, $\mu$, and standard deviation, $\sigma$, of $p(\alpha_i)$ using hyper-priors. Here, $\mu$ can be interpreted as the population chance of success. 
 
 
+<p align="center">
+  <img src="/assets/NBA-free-throw-partial-pooling-theta.png" width="100%" height="100%">
+</p>
+
+&nbsp;
 
 
+### Where does the difference come from?
+
+The partially pooled and non-pooled models have very similar formulations, but produce very different posterior distributions. The most obvious difference for me is the prior on $\alpha_i$. The partial pooling formulation has more flexibility here as both $\mu$ an $\sigma$ are estimated from the data. Below I compare $p(\alpha)$ for the partially pooled and non-pooled models and it seems like the partially pooled prior has more variance than the non-pooled model.
+
+Now I'm interested to see what the impact of flatter priors would have on the model. After increasing the prior variance for the non-pooled model, interval estimates were too wide to be useful, this is because we have such small data on each player. On the other hand, the interval estimates produced by the hierarchical model were very similar to before, this is because the hyperpriors are estimated using population data, which we have more of because of pooling. 
+
+
+<p align="center">
+  <img src="/assets/NBA-free-throw-priors.png" width="100%" height="100%">
+</p>
 
 
 
