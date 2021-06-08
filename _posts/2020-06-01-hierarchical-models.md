@@ -33,7 +33,7 @@ I'll use [NBA free throw data](https://www.kaggle.com/sebastianmantey/nba-free-t
 
 ## Overall Model
 
-The three formulations in this post branch out the same canonical model. We have 20 players, $i = 1...20$, and our goal is to estimate the free throw percentage (chance of success) for each one, $\theta_i$. Our data consists of the number of shots made for player $i$, $y_i$, and the number of attempts for each player, $K_i$. Then the number of free throws made, $y_i$, follows a Binomial distribution: 
+The three formulations in this post branch out the same canonical model. We have 15 players, $i = 1...15$, and our goal is to estimate the free throw percentage (chance of success) for each one, $\theta_i$. Our data consists of the number of shots made for player $i$, $y_i$, and the number of attempts for each player, $K_i$. Then the number of free throws made, $y_i$, follows a Binomial distribution: 
 
 $$ p(y_i \mid \theta_i, K_i) = \text{Binomial}(\theta_i, K_i) $$
 
@@ -76,7 +76,7 @@ Posterior distribution for $\theta$ is below. This model is both wrong and usele
 
 
 <p align="center">
-  <img src="/assets/NBA-free-throw-fully-pooled-theta.png" width="75%" height="60%">
+  <img src="/assets/NBA-free-throw-fully-pooled-theta.png" width="75%" height="75%">
 </p>
 
 
@@ -114,6 +114,34 @@ The posterior distributions for each $\theta$ are below:
 
 We ideally want a balance between the two extremes of no-pooling and complete-pooling, and this comes in the form of a partially pooled model. This model has a very subtle but important difference to the `no pooling` model. The difference is in how we generate $\alpha_i$. Instead of sampling $\alpha_i$ directly from $N(-1, 1)$, we estimate the mean, $\mu$, and standard deviation, $\sigma$, of $p(\alpha_i)$ using hyper-priors. Here, $\mu$ can be interpreted as the population chance of success. 
 
+$$ p(y_i \mid K_i, \theta_i) = \text{Binomial}(K_i, \theta) $$
+
+$$ p(y_i \mid K_i, \alpha_i) = \text{BinomialLogit}(K_i, \alpha) $$
+
+$$ p(\alpha_i \mid \mu, \sigma) = \text{Normal}(\mu, \sigma) $$
+
+$$ p(\mu) = N(1, 1) $$
+
+$$ p(\sigma) = N(0, 1) $$
+
+&nbsp;
+
+```python
+def partial_pooling (ft_attempts, ft_makes = None):
+    num_players = ft_attempts.shape[0]
+    mu = numpyro.sample("mu", dist.Normal(1, 1))
+    sigma = numpyro.sample("sigma", dist.Normal(0, 1))
+    with numpyro.plate("players", num_players):
+        alpha = numpyro.sample("alpha", dist.Normal(mu, sigma))
+        theta = numpyro.deterministic("theta", jax.nn.sigmoid(alpha))
+        assert alpha.shape == (num_players, ), "alpha shape wrong"
+        return numpyro.sample("y", dist.BinomialLogits(logits = alpha, total_count = ft_attempts), 
+                              obs = ft_makes)
+```
+
+&nbsp;
+
+We can compare the posterior densities for the no-pooling and partial pooling models. 
 
 <p align="center">
   <img src="/assets/NBA-free-throw-partial-pooling-theta.png" width="100%" height="100%">
