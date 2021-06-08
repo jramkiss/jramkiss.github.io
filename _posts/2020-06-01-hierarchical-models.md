@@ -11,12 +11,11 @@ summary: Exploring pooling and hierarchical models with Numpyro by estimating th
 
 In this post I explore 3 different formulations for modeling repeated Bernoulli / binary trial data: complete pooling where all items have the same chance of success, no pooling where each item has in independent chance of success and partial pooling where data across items are shared to estimate parameters. To do this I use an example where I try to estimate the batting average of baseball players, with inference in Numpyro. All the code for this post is available [here](https://www.kaggle.com/jramkiss/pooling-in-hierarchical-models-with-numpyro).
 
-In a repeated Bernoulli / binary trial, our data consists of $n$ units where each unit, $i$, records $y_i$ successes in $K_i$ trials / attempts. It essnetialy consists of a series of attempts with binary outcomes and is easiest explained with examples:
+In a repeated Bernoulli / binary trial, our data consists of $n$ units where each unit, $i$, records $y_i$ successes in $K_i$ trials / attempts. It essentially consists of a series of attempts with binary outcomes and is easiest explained with examples:
 
 - Baseball batters: Every pitch faced is a trial and every hit is a success. Each batter is a unit
 - Basketball players taking free throws: Every free throw is a trial and everytime they make it is a success. Each player is a unit
 
-<!-- Before we start, what is meant by `pooling`? The concept of pooling is core to hierarchical models and is analogous to sharing in real life, only in the context of data. The goal is to estimate paramters such as chance of a hit for a baseball player. There are 3 ways we can go about doing this, each of which requires a different amount of pooling / data sharing. We can share data between all players which would assume that each player is the same (complete pooling), not share data between any player which implicitly assumes that no player is related at all, or we can share data in some cases (i.e. to estimate some parameters but not others).  -->
 
 
 ## Problem and Data
@@ -163,7 +162,7 @@ The plots below compare the posterior densities for the partial pooled and no-po
 
 The partially pooled and non-pooled models have very similar formulations, but produce very different posterior distributions. The most obvious difference in the formulation the prior on $\alpha_i$. The partial pooling formulation has more flexibility here as both $\mu$ an $\sigma$ are estimated from the data. Below I compare $p(\alpha)$ for the partially pooled and non-pooled models and it seems like the partially pooled prior has more variance than the non-pooled model.
 
-I was also interested to see the impact of flatter priors on the model. However, after increasing the prior variance for the non-pooled model, interval estimates were too wide to be useful, this is because we have such small data on each player. On the other hand, the interval estimates produced by the hierarchical model were very similar to before, this is because the hyperpriors are estimated using population data, which we have more of because of pooling. It turns out that as we collect more and more data, the no-pooling and partially pooled formulations converge to the same solutions. 
+I was also interested to see the impact of flatter priors on the model. However, after increasing the prior variance for the non-pooled model, interval estimates were too wide to be useful, this is because we have such small data on each player. On the other hand, the interval estimates produced by the hierarchical model were very similar to before, this is because the hyper-priors are estimated using population data, which we have more of because of pooling. It turns out that as we collect more and more data, the no-pooling and partially pooled formulations converge to the same solutions. 
 
 
 <p align="center">
@@ -174,7 +173,7 @@ I was also interested to see the impact of flatter priors on the model. However,
 
 ### Checking Model Interpretation 
 
-Above I mentioned that an interpretation of $\mu$ in the hierarchical model is the population chance of success. In our complete pooling formulation, $\theta$ is exactly the population chance of success. Here I compare the posterior distributions of these two parameters to see how similar they really are. Before this is done, $\mu$ needs to be transformed from a log-odds paramters to a probability with $\text{sigmoid}(\mu)$.
+Above I mentioned that an interpretation of $\mu$ in the hierarchical model is the population chance of success. In our complete pooling formulation, $\theta$ is exactly the population chance of success. Here I compare the posterior distributions of these two parameters to see how similar they really are. Before this is done, $\mu$ needs to be transformed from a log-odds parameters to a probability with $\text{sigmoid}(\mu)$.
 
 
 <p align="center">
