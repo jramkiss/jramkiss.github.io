@@ -9,9 +9,9 @@ summary: Exploring pooling and hierarchical models with Numpyro by estimating th
 ---
 
 
-In this post I explore 3 different formulations for modeling repeated Bernoully / binary trail data: complete pooling where all items have the same chance of success, no pooling where each item has in independent chance of success and partial pooling where data across items are shared to estimate parameters. To do this I use an example where I try to estimate the batting average of baseball players, with inference in Numpyro. All the code for this post is available [here](https://www.kaggle.com/jramkiss/pooling-in-hierarchical-models-with-numpyro).
+In this post I explore 3 different formulations for modeling repeated Bernoulli / binary trial data: complete pooling where all items have the same chance of success, no pooling where each item has in independent chance of success and partial pooling where data across items are shared to estimate parameters. To do this I use an example where I try to estimate the batting average of baseball players, with inference in Numpyro. All the code for this post is available [here](https://www.kaggle.com/jramkiss/pooling-in-hierarchical-models-with-numpyro).
 
-In a repeated Bernoully / binary trial, our data consists of $n$ units where each unit, $i$, records $y_i$ successes in $K_i$ trials / attempts. It essnetialy consists of a series of attempts with binary outcomes and is easiest explained with examples:
+In a repeated Bernoulli / binary trial, our data consists of $n$ units where each unit, $i$, records $y_i$ successes in $K_i$ trials / attempts. It essnetialy consists of a series of attempts with binary outcomes and is easiest explained with examples:
 
 - Baseball batters: Every pitch faced is a trial and every hit is a success. Each batter is a unit
 - Basketball players taking free throws: Every free throw is a trial and everytime they make it is a success. Each player is a unit
