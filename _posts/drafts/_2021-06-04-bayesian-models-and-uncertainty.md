@@ -25,7 +25,8 @@ These papers may have some interesting and relevant material in them:
 
 Other papers: 
 
-- [](https://authors.library.caltech.edu/13796/1/MACnc92d.pdf): Apparently this paper shows that Bayesian methods deal with overconfidence.
+- [The Evidence Framework Applied to Classification
+Networks](https://authors.library.caltech.edu/13796/1/MACnc92d.pdf): Apparently this paper shows that Bayesian methods deal with overconfidence.
 - [Evidential Deep Learning to Quantify Classification
 Uncertainty](https://arxiv.org/pdf/1806.01768.pdf): Authors use a Dirichlet distribution to model NN output 
 - [Bayesian DL and Uncertainty Thesis](https://uwspace.uwaterloo.ca/bitstream/handle/10012/15056/Phan_Buu.pdf?isAllowed=y&sequence=3): Introduces key differences between Bayesian and frequentist methods. 
