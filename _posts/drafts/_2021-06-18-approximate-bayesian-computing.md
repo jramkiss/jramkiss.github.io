@@ -9,9 +9,27 @@ summary:
 ---
 
 
-Is approximate bayesian computation the same as approximate bayesian inference?
+### Conditional Density Estimation 
+
+- What problem does conditional density estimation solve? And why do we need it?
+- What are some ways of estimating conditional densities?
+
+
+### Approximate Bayesian Inference Via Conditional Density Estimation 
+
+- HOW
+
+
+### Questions
+
+- Is approximate bayesian computation the same as approximate bayesian inference?
 
 ## Annotated Bib
+
+### Conditional Density Estimation
+
+- [Conditional Density Estimation with NN's](https://arxiv.org/pdf/1903.00954.pdf)
+- [Gaussian Process Conditional Density Estimation](https://papers.nips.cc/paper/2018/file/6a61d423d02a1c56250dc23ae7ff12f3-Paper.pdf)
 
 ### Apprroximate Bayesian Computation 
 - [Jupyter notebook on ABC with code](http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2017/tutorials/aux9_abc.html): Plots and code on ABC from scratch
