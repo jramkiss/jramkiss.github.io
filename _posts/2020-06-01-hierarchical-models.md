@@ -1,19 +1,21 @@
 ---
 layout: post
-title: "Estimating NBA Free Throw Percentage with Hierarchical Models"
+title: "Hierarchical Models in Numpyro"
 date: 2021-01-29 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Exploring pooling and hierarchical models with Numpyro by estimating the free throw percentage for NBA players
+summary: Exploring pooling and hierarchical models with Numpyro by estimating the free throw percentage of NBA players
 ---
 
 
-In this post, I explore 3 different formulations for modelling repeated Bernoulli / binary trial data: complete pooling where all items have the same chance of success, no pooling where each item has an independent chance of success and partial pooling where data across items are shared to estimate parameters. To demonstrate, I model the free throw percentage of NBA players with inference in Numpyro. All the code for this post is available [here](https://www.kaggle.com/jramkiss/pooling-in-hierarchical-models-with-numpyro).
+In this post, I explore 3 different formulations for modelling repeated Bernoulli / binary trial data: complete pooling where all items have the same chance of success, no pooling where each item has an independent chance of success and partial pooling where data across items are shared to estimate parameters. To demonstrate, I model the free throw percentage of NBA players using Numpyro. Another famous example is modelling baseball batting averages, but I like basketball a lot more than baseball! 
+
+All the code for this post is available [here](https://www.kaggle.com/jramkiss/pooling-in-hierarchical-models-with-numpyro).
 
 In a repeated Bernoulli / binary trial, our data consists of $n$ units where each unit, $i$, records $y_i$ successes in $K_i$ trials / attempts. Two simple examples are in baseball and basketball, but they get a lot more interesting than this. 
 
-- Baseball batters: Every pitch faced is a trial and every hit is a success. Each batter is a unit
+- Baseball batters: Every pitch faced is a trial and every hit is a success. Each batter is a unit. 
 - Basketball players taking free throws: Every free throw is a trial and every time they make it is a success. Each player is a unit
 
 
