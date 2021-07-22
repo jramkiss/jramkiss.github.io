@@ -1,3 +1,4 @@
+vendor*
 DONTADD*
 _site
 .sass-cache
