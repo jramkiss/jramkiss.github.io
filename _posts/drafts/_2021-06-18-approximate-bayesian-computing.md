@@ -8,6 +8,19 @@ math: true
 summary: 
 ---
 
+## What
+
+The field of approximate inference aims to develop methods to sample from complex and usually intractable probability distributions. It is especially useful for posterior inference as these distributions are usually difficult to write down and sometimes also difficult to evaluate. An early method for generating approximate random samples from posterior distributions is a [rejection-sampling scheme](https://www.genetics.org/content/genetics/145/2/505.full.pdf) using summary statistics from the observed data. A summary statistic, $S$, is chosen and calculated from the observed data. Then we forward simulate starting from the prior of the parameters of interest to generate a new dataset, which we then calculate the summary statistic, $s'$. Once $s'$ is "close enough" to $S$, we accept the sample.
+
+Improving on this, 
+
+## So What
+
+## Now What
+
+
+---
+
 
 ### Conditional Density Estimation 
 
@@ -15,21 +28,21 @@ summary:
 - What are some ways of estimating conditional densities?
 
 
-### Approximate Bayesian Inference Via Conditional Density Estimation 
-
-- HOW
-
 
 ### Questions
 
 - Is approximate bayesian computation the same as approximate bayesian inference?
+- What does `explicit likelihood` mean? I see this all over the literature. Does it just mean we don't have a analytic likelihood that we can write down?
+- What is an example of a nuisance parameter? Is the hierarchical parameter an example of this? 
+
 
 ## Annotated Bib
 
-### Conditional Density Estimation
+### Normalizing Flows and Conditional Density Estimation
 
 - [Conditional Density Estimation with NN's](https://arxiv.org/pdf/1903.00954.pdf)
 - [Gaussian Process Conditional Density Estimation](https://papers.nips.cc/paper/2018/file/6a61d423d02a1c56250dc23ae7ff12f3-Paper.pdf)
+- [Annealed Flow Transport Monte Carlo](http://proceedings.mlr.press/v139/arbel21a.html): Combining SCM samplers with Normalizing flows
 
 ### Apprroximate Bayesian Computation 
 - [Jupyter notebook on ABC with code](http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2017/tutorials/aux9_abc.html): Plots and code on ABC from scratch
