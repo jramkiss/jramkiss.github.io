@@ -10,19 +10,47 @@ summary:
 
 ## What
 
-Approximate Bayesian computing is a family of approximate inference methods targetted at drawing approximate posterior samples when the likelihood, $p(X \mid \theta)$ is computationally intractable but it is easy to sample from the model, $X \sim p(. \mid \theta)$.
+Approximate Bayesian computing is a family of approximate inference methods targeted at drawing approximate posterior samples when the likelihood, $p(X \mid \theta)$ is computationally intractable but it is easy to sample from the model, $X \sim p(. \mid \theta)$. 
 
-ABC approximates the posterior conditional on the full dataset, $p(\theta \mid X_{obs})$, by effectively summarizing $X_{obs}$ with summary statistics, $s_{obs}$. We end up with $p(\theta \mid s_{obs}) \propto p(s_{obs} \mid \theta)p(\theta)$. Since the likelihood is intractable, $p(s_{obs} \mid \theta)$ is also likely intractable and we have to introduce another approximation of $p_{ABC}(\theta \mid s_{obs}) = \int p(\theta, s \mid s_{obs}) ds$.
+&nbsp;
 
-$$ p(\theta, s \mid s_{obs}) \propto K(\mid \mid s' - s_{obs} \mid \mid) p(s \mid \theta) p(\theta) $$
-
-Where $K$ is a kernel function that measures how far away $s'$ is from $s_{obs}$.
 
 ### Rejection-Sampling 
 
-An early method for generating approximate random samples from posterior distributions is [rejection-sampling](https://www.genetics.org/content/genetics/145/2/505.full.pdf) by comparing summary statistics from observed data and simulated data. A summary statistic, $S$, is chosen and calculated from the observed data. Then we forward simulate starting from the prior of the parameters of interest to generate a new dataset, which we then calculate the summary statistic, $s'$. Once $s'$ is "close enough" to $S$, we accept the sample. [Beaumont, 2002](https://www.genetics.org/content/genetics/162/4/2025.full.pdf) extends this by perturbing the samples of $\phi_i$ relative to the difference between $s'_i$ and $S$. 
+<!-- An early method for generating approximate random samples from posterior distributions is [rejection-sampling](https://www.genetics.org/content/genetics/145/2/505.full.pdf) by comparing summary statistics from observed data and simulated data. A summary statistic, $S$, is chosen and calculated from the observed data. Then we forward simulate starting from the prior of the parameters of interest to generate a new dataset, which we then calculate the summary statistic, $s'$. Once $s'$ is "close enough" to $S$, we accept the sample. [Beaumont, 2002](https://www.genetics.org/content/genetics/162/4/2025.full.pdf) extends this by perturbing the samples of $\phi_i$ relative to the difference between $s'_i$ and $S$.  -->
 
-Below is code for a simulated example using the first rejection scheme described above. 
+##### Rejection-Sampling in an ideal world
+
+An early method for generating samples from approximate posterior distributions is [rejection-sampling](https://www.genetics.org/content/genetics/145/2/505.full.pdf). In an ideal world with a tractable likelihood function, we would first sample a candidate parameter from the prior, $\theta^* \sim p(\theta)$. Then forward-simulate our data, $X^* \sim p(X \mid \theta^*)$, to get a sample from the joint distribution, $(\theta^*, X^*) \sim p(\theta^*, X^*)$. If the simulated data, $X^*$, "matches" the observed data, $X$, we accept $\theta^*$ and repeat the process. After repeating this many times, we end up with approximate samples from the posterior, $p(\theta \mid X)$. 
+Now I only have one question... how are we sure this works?? Here's an explanation below: 
+
+$$ p(\theta^*, X^*) = p(X^* \mid \theta^*) p(\theta) \mathbb{I}_X(X^*) $$
+
+Where $\mathbb{I}_X$ is 1 if $X^*$ "matches" $X$, and 0 otherwise. Therefore, averaging $\mathbb{I}_X(X^*)$ for all values of $X^*$ will give the acceptance probability of the our rejection-sampling method, since we only accept when the simulated data matches the observed data. 
+
+Marginalizing $X^*$, we get:
+
+$$ p(\theta^*) = \int p(X^* \mid \theta^*) p(\theta^*) \mathbb{I}_X(X^*)  dX^* $$
+
+$$ p(\theta^*) = p(X \mid \theta^*) p(\theta^*) \propto p(\theta^* \mid X) $$
+
+So the distribution of our resulting $\theta^*$'s is proportional to the posterior distribution we were after in the first place. An intuition for this method is to keep trying to recreate the observed data using different values of $\theta$. For the reconstructions that are really close to the observed data, keep the values of $\theta$, otherwise throw it out. 
+
+&nbsp;
+
+
+##### Rejection-sampling in practice 
+
+We want to do inference on models with intractable likelihoods, so we need to introduce some more approximations. The posterior conditional on the full dataset, $p(\theta \mid X_{obs})$, is approximated by effectively summarizing $X_{obs}$ with summary statistics, $s_{obs}$. We end up with $p(\theta \mid s_{obs}) \propto p(s_{obs} \mid \theta)p(\theta)$. Since the likelihood is intractable, $p(s_{obs} \mid \theta)$ is also likely intractable and we have to introduce another approximation of $p_{ABC}(\theta \mid s_{obs}) = \int p(\theta, s \mid s_{obs}) ds$.
+
+$$ p(\theta, s \mid s_{obs}) \propto K(\mid \mid s' - s_{obs} \mid \mid) p(s \mid \theta) p(\theta) $$
+
+Where $K$ is a kernel that measures how far away $s'$ is from $s_{obs}$.
+
+From Wikipedia: 
+> The outcome of the ABC rejection algorithm is a sample of parameter values approximately distributed according to the desired posterior distribution, and, crucially, obtained without the need to explicitly evaluate the likelihood function.
+
+Below is code for a simulated example using the first rejection scheme described above. This exposes some holes in the rejection-sampling methodology. Firstly, it is very inefficient if $p(\theta)$ is far from $p(\theta \mid X)$, which it usually is. Second, the sampling scheme doesn't take into account previously sampled points. 
 
 ```python 
 num_tries = 10000
@@ -45,14 +73,25 @@ for eps in [0.5]: #, 0.4, 0.3, 0.2, 0.1]:
 ```
 
 
+### ABC in MCMC
 
 
-## So What
 
-## Now What
+
+<!-- ## So What
+
+## Now What -->
 
 
 ---
+
+### Questions
+
+- Since ABC methods are targeted at problems with intractable likelihoods, do you need a tractable likelihood for VI? Do you need a tractable likelihood for all other posterior approximations? What about Laplace approximation? 
+- In what situations are likelihoods computationally intractable? How could a likelihood be computationally intractable but the model could be easy to sample from? I **really** don't understand this. Isn't sampling from the `model` the same as sampling from the likelihood? 
+- Is approximate bayesian computation the same as approximate bayesian inference? It seems like ABC is a sub-field of approximate inference
+- What does `explicit likelihood` mean? I see this all over the literature. Does it just mean we don't have a analytic likelihood that we can write down?
+- What is an example of a nuisance parameter? Is the hierarchical parameter an example of this? 
 
 
 ### Conditional Density Estimation 
@@ -61,14 +100,6 @@ for eps in [0.5]: #, 0.4, 0.3, 0.2, 0.1]:
 - What problem does conditional density estimation solve? And why do we need it?
 - What are some ways of estimating conditional densities?
 
-
-
-### Questions
-
-- In what situations are likelihoods computationally intractable? How could a likelihood be computationally intractable but the model could be easy to sample from? I **really** don't understand this. Isn't sampling from the `model` the same as sampling from the likelihood? 
-- Is approximate bayesian computation the same as approximate bayesian inference? It seems like ABC is a sub-field of approximate inference
-- What does `explicit likelihood` mean? I see this all over the literature. Does it just mean we don't have a analytic likelihood that we can write down?
-- What is an example of a nuisance parameter? Is the hierarchical parameter an example of this? 
 
 
 ## Annotated Bib
@@ -80,6 +111,8 @@ for eps in [0.5]: #, 0.4, 0.3, 0.2, 0.1]:
 - [Annealed Flow Transport Monte Carlo](http://proceedings.mlr.press/v139/arbel21a.html): Combining SCM samplers with Normalizing flows
 
 ### Apprroximate Bayesian Computation 
+- [Intro to ABC Slides](https://www.maths.lu.se/fileadmin/maths/forskning_research/InferPartObsProcess/abc_slides.pdf): Very comprehensive slides, this is where I got the proof that the rejection-sampling scheme works.
+- []
 - [Bayesian Computation with Intractable Likelihoods](https://arxiv.org/abs/2004.04620)
 - [Jupyter notebook on ABC with code](http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2017/tutorials/aux9_abc.html): Plots and code on ABC from scratch
 - [Paper Tutorial on ABC](https://www.semanticscholar.org/paper/A-tutorial-on-approximate-Bayesian-computation-Turner-Zandt/88974ed0ac2f5d9c1c6a0cf04ac7306045540c9c)
