@@ -8,7 +8,7 @@ math: true
 summary: 
 ---
 
-## What
+## Introduction (What)
 
 Approximate Bayesian computing is a family of approximate inference methods targetted at drawing approximate posterior samples when the likelihood, $p(X \mid \theta)$ is computationally intractable but it is easy to sample from the model, $X \sim p(. \mid \theta)$.
 
@@ -17,6 +17,9 @@ ABC approximates the posterior conditional on the full dataset, $p(\theta \mid X
 $$ p(\theta, s \mid s_{obs}) \propto K(\mid \mid s' - s_{obs} \mid \mid) p(s \mid \theta) p(\theta) $$
 
 Where $K$ is a kernel function that measures how far away $s'$ is from $s_{obs}$.
+
+[Blum, 2013](https://arxiv.org/pdf/1202.3819.pdf) gives a good review of ABC and talks about dimensionality reduction techniques with ABC.
+
 
 ### Rejection-Sampling 
 
