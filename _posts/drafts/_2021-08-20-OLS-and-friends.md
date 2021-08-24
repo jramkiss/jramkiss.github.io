@@ -8,7 +8,17 @@ math: true
 summary: Notes and interesting properties of OLS regression.
 ---
 
+## OLS Parameter Estimation
 
+## Parameter Confidence Intervals
+
+- How does our confidence in the point estimates change as we add more data?
+- What does the confidence interval for each coefficient estimate tell us? 
+
+
+## Proof of Gauss-Markov Theorem
+
+## Coefficient of Determination 
 
 ## Coefficient of Determination and Correlation 
 
@@ -31,3 +41,12 @@ Since $\bar{\hat{y}} = E(\hat{y}) = E(y - \epsilon) = E(y)$, we have:
 $$ = \frac{ \sum_{i = 1}^n (\hat{y}_i - \bar{y})^2}{\sum_{i = 1}^n (y_i - \bar{y})^2} $$
 
 Another proof of this can be found [here](https://math.stackexchange.com/questions/129909/correlation-coefficient-and-determination-coefficient/1799567).
+
+
+## Variance Inflation Factor
+
+
+## Questions
+
+- What happens to existing coefficients when we add a new variable to the regression?
+- What happens to the $R^2$ when we add a new feature to predict $y$?

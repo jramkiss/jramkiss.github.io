@@ -466,15 +466,57 @@ I have 3 numbers, all uniformly distributed. I'll show you one and you decide wh
 
 &nbsp;
 
-#### Problem 22
+#### Problem 38
+
+$X_i, 1 \le i \le 4$ is log-Normally distributed with E(X) = 0 and Var(X) = 1. What is the probability that the product of all $X_i$ is less than 50?
 
 #### Solution
 
 &nbsp;
 
-#### Problem 22
+#### Problem 39
+
+Two players, A and B, alternatively toss a fair coin (A tosses first and then B). The sequence of heads and tails is recorded. If there is a head followed by a tail (HT subsequence), the game ends and the person who tosses the tail wins. What is the probability that A wins the game?
 
 #### Solution
+
+Let:
+
+- A: event that A wins after starting first
+- B: event that B wins after starting first
+
+We want to find $p(A)$.
+
+$$ p(A) = \frac{1}{2}p(A \mid H) + \frac{1}{2}p(A \mid T) $$
+
+Starting with $p(A \mid H)$, if A tosses a H, then the game starts over with B going first.
+
+$$ p(A \mid H) = 1 - p(B) $$
+
+By symmetry, p(A) = p(B). (Because of the way the events of A and B are set up). So now we have that:
+
+$$ p(A \mid H) = 1 - p(A) $$
+
+Now for $p(A \mid T)$. If A flips a T, then the next person to flip a H wins. So in order for A to win, B has to first flip a T with probability 0.5, then A has to be the first to flip a H from then on out. 
+
+Let: 
+
+- AH be the event that A flips a H first after starting
+- BH be the event that B flips a H first after starting
+
+$$ p(AH) = \frac{1}{2}(1) + \frac{1}{2}(1 - p(BH)) $$
+
+With the same symmetry arguement used earlier, p(BH) = p(AH), so:
+
+$$ p(AH) = \frac{1}{2}(1) + \frac{1}{2}(1 - p(AH)) $$
+
+$$ p(AH) = \frac{2}{3} $$
+
+Substituting $p(A \mid T)$ and $p(A \mid H)$ back into the first equation:
+
+$$ p(A) = \frac{1}{2}(1 - p(A)) + \frac{1}{2}(\frac{1}{2}\frac{2}{3}) $$
+
+$$ p(A) = \frac{4}{9} $$
 
 &nbsp;
 
