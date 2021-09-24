@@ -73,7 +73,7 @@ Which looks a lot more intimidating than it is. The sum term says that at each t
 
 #### Problem 3
 
-Suppose there are five pirates with 100100 pieces of gold who are voting on splitting up the gold. The most senior pirate will propose a way to distribute the gold and requires 50\%50% of the votes in order to pass his proposal. If he receives less than 50\%50% of the votes then he will be killed and the process will begin with the next most senior pirate. How will the gold coins be divided?
+Suppose there are five pirates with 100 pieces of gold who are voting on splitting up the gold. The most senior pirate will propose a way to distribute the gold and requires 50\%50% of the votes in order to pass his proposal. If he receives less than 50\%50% of the votes then he will be killed and the process will begin with the next most senior pirate. How will the gold coins be divided?
 
 #### Solution
 
@@ -453,6 +453,12 @@ I have a response, $Y$ and 2 covariates, $x_1$ and $x_2$. When I regress $y$ on 
 
 #### Solution
 
+Formula is [here](http://faculty.cas.usf.edu/mbrannick/regression/Part3/Reg2.html). But I need to learn how to derive these formulas and interpret the addition of a new variable. 
+
+Prove that:
+
+$$ R^2 = \beta_1 r_{yx_1} + \beta_2 r_{yx_2} = \frac{r_{yx_1}^2 - r_{yx_2}^2 - 2 r_{yx_1}r_{yx_2}r_{x_1x_2}}{1 - r_{x_1 x_2}^2} $$
+
 
 
 &nbsp;
@@ -520,7 +526,142 @@ $$ p(A) = \frac{4}{9} $$
 
 &nbsp;
 
-#### Problem 22
+#### Problem 40 ***
+
+Two people each tosses a fair coin N times. Find the probability that they get the same number of heads.
+
+#### Solution
+
+https://ryu577.github.io/jekyll/update/2018/10/08/competitive_coin_tossing.html
+
+&nbsp;
+
+#### Problem 41
+
+9 fair coins and 1 special with double head. First I draw a coin and see the face is a head, what is the conditional probability that the next one is the special one?
+
+#### Solution
+
+&nbsp;
+
+#### Problem 42
+
+If the probability of seeing a shooting star over the course of an hour is 0.64, what is the probability of seeing a shooting star over the course of a half hour.
+
+#### Solution
+
+If we see at least 1 star in 1 hour then in 2 half hours:
+
+- see 1 star in first half, none in 2nd half
+- see none in 1st half, 1 in 2nd half
+- see 1 star in both half hours
+
+Let:
+
+$$ p(\text{star in 30 minutes}) = x $$
+
+$$ 2x(1-x) + x^2 = 0.64 $$
+
+After applying the quadratic formula, $x = 0.4$.
+
+&nbsp;
+
+#### Problem 43 ***
+
+I have three random variables X, Y , and Z with pairwise correlations all equal to r. Whar are the bounds on r? What are the bounds on corr(X, Z) if corr(X, Y ) = a and corr(Y, Z) = b?
+
+#### Solution
+
+- https://math.stackexchange.com/questions/284877/correlation-between-three-variables-question
+- https://math.stackexchange.com/questions/1536234/correlation-coefficient-as-cosine
+- http://jakewestfall.org/blog/index.php/2013/09/17/geometric-argument-for-constraints-on-corrxz-given-corrxy-and-corryz/
+- https://stats.stackexchange.com/questions/72790/bound-for-the-correlation-of-three-random-variables
+&nbsp;
+
+#### Problem 44 ***
+
+Let X and Y be two i.i.d uniform random variables drawn from (0,1). Let A be min(X,Y) and B be max(X,Y), what’s the correlation between A and B?
+
+#### Solution
+
+- https://math.stackexchange.com/questions/842264/finding-the-correlation-coefficient-of-ordered-statistics
+- http://www.ams.sunysb.edu/~zhu/ams570/Lecture9_570.pdf
+
+
+&nbsp;
+
+#### Problem 45
+
+Two people 𝐴 and 𝐵 throw fair coins independently. Let 𝑀 be the number of coin tosses until 𝐴 gets two consecutive heads. Let 𝑁 be the number of coin tosses until 𝐵 gets three consecutive heads. What is the probability that 𝑀>𝑁?
+
+#### Solution
+
+- https://math.stackexchange.com/questions/534800/probability-that-a-need-more-coin-tosses-to-get-two-consecutive-heads-than-b
+
+&nbsp;
+
+#### Problem 46
+
+Let $X_1, \dots X_n$ be independent random variables uniformly distributed on [0,1]. Find $P(X_1 + \cdots + X_n \leq 1)$?
+
+#### Solution
+
+- https://math.stackexchange.com/questions/1683558/probability-that-sum-of-independent-uniform-variables-is-less-than-1
+
+
+&nbsp;
+
+#### Problem 47
+
+a and b are randomly chosen real numbers in the interval [0, 1], that is both
+a and b are standard uniform random variables. Find the probability that
+the quadratic equation x2 + ax + b = 0 has real solutions.
+
+#### Solution
+
+Quadratic has real roots if the term in the square root is positive. Sketch joint distribution and integrate 
+
+
+&nbsp;
+
+#### Problem 48
+
+How many times do we need to roll a fair die to get a sum divisible by 3?
+
+#### Solution
+
+Let X be the number of rolls until we get a sum divisible by 3. There are 2 outcomes after every roll:
+
+1) sum mod 3 = 1
+2) sum mod 3 = 2
+
+In the first case, if we roll (2, 5) next, we get a sum that is divisible by 3. Similarly, in the second case, if we roll (1, 4) next, we get a sum divisible by 3. 
+
+Let: 
+
+- $X_1$ be the number of rolls until we get a 2 or 5
+- $X_2$ be the number of rolls until we get a 1 or 4
+
+$$ E(X) = \frac{1}{3}(1) + \frac{1}{3}(1 + E(X_1)) + \frac{1}{3}(1 + E(X_2)) $$
+
+$$ E(X_1) = \frac{1}{3}(1) + \frac{2}{3}(1 + E(X_1)) $$
+$$ E(X_1) = 3 $$
+ 
+Therefore, $E(X_2) = 3$ and we can plug these back into the original equation to get $E(X) = 3$.
+
+&nbsp;
+
+#### Problem 49
+
+What is the expected number of tosses of a die before we get 2 consecutive Heads or 2 consecutive Tails? What about 3 consecutive Heads or Tails?
+
+#### Solution
+
+&nbsp;
+
+#### Problem 50 - Programming
+
+
 
 #### Solution
 
