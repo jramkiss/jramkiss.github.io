@@ -11,13 +11,13 @@ summary: Originally written to be a personal refresher for some ML models and co
 
 # Models
 
-#### Linear Regression, Logistic Regression and GLM's
-http://cs229.stanford.edu/notes/cs229-notes1.pdf
+### Linear Regression and Logistic Regression 
+Just read [this](http://cs229.stanford.edu/notes/cs229-notes1.pdf)
 
 ---
 
 
-#### Decision Trees and Random Forests
+### Decision Trees and Random Forests
 
 Decision trees split the input space into non-linear regions by minimizing cross-entropy loss between regions. Let $p_c$ be the proportion of samples in region $R$ that are in class $c$, then:
 
@@ -40,7 +40,7 @@ Bagged decision trees can be taken one step further by only considering a subset
 
 ---
 
-#### Support Vector Machines
+### Support Vector Machines
 
 SVM is a linear classifier that finds the optimal margin of seperation between two classes. It maximizes the orthogonal distance between each point and a linear boundary, eventually reducing the dataset into a couple important points close to the margin called support vectors. These are the only datapoints that influence future predictions.
 
@@ -81,19 +81,19 @@ $$
 
 More on SVM's [here](http://cs229.stanford.edu/notes/cs229-notes3.pdf).
 
-#### Naive Bayes
+### Naive Bayes
 
 http://cs229.stanford.edu/notes/cs229-notes2.pdf
 
 ---
 
 
-#### k-Means and k-NN
+### k-Means and k-NN
 
 k-Means: http://cs229.stanford.edu/notes/cs229-notes7a.pdf
 
 
-#### Principal Component Analysis
+### Principal Component Analysis
 
 Consider a dataset $\{x_i; i = 1..m\}$ that represent pilots of RC helicopters. We can have that $x_{i1}$ measures the pilot's skill and $x_{i2}$ measures thow much he/she enjoys flying. Since RC helicopters are usually difficult to fly, the most skilled pilots are the ones who enjoy flying the most. Therefore we can expect that the data actually lies on a diagonal axis representing the "piloting karma" of a person. And orthogonal to that axis is some noise.
 In addition to this, we may want an automatic way of detecting when 2 covariates have high covariance, so that we can either combine them or exclude them.
@@ -121,7 +121,7 @@ More on PCA [here](http://cs229.stanford.edu/notes/cs229-notes10.pdf).
 
 # Concepts
 
-#### Precision, Recall and F1 Score
+### Precision, Recall and F1 Score
 
 - Precision is the fraction of points predicted to be class $k$ that are correct
 - Recall is the fraction of class $k$ that are predicted correctly 
@@ -140,20 +140,20 @@ The F1 score is the harmonic mean of the precision and recall.
 $$ F_1 = \frac{2}{\text{Recall}^{-1} + \text{Precision}^{-1}} $$
 
 
-#### k-Fold Cross Validation
+### k-Fold Cross Validation
 
 Cross validation is simply holding out part of out data to be used for testing. In its most basic form, 1-fold cross validation, we make 1 split in the data and use part for training and the rest for testing, however we can extend this to multiple splits. 
 We can use k-fold cross validation to determine the robustness of our model. Here we divide the data into $k$ "folds", train on $k-1$ and evaluate on the $k$th. Be careful to do any data cleaning / transformations on the $k-1$ folds so that you don't allow data leakage.
 
 
-#### Central Limit Theorem
+### Central Limit Theorem
 
 The CLT states that with a population with mean, $\mu$ and standard deviation, $\sigma$. If we take sufficiently large samples with replacement then the distribution of the sample means will be approximately Normally distributed.
 
 In practice it helps us assign a distribution for sample estimates, which are used in hypothesis testing.
 
 
-#### Bias / Variance Tradeoff
+### Bias / Variance Tradeoff
 
 We can forget about bias and variance, and just focus on building a model given some training data. We know that there is a possibility that we overtrain the model on this specific set of training data, so we're careful not to do so. On the flip side, we're aware that if we train too little, the model will predict garbage as it isn't able to capture the signal. This tradeoff between overfitting and underfitting is exactly the bias-variance tradeoff.
 If we over train the model too our training set, when we try to generalize to more data we can expect varying predictions, i.e. high variance. However if we undertrain the model, we can expect more consistent, but wrong predictions.
@@ -162,7 +162,7 @@ Bias is the model's tendency to consistently learn the same wrong thing, whereas
 
 
 
-#### Coefficient of Determination, $R^2$ and Adjusted $R^2$
+### Coefficient of Determination, $R^2$ and Adjusted $R^2$
 
 $R^2$ is the percentage of variance in the target variable explained by the covariates. The variance in the target variable can be thought of as variance along the $y$ axis. Low variance in the target variable would imply data points are close to the regression line, and vice versa for high variance. High variance likely means the covariates are inappropriate for the problem and that there are other drivers of the target variable. 
 
@@ -171,14 +171,14 @@ $$R^2 = \frac{\text{Variance explained by the model}}{\text{Total variance}}$$
 $R^2$ necessarily increases as we add more covariates. Ideal behaviour would be for us to penalize additional covariates, which is what adjusted $R^2$ does. 
 
 
-#### Bagging, Boosting, Gradient Boosting
+### Bagging, Boosting, Gradient Boosting
 
-##### Bagging
+#### Bagging
 Bagging stands for Bootstrap Aggregation and is a variance reduction technique. We start by bootstrap sampling a dataset into $M$ bootstrap samples. Then we build models, $g_m(X)$, on each sample and aggregate their outputs to make predictions: $g(X) = \sum_m\frac{g_m(X)}{M}$.
 
 Bagging creates less correlated predictors than if we just trained on the whole sample, thus reducing overall variance. However the overall bias is increased because each individual bootstrap sample doesn't contain the full training set. More on bagging [here](http://cs229.stanford.edu/notes/cs229-notes-ensemble.pdf).
 
-##### Boosting
+#### Boosting
 Boosting is a bias-reduction technique where we iteratively train weak learners (ex: decision trees with only 1 split / decision stumps). At each iteration we give misclassified points higher weight and train another learner. At the end we have an ensemble of weak learners.
 More on boosting [here](http://cs229.stanford.edu/extra-notes/boosting.pdf).
 
