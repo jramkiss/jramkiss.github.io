@@ -56,7 +56,7 @@ $$\gamma_i = y_i (w^Tx_i + b) $$
 
 Unlike logistic regression, SVM has no notion of confidence. All we get in return from the model is a predicted class.
 
-We are looking for the optimal boundary separating the positive and negative training examples with a gap of at least $\gamma$. In addition, we need to constrain $||w|| = 1$ so that we can't arbitrarily scale $(w, b)$. This constraint makes the optimization non-convex and difficult, so instead we change the constraint to: $\hat{\gamma} = 1$, which results in:
+We are looking for the optimal boundary separating the positive and negative training examples with a gap of at least $\gamma$. In addition, we need to constrain $\text{||}w\\text{||} = 1$ so that we can't arbitrarily scale $(w, b)$. This constraint makes the optimization non-convex and difficult, so instead we change the constraint to: $\hat{\gamma} = 1$, which results in:
 
 $$
 \underset{w, b}{\text{max}}  \frac{1}{2}||w||^2 \\
