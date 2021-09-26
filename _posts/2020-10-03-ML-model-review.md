@@ -170,6 +170,27 @@ $$R^2 = \frac{\text{Variance explained by the model}}{\text{Total variance}}$$
 
 $R^2$ necessarily increases as we add more covariates. Ideal behaviour would be for us to penalize additional covariates, which is what adjusted $R^2$ does. 
 
+We can show that another way to derive the coefficient of determination is from the corelation between the observed, $y_i$ and fitted values, $\hat{y}_i$. 
+
+$$ r^2_{\hat{y}, y} = (\frac{Cov(y, \hat{y})}{\sqrt{Var(y)Var(\hat{y})}})^2 $$
+
+$$ = \frac{Cov(y, \hat{y})Cov(y, \hat{y})}{Var(y)Var(\hat{y})} $$
+
+$$ = \frac{Cov(\hat{y} + \epsilon, \hat{y})Cov(\hat{y} + \epsilon, \hat{y})}{Var(y)Var(\hat{y})} $$
+
+$$ = \frac{Var(\hat{y})^2}{Var(y)Var(\hat{y})} $$
+
+$$ = \frac{Var(\hat{y})}{Var(y)} $$
+
+$$ = \frac{\frac{1}{n} \sum_{i = 1}^n (\hat{y}_i - \bar{\hat{y}})^2}{\frac{1}{n} \sum_{i = 1}^n (y_i - \bar{y})^2} $$
+
+Since $\bar{\hat{y}} = E(\hat{y}) = E(y - \epsilon) = E(y)$, we have:
+
+$$ = \frac{ \sum_{i = 1}^n (\hat{y}_i - \bar{y})^2}{\sum_{i = 1}^n (y_i - \bar{y})^2} $$
+
+Another proof of this can be found [here](https://math.stackexchange.com/questions/129909/correlation-coefficient-and-determination-coefficient/1799567).
+
+
 
 ### Bagging, Boosting, Gradient Boosting
 
