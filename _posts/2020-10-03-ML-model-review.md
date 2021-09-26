@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Machine Learning Reference Sheet"
+title: "ML Models Reference Sheet"
 date: 2020-09-29 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Designed to be a personal refresher for some ML models and concepts.
+summary: Originally written to be a personal refresher for some ML models and concepts.
 ---
 
 
