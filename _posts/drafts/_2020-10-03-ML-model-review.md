@@ -12,7 +12,8 @@ summary: Originally written to be a personal refresher for some ML models and co
 # Models
 
 ### Linear Regression and Logistic Regression 
-Just read [this](http://cs229.stanford.edu/notes/cs229-notes1.pdf)
+
+Just read [this](http://www.cs.toronto.edu/~rgrosse/courses/csc321_2018/readings/L02%20Linear%20Regression.pdf) and [this](https://lindeloev.github.io/tests-as-linear/)
 
 ---
 
@@ -80,6 +81,11 @@ $$
 $$
 
 More on SVM's [here](http://cs229.stanford.edu/notes/cs229-notes3.pdf).
+
+### SVM Questions:
+
+- Can we interpret the coefficients of an SVM model? Why or why not?
+- How would a new point outside of the margin affect the parameters in an SVM?
 
 ### Naive Bayes
 
@@ -156,7 +162,7 @@ In practice it helps us assign a distribution for sample estimates, which are us
 ### Bias / Variance Tradeoff
 
 We can forget about bias and variance, and just focus on building a model given some training data. We know that there is a possibility that we overtrain the model on this specific set of training data, so we're careful not to do so. On the flip side, we're aware that if we train too little, the model will predict garbage as it isn't able to capture the signal. This tradeoff between overfitting and underfitting is exactly the bias-variance tradeoff.
-If we over train the model too our training set, when we try to generalize to more data we can expect varying predictions, i.e. high variance. However if we undertrain the model, we can expect more consistent, but wrong predictions.
+If we over train the model too much on our training set, when we try to generalize to more data we can expect varying predictions, i.e. high variance. However if we undertrain the model, we can expect more consistent, but wrong predictions.
 
 Bias is the model's tendency to consistently learn the same wrong thing, whereas variance is the tenddedncy to consistently learn random things. Simple models have high bias because they are not able to properly induce the properties of the data, however more complex models have a tendency to have high variance because their hypothesis spaces are much larger. This can be thought of as simple models only considering a small set of possible outcomes (ex of an outcome is a linear boundary), however complex models consider a much larger set of possible outcomes (neural nets can represent any function).
 
