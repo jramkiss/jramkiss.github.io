@@ -67,3 +67,36 @@ $$ X \sim Poi(\frac{5}{12}) $$
 $$ p(X = 1) = \frac{\frac{5}{12} e^{-\frac{5}{12}}}{1!} $$
 
 
+
+## Statistics
+
+14) There’s a rare disease that only 1 in 10000 people get. Scientists have developed a test to diagnose the disease with the false positive rate and false negative rate of 1%.
+
+    - Given a person is diagnosed positive, what’s the probability that this person actually has the disease?
+    
+    - What’s the probability that a person has the disease if two independent tests both come back positive?
+
+**Solution**:
+
+Part (a):
+
+Part (b):
+
+A: has disease
+B: see a negative test
+
+$$ p(A \mid BB) = p(A \mid B)^2 $$
+
+$$ p(B) = p(B \mid A)p(A) + p(B \mid A') p(A') $$
+
+$$ p(B) = FNR * p(A) + [1 - FNR] * p(A') $$
+
+$$ p(B) = \frac{1}{1e6}(1 + 99(9999)) $$
+
+$$ p(A, B) = p(B \mid A)p(A) $$
+
+$$ p(B \mid A)p(A) = \frac{1}{1e6} $$
+
+$$ p(A \mid BB) = p(A \mid B)^2 $$ 
+
+$$ p(A \mid B)^2 = \frac{1}{1e12} * \frac{1 + 99(9999)}{1e6}^2 $$

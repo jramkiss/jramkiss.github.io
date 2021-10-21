@@ -10,7 +10,7 @@ tags: about
 
 ### Work
 
-I'm currently a masters student in statistics at the University of Waterloo. Between undergrad and grad school I worked as a data scientist at [Scribd](https://www.scribd.com) on the Applied Research team in Toronto. I'm mainly interested in the intersection of Bayesian statistics and machine learning. 
+I'm a masters student in statistics at the University of Waterloo and was a data scientist at [Scribd](https://www.scribd.com) before that. My general interest lie somewhere in the intersection of Bayesian statistics and machine learning. This blog is a somewhat random assortment of things I find interesting or experiments I find cool. 
 
 
 ### Play
