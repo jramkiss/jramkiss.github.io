@@ -5,9 +5,15 @@ date: 2020-09-29 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Originally written to be a personal refresher for some ML models and concepts.
+summary: Personal refresher for some ML models and concepts.
 ---
 
+
+## Amazing Resources
+
+- [Deep learning tips and tricks](https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-deep-learning-tips-and-tricks)
+- [CNN cheatsheet](https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-convolutional-neural-networks)
+- [RNN cheatsheet](https://stanford.edu/~shervine/teaching/cs-230/cheatsheet-recurrent-neural-networks)
 
 # Models
 
