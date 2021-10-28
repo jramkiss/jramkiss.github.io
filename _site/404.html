@@ -10,7 +10,7 @@
     <link rel="dns-prefetch" href="//maxcdn.bootstrapcdn.com">
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Documentation of ranodm ML exploration">
+    <meta name="description" content="Random walk through life">
     <meta name="robots" content="all">
     <meta name="author" content="Jonathan Ramkissoon">
     
@@ -19,20 +19,70 @@
     <link rel="alternate" type="application/rss+xml" title="RSS Feed for Jonathan Ramkissoon" href="/feed.xml" />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/pixyll.css?201911032158" type="text/css">
+    <link rel="stylesheet" href="/css/pixyll.css?202110272212" type="text/css">
 
     <!-- Fonts -->
     
-    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
-    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic&amp;subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300&amp;subset=latin-ext,latin' rel='stylesheet' type='text/css'>
     
     
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- MathJax -->
     
-    <script type="text/javascript"
+    <!--
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  CommonHTML: {
+    scale: 50
+  }
+});
+</script>
+
+<script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/latest.js?config=TeX-AMS-MML_HTMLorMML,https://idcrook.github.io/assets/js/MathJaxLocal.js">
 </script>
+-->
+
+<!--
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$'] ],
+    processEscapes: true,
+  },
+  CommonHTML: {
+    scale: 85
+  }
+});
+MathJax.Hub.Register.MessageHook("Math Processing Error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
+	  alert("Math Processing Error: "+message[1]);
+	});
+</script>
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+-->
+
+<script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "all" } } }); </script>
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     tex2jax: {
+       inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+       processEscapes: true
+     }
+   });
+</script>
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 
     
 
@@ -45,17 +95,25 @@
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Jonathan Ramkissoon">
-    <meta property="og:description" content="Documentation of ranodm ML exploration">
+    <meta property="og:description" content="Random walk through life">
     <meta property="og:url" content="http://localhost:4000/404.html">
     <meta property="og:site_name" content="Jonathan Ramkissoon">
+    
+    <meta property="og:image" content="http://localhost:4000/assets/profile.JPG">
     
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary" />
     
+        <meta name="twitter:site" content="@_jramkissoon" />
+        <meta name="twitter:creator" content="@_jramkissoon" />
+    
     <meta name="twitter:title" content="Jonathan Ramkissoon" />
-    <meta name="twitter:description" content="Documentation of ranodm ML exploration" />
+    <meta name="twitter:description" content="Random walk through life" />
     <meta name="twitter:url" content="http://localhost:4000/404.html" />
+    
+    <!-- <meta name="twitter:image" content="http://localhost:4000/assets/profile.JPG" /> -->
+    <meta name="twitter:image" content="page.image" />
     
 
     <!-- Icons -->
@@ -104,11 +162,6 @@
     
     
         <a class="nav-link" href="/about/">About</a>
-    
-
-    
-    
-        <a class="nav-link" href="/contact/">Say Hello</a>
     
 
 
