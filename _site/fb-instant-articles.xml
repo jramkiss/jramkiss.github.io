@@ -9,6 +9,137 @@
     
         
             <item>
+                <title>Honey, my pdf is greater than 1!</title>
+                <link>http://localhost:4000/2021/10/29/my-pdf/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <p>This is a confusing concept because of the density function for discrete distributions. These have a probability mass function, not a probability density function. So the interpretation here is straightforward, if we evalute the PMF at any point, $X = x$, that value corresponds to the probability of $X = x$ occurring. So if we toss a coin, then $p(X = \text{Head})$ is the probability of observing a head.</p>
+
+<p>When we try to extend this logic to probability density functions, weird things happen. Because PDF’s describe continuous distributions, the probability that we observe the exact value $X = x$ is 0 (as you have probably heard 100 times). So evaluating the PDF at a particular point doesn’t correspond to a probability. Then what does it correspond to? And how do we interpret it?</p>
+
+<p>It helps to take a step back. The PDF, $f(x)$, is the derivative of the cumulative distribution function, $F(x)$. So at any given point, $X = x$ in the support, in order to get the value of the PDF, we can differentate the CDF and evaluate it at $X = x$. If you let this marinate for a bit, things should start to clear up. Now it’s less natural to interpret the value as a probability.</p>
+
+<p> </p>
+
+<p align="center">
+  <img src="/assets/Normal_pdf_cdf.png" width="80%" height="80%" />
+</p>
+
+<p> </p>
+
+<p>So it’s not a probability, what is it? Well, we could interpret it similar to how we interpret gradients. Technically, a specific point in a function doesn’t have a gradient. However, we can take a really small slice of the function and find the gradient there, then make claims about the gradient in that region. So, now we know that higher values of this derivative correspond to regions that are more likely, and vice versa for smaller values of the derviative.</p>
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/2021/10/29/my-pdf/</guid>
+                <description>
+                    
+                    Can the values of a probability density function be greater than 1?
+                    
+                </description>
+                <pubDate>Fri, 29 Oct 2021 02:22:00 -0400</pubDate>
+                <author>Jonathan Ramkissoon</author>
+            </item>
+        
+    
+        
+            <item>
+                <title>Variational Lower Bound</title>
+                <link>http://localhost:4000/2021/10/28/ELBO/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <h2 id="variational-lower-bound">Variational Lower Bound</h2>
+
+<p>Exact posterior inference is hard in most Bayesian models. Variational inference proposes a way of approximating a posterior over latent variables, $p(z \mid x)$, with a <em>variational distribution</em>, $q(z \mid x)$. The idea is that we can specify some family of distributions, $q_{\theta}(.)$ to approximate the true posterior, then learn the distributional parameters, $\theta$ that make $q_{\theta}$ as close as possible to the true posterior.</p>
+
+<h4 id="how-to-measure-closeness">How to measure closeness?</h4>
+
+<p>One way of measuring closeness in distribution is with <a href="https://en.wikipedia.org/wiki/Kullback–Leibler_divergence">Kullback-Leibler divergence</a>. The KL-divergence between the variational distributions, $q$ and the true posterior, $p(Z \mid x)$ is:</p>
+
+\[KL(q(Z) \mid \mid p(Z \mid x)) = E_q \left[ log \frac{q(Z)}{p(Z \mid x)} \right]\]
+
+<p>Important to note, is that KL(q || p) $\ne$ KL(p || q) and the KL-divergence is non-negative.</p>
+
+<p>The key idea behind VI is to minimize the KL divergence with respect to the variational paramters, $\theta$. Turns out that we can’t do this directly, and instead have to minimize another function that is equal to the KL-divergence up to a constant.</p>
+
+<h4 id="marginal-likelihood">Marginal Likelihood</h4>
+
+<p>First we combine Jensen’s inequality and the log-marginal likelihood:</p>
+
+\[\begin{aligned}
+\log p(x) &amp;= \log \int_Z p(x, z) dz \\
+&amp;= \log \int_Z p(x, z) \frac{q(z)}{q(z)} dz \\
+&amp;= \log E_q \left[ \frac{p(x, z)}{q(z)} \right] \\
+\end{aligned}\]
+
+<p>From Jensen’s inequality: $f(E(X)) \ge E(f(X))$:</p>
+
+\[\begin{aligned}
+\log p(x) \ge E_q \left[ \log \frac{p(x, z)}{q(z)} \right] \\
+\log p(x) \ge E_q \left[ \log p(x, z) \right] - E_q \left[ \log q(z) \right]
+\end{aligned}\]
+
+<p>$p(x)$ is typically referred to as the evidence, so I believe that’s why this bound is called the evidence lower bound or ELBO.</p>
+
+<p> </p>
+
+<h4 id="kl-divergence-again">KL-Divergence (again)</h4>
+
+\[\begin{aligned}
+KL(q(Z) \mid \mid p(Z \mid x)) &amp;= E_q \left[ \log \frac{q(Z)}{p(Z \mid x)} \right] \\
+&amp;= E_q \left[ \log q(Z) - \log p(Z \mid x) \right] \\
+&amp;= E_q \left[ \log q(Z) \right] - E_q \left[ \log p(Z \mid x) \right] + \log p(x) \\
+&amp;= - \left( E_q \left[ \log p(Z \mid x) \right] - E_q \left[ \log q(Z) \right] \right) + \log p(x)
+\end{aligned}\]
+
+<p>So we have decomposed the KL-divergence between the posterior and the variational distribution into the log marginal likelihood plus the ELBO. This is cool. In order to minimize the KL-divergence, we can maximize the evidence lower bound with respect to $\theta$, which usually requires us to decompose the ELBO further.</p>
+
+<p> </p>
+
+<p>Some really useful resources for this are:</p>
+
+<ul>
+  <li><a href="https://www.cs.princeton.edu/courses/archive/fall11/cos597C/lectures/variational-inference-i.pdf">David Blei’s VI lecture</a></li>
+  <li><a href="https://arxiv.org/pdf/1312.6114.pdf">Original VAE paper</a></li>
+</ul>
+
+<p> </p>
+
+<h3 id="aside-latent-variable-problem">Aside: Latent Variable Problem</h3>
+
+<p>A latent variable is a quantity that we don’t directly observe. This arises for different reasons. It could be because of observational noise or that the quantity doesn’t really exist, for example the clusters in a GMM. Lots of interesting problem formulations contain latent variables which brings some challenges during inference.</p>
+
+<p>In models like this, if $Z$ was our observed data, then we can use the likelihood function to do inference on $\theta$ and walk away happily. However, $X$ is observed and only connected to $\theta$ through $Z$.</p>
+
+<p>The model is:</p>
+
+\[Z_j \sim f(z \mid \theta), \qquad j = 1, ..., m\]
+
+\[X_i \sim g(x \mid Z), \qquad i = 1, ..., n\]
+
+<p>In order to do inference on $\theta$, we need the likelihood function, $L(\theta \mid X)$, which we can only get by introducing $Z$ and integrating it out.</p>
+
+\[L(\theta \mid X) \propto f(x \mid \theta) = \int_Z p(X, Z \mid \theta) dZ\]
+
+\[\qquad = \int_Z p(X \mid Z) p(Z \mid \theta) dZ\]
+
+<p>This integral is almost definitely intractable, which leads into the main idea of this blog post: variational lower bounds.</p>
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/2021/10/28/ELBO/</guid>
+                <description>
+                    
+                    Variational (evidence) lower bound and the latent variable problem
+                    
+                </description>
+                <pubDate>Thu, 28 Oct 2021 02:22:00 -0400</pubDate>
+                <author>Jonathan Ramkissoon</author>
+            </item>
+        
+    
+        
+            <item>
                 <title>Hierarchical Models in Numpyro</title>
                 <link>http://localhost:4000/2021/01/29/hierarchical-models/</link>
                 <content:encoded>
