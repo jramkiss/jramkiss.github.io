@@ -8,11 +8,11 @@
     
       <item>
         <title>Honey, my pdf is greater than 1!</title>
-        <description>&lt;p&gt;This is a confusing concept because of the density function for discrete distributions. These have a probability mass function, not a probability density function. So the interpretation here is straightforward, if we evalute the PMF at any point, $X = x$, that value corresponds to the probability of $X = x$ occurring. So if we toss a coin, then $p(X = \text{Head})$ is the probability of observing a head.&lt;/p&gt;
+        <description>&lt;p&gt;This is a confusing concept because of the density function for discrete distributions. These have a probability mass function, not a probability density function, and the interpretation is what we’re accustomed to. If we evalute the PMF at any point, $X = x$, that value corresponds to the probability of us observing $X = x$. So if we toss a coin, then $p(X = \text{Head})$ is the probability of observing a head.&lt;/p&gt;
 
 &lt;p&gt;When we try to extend this logic to probability density functions, weird things happen. Because PDF’s describe continuous distributions, the probability that we observe the exact value $X = x$ is 0 (as you have probably heard 100 times). So evaluating the PDF at a particular point doesn’t correspond to a probability. Then what does it correspond to? And how do we interpret it?&lt;/p&gt;
 
-&lt;p&gt;It helps to take a step back. The PDF, $f(x)$, is the derivative of the cumulative distribution function, $F(x)$. So at any given point, $X = x$ in the support, in order to get the value of the PDF, we can differentate the CDF and evaluate it at $X = x$. If you let this marinate for a bit, things should start to clear up. Now it’s less natural to interpret the value as a probability.&lt;/p&gt;
+&lt;p&gt;It helps to take a step back. The PDF, $f(x)$, is the derivative of the cumulative distribution function, $F(x)$. So at any given point, $X = x$ in the support, in order to get the value of the PDF, we can differentate the CDF and evaluate it at $X = x$. If you let this marinate for a bit, things should start to clear up and it becomes less natural to interpret the value as a probability.&lt;/p&gt;
 
 &lt;p&gt; &lt;/p&gt;
 
@@ -22,7 +22,7 @@
 
 &lt;p&gt; &lt;/p&gt;
 
-&lt;p&gt;So it’s not a probability, what is it? Well, we could interpret it similar to how we interpret gradients. Technically, a specific point in a function doesn’t have a gradient. However, we can take a really small slice of the function and find the gradient there, then make claims about the gradient in that region. So, now we know that higher values of this derivative correspond to regions that are more likely, and vice versa for smaller values of the derviative.&lt;/p&gt;
+&lt;p&gt;So it’s not a probability, what is it? Well, we could interpret it similar to how we interpret gradients. A specific point in a function doesn’t have a gradient. However, we can take a really small slice of the function and find the gradient there, then make claims about the gradient in that region. So, now we know that higher values of this derivative correspond to regions that are more likely, and vice versa for smaller values of the derviative.&lt;/p&gt;
 </description>
         <pubDate>Fri, 29 Oct 2021 02:22:00 -0400</pubDate>
         <link>http://localhost:4000/2021/10/29/my-pdf/</link>
@@ -111,6 +111,181 @@ KL(q(Z) \mid \mid p(Z \mid x)) &amp;amp;= E_q \left[ \log \frac{q(Z)}{p(Z \mid x
         <pubDate>Thu, 28 Oct 2021 02:22:00 -0400</pubDate>
         <link>http://localhost:4000/2021/10/28/ELBO/</link>
         <guid isPermaLink="true">http://localhost:4000/2021/10/28/ELBO/</guid>
+      </item>
+    
+      <item>
+        <title>Inference on SDE's</title>
+        <description>&lt;p&gt;A stochastic differential equation describes the change in some variable, $X$, at a given time, $t$.&lt;/p&gt;
+
+\[d X_t = \mu(X_{t-1}, \theta) dt + \sigma(X_{t-1}, \theta) dW_t\]
+
+&lt;h2 id=&quot;why-is-inference-hard&quot;&gt;Why is inference hard?&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The likelihood is intractable: We cannot write down the likelihood. This makes maximum likehood inference nearly impossible, and&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Wed, 29 Sep 2021 02:22:00 -0400</pubDate>
+        <link>http://localhost:4000/2021/09/29/inference-on-SDEs/</link>
+        <guid isPermaLink="true">http://localhost:4000/2021/09/29/inference-on-SDEs/</guid>
+      </item>
+    
+      <item>
+        <title>Introduction to Approximate Bayesian Inference</title>
+        <description>&lt;h2 id=&quot;introduction-what&quot;&gt;Introduction (What)&lt;/h2&gt;
+
+&lt;p&gt;Approximate Bayesian computing is a family of approximate inference methods targeted at drawing approximate posterior samples when the likelihood, $p(X \mid \theta)$ is computationally intractable but it is easy to sample from the model, $X \sim p(. \mid \theta)$. These are generally simulation based models, where it is easy to generate $X$ if we have $\theta$, but impossible to write down the likelihood. Some examples of these models are &lt;strong&gt;exmaples here&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The lack of a likelihood function makes Bayesian inference particularly challenging, since the usual way of modelling the posterior is through the product of the likelihood and the priors. To proceed with inference, we have to either directly approximate the posterior, or first approximate the likelihood, then use it to model the posterior.&lt;/p&gt;
+
+&lt;p&gt;Since we can’t estimate $L(\theta; X)$, but we can sample from $p(X \mid \theta)$ easily, one direction for inference is as follows:&lt;/p&gt;
+
+&lt;p&gt;1) Propose $\theta_1 \sim p(\theta)$ using the prior on $\theta$ &lt;br /&gt;
+2) Simulate data using $p(X_1 \mid \theta_1)$ &lt;br /&gt;
+3) If the distance between $X_1$ and $X_{obs}$ is less than $\epsilon$, we accept $\theta_1$, and reject otherwise. We can use summary statistics to define distance here. &lt;br /&gt;
+4) Now each accepted $\theta$ is an sample from the approximate posterior $p(\theta \mid X)$. This approximation comes from an approximation to the likelihood, which is dependent on, $\epsilon$.&lt;/p&gt;
+
+&lt;p&gt;This is called a rejection sampling scheme and not surprisingly, it isn’t the most efficient or robust. It is sensitive to the choice of summary statistics and threshold, and there is a tradeoff between statistical and computational efficiency. &lt;a href=&quot;https://academic.oup.com/sysbio/article/66/1/e66/2420817&quot;&gt;This paper&lt;/a&gt; has lots more about it.&lt;/p&gt;
+
+&lt;p&gt;Aside from these drawbacks, if we think about this algorithm a bit, each draw of $\theta$ is independent, and we can probably do more to inform future draws of $\theta$.&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;!-- ### Rejection-Sampling 
+
+
+##### Rejection-Sampling in an ideal world
+
+An early method for generating samples from approximate posterior distributions is [rejection-sampling](https://www.genetics.org/content/genetics/145/2/505.full.pdf). In an ideal world with a tractable likelihood function, we would first sample a candidate parameter from the prior, $\theta^{\ast} \sim p(\theta)$. Then forward-simulate our data, $X^{\ast}\sim p(X \mid \theta^{\ast})$, to get a sample from the joint distribution, $(\theta^{\ast}, X^{\ast}) \sim p(\theta^{\ast}, X^{\ast})$. If the simulated data, $X^{\ast}$, &quot;matches&quot; the observed data, $X$, we accept $\theta^{\ast}$ and repeat the process. After repeating this many times, we end up with approximate samples from the posterior, $p(\theta \mid X)$. 
+Now I only have one question... how are we sure this works?? Here's an explanation below: 
+
+$$ p(\theta^{\ast}, X^{\ast}) = p(X^{\ast} \mid \theta^{\ast}) p(\theta) I_X(X^{\ast}) $$
+
+Where $I_X$ is 1 if $X^{\ast}$ &quot;matches&quot; $X$, and 0 otherwise. Therefore, averaging $I_X(X^{\ast})$ for all values of $X^{\ast}$ will give the acceptance probability of the our rejection-sampling method, since we only accept when the simulated data matches the observed data. 
+
+Marginalizing $X^{\ast}$, we get:
+
+$$ p(\theta^{\ast}) = \int p(X^{\ast} \mid \theta^{\ast}) p(\theta^{\ast}) I_X(X^{\ast})  dX^{\ast} $$
+
+$$ p(\theta^{\ast}) = p(X \mid \theta^{\ast}) p(\theta^{\ast}) \propto p(\theta^{\ast} \mid X) $$
+
+So the distribution of our resulting $\theta^{\ast}$'s is proportional to the posterior distribution we were after in the first place. An intuition for this method is to keep trying to recreate the observed data using different values of $\theta$. For the reconstructions that are really close to the observed data, keep the values of $\theta$, otherwise throw it out. 
+
+&amp;nbsp;
+
+
+##### Rejection-sampling in practice 
+
+We want to do inference on models with intractable likelihoods, so we need to introduce some more approximations. The posterior conditional on the full dataset, $p(\theta \mid X_{obs})$, is approximated by effectively summarizing $X_{obs}$ with summary statistics, $s_{obs}$. We end up with $p(\theta \mid s_{obs}) \propto p(s_{obs} \mid \theta)p(\theta)$. Since the likelihood is intractable, $p(s_{obs} \mid \theta)$ is also likely intractable and we have to introduce another approximation of $p_{ABC}(\theta \mid s_{obs}) = \int p(\theta, s \mid s_{obs}) ds$.
+
+$$ p(\theta, s \mid s_{obs}) \propto K(\mid \mid s' - s_{obs} \mid \mid) p(s \mid \theta) p(\theta) $$
+
+Where $K$ is a kernel that measures how far away $s'$ is from $s_{obs}$.
+
+From Wikipedia: 
+&gt; The outcome of the ABC rejection algorithm is a sample of parameter values approximately distributed according to the desired posterior distribution, and, crucially, obtained without the need to explicitly evaluate the likelihood function.
+
+Below is code for a simulated example using the first rejection scheme described above. This exposes some holes in the rejection-sampling methodology. Firstly, it is very inefficient if $p(\theta)$ is far from $p(\theta \mid X)$, which it usually is. Second, the sampling scheme doesn't take into account previously sampled points. 
+
+```python 
+num_tries = 10000
+for eps in [0.5]: #, 0.4, 0.3, 0.2, 0.1]:
+    # we never call the `likelihood` function
+    samples = []
+    for _try in range(num_tries):
+        # 1) simulate \sigma from prior
+        prior_sim = sigma_prior.rvs(size = 1)
+        # 2) forward generate data using the value of \sigma just samples
+        data_sim = simulator(prior_sim)
+        # 3) calculate the sufficient statistic of the simulated data
+        sim_ss = sufficient_summary(data_sim)
+        # 4) compare the estimated stat and the actual stat. 
+        if (distance(sim_ss, data_ss) &lt; eps):
+            # accept
+            samples.append(prior_sim)
+    samples = np.array(samples).T
+    fraction_accepted = len(samples) / num_tries
+```
+
+
+### ABC in MCMC --&gt;
+
+&lt;!-- ## So What
+
+## Now What --&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;questions&quot;&gt;Questions&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Since ABC methods are targeted at problems with intractable likelihoods, do you need a tractable likelihood for VI? Do you need a tractable likelihood for all other posterior approximations? What about Laplace approximation?
+    &lt;ul&gt;
+      &lt;li&gt;We need a likelihood function for the Laplace approximation becasue we approximate the maximum of the posterior, which is the likelihood multiplied by the priro. I think we also need it for VI but it’s not clear where it shows up in the ELBO for me right now.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Do SMC methods require likeilhood functions?
+    &lt;ul&gt;
+      &lt;li&gt;Yes, in order to compute the importance weights we need knowledge of $p(y_t \mid x_t, \theta)$&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;In what situations are likelihoods computationally intractable? How could a likelihood be computationally intractable but the model could be easy to sample from? I &lt;strong&gt;really&lt;/strong&gt; don’t understand this. Isn’t sampling from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;model&lt;/code&gt; the same as sampling from the likelihood?
+    &lt;ul&gt;
+      &lt;li&gt;This happens in simulation models, like SDE’s. We have a closed for solution for how the model/latent variables evolve, but no way to right down the likelihood. Not quite sure what the reason for us not being able to write down the likelihood is but I think it has something to do with latent variables and dependence between observations? But then if it has something to do with the dependence between observations, that would imply that we can’t write down the likelihood for any reasonably complex time-series model… yea idk.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Is approximate bayesian computation the same as approximate bayesian inference? It seems like ABC is a sub-field of approximate inference
+    &lt;ul&gt;
+      &lt;li&gt;From what I understand, ABC is a subfield of approximate inference specifically dealing with the case where we don’t have a tractable likelihood. The other parts of approximate inference deals with approximating the posterior distribution for efficiency reasons, like variational inference or Laplace approximation.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;What does &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;explicit likelihood&lt;/code&gt; mean? I see this all over the literature. Does it just mean we don’t have a analytic likelihood that we can write down?
+    &lt;ul&gt;
+      &lt;li&gt;I think so.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;What is an example of a nuisance parameter? Is the hierarchical parameter an example of this?
+    &lt;ul&gt;
+      &lt;li&gt;I think this is just a latent variable, which we have to integrate out to do inference on the parameters.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;annotated-bib&quot;&gt;Annotated Bib&lt;/h2&gt;
+
+&lt;h3 id=&quot;apprroximate-bayesian-computation&quot;&gt;Apprroximate Bayesian Computation&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.maths.lu.se/fileadmin/maths/forskning_research/InferPartObsProcess/abc_slides.pdf&quot;&gt;Intro to ABC Slides&lt;/a&gt;: Very comprehensive slides, this is where I got the proof that the rejection-sampling scheme works.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/2004.04620&quot;&gt;Bayesian Computation with Intractable Likelihoods&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2017/tutorials/aux9_abc.html&quot;&gt;Jupyter notebook on ABC with code&lt;/a&gt;: Plots and code on ABC from scratch&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.semanticscholar.org/paper/A-tutorial-on-approximate-Bayesian-computation-Turner-Zandt/88974ed0ac2f5d9c1c6a0cf04ac7306045540c9c&quot;&gt;Paper Tutorial on ABC&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://journals.plos.org/ploscompbiol/article/file?id=10.1371/journal.pcbi.1002803&amp;amp;type=printable&quot;&gt;Overview of ABC&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://storage.googleapis.com/plos-corpus-prod/10.1371/journal.pcbi.1002803/1/pcbi.1002803.pdf?X-Goog-Algorithm=GOOG4-RSA-SHA256&amp;amp;X-Goog-Credential=wombat-sa%40plos-prod.iam.gserviceaccount.com%2F20210623%2Fauto%2Fstorage%2Fgoog4_request&amp;amp;X-Goog-Date=20210623T212921Z&amp;amp;X-Goog-Expires=86400&amp;amp;X-Goog-SignedHeaders=host&amp;amp;X-Goog-Signature=85cc0b8ea6a192df72554cf38a8227930aa0ed069e094e42782cdc53cae796847e8a5024535f90da9da14d26e97ff3882ee521ec196b704db7b0750faa05a0e82a6f6e4fac9109ce21f3eb06982d80a588b1ebc1908e0ab0dfa67f202afe95d2707e100a3f83060a3dd1d7fac1b1dc39c5cb24014bdb463ba3760411855a3277b2901fac0b999136c4d83ee0cbbfa700d0c1f4d986f6b595c508a6d2e844857e872f733f323f799a2c27a733813e669645a650d71e4f9456a4e0079dbd860220604444a67d2abc6f995aa64cc29813c61b25da4e6cd584fadad419b1fa440142ba2f4344bb0ef9714bdf492b2fffc3aae33758e78cc7054c1662cacbcf820ce7&quot;&gt;Approxiimate Bayesian Computation, in a Bio Journal&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/pdf/2103.02407.pdf&quot;&gt;A Comparison of Likelihood-Free Methods With and Without Summary Statistics&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.cs.ubc.ca/~arnaud/delmoral_doucet_jasra_smcabc.pdf&quot;&gt;https://www.cs.ubc.ca/~arnaud/delmoral_doucet_jasra_smcabc.pdf&lt;/a&gt;: Connection between ABC and SMC&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;approximate-inference&quot;&gt;Approximate Inference&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://yingzhenli.net/home/pdf/topics_approx_infer.pdf&quot;&gt;Yingzhen Li Topics in Approximate Inference&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://yingzhenli.net/home/en/?page_id=345&quot;&gt;Yingzhen Li papers&lt;/a&gt;: Lots of work on approximate inference, with easy to understand “cartoons”.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://yingzhenli.net/home/en/?page_id=1341&quot;&gt;Neurips2020 Tutorial on Approximate Inference&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;normalizing-flows-and-conditional-density-estimation&quot;&gt;Normalizing Flows and Conditional Density Estimation&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/pdf/1903.00954.pdf&quot;&gt;Conditional Density Estimation with NN’s&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://papers.nips.cc/paper/2018/file/6a61d423d02a1c56250dc23ae7ff12f3-Paper.pdf&quot;&gt;Gaussian Process Conditional Density Estimation&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://proceedings.mlr.press/v139/arbel21a.html&quot;&gt;Annealed Flow Transport Monte Carlo&lt;/a&gt;: Combining SCM samplers with Normalizing flows&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Tue, 29 Jun 2021 02:22:00 -0400</pubDate>
+        <link>http://localhost:4000/2021/06/29/approximate-bayesian-computing/</link>
+        <guid isPermaLink="true">http://localhost:4000/2021/06/29/approximate-bayesian-computing/</guid>
       </item>
     
       <item>
@@ -1534,395 +1709,6 @@ Slope for non-European nations:  0.040710554
         <pubDate>Sun, 01 Mar 2020 02:54:00 -0500</pubDate>
         <link>http://localhost:4000/2020/03/01/regression-vs-bayesian-regression/</link>
         <guid isPermaLink="true">http://localhost:4000/2020/03/01/regression-vs-bayesian-regression/</guid>
-      </item>
-    
-      <item>
-        <title>First Steps with Word Embeddings</title>
-        <description>&lt;p&gt;Accurately representing words as vectors is a challenging, but necessary task in machine learning. Consider the following sentences:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;The garden is pretty&lt;/li&gt;
-  &lt;li&gt;The garden is beautiful&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;As humans we know that “pretty” and “beautiful” are similar, but how can we learn vector representations of these words so that they are “close” together? If this can be done, we can start to tackle bigger challenges, such as understanding customer reviews and summarizing content.&lt;/p&gt;
-
-&lt;p&gt;The goal of this post is to first explain the intuition behind these 3 methods for learning word embeddings (&lt;a href=&quot;https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf&quot;&gt;word2vec&lt;/a&gt;, &lt;a href=&quot;https://nlp.stanford.edu/pubs/glove.pdf&quot;&gt;GloVe&lt;/a&gt;, &lt;a href=&quot;https://arxiv.org/pdf/1607.04606.pdf&quot;&gt;fasttext&lt;/a&gt;), then provide Python code to get started using them quickly.&lt;/p&gt;
-
-&lt;h2 id=&quot;word2vec&quot;&gt;Word2Vec&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://arxiv.org/pdf/1310.4546.pdf&quot;&gt;Word2vec&lt;/a&gt; really refers to two models for learning word vectors: the continuous bag-of-words (CBOW) and the skip-gram model. They are very similar - CBOW accepts context words as input and predicts a target word, whereas the skip-gram accepts a target word as input and predicts a context word.&lt;/p&gt;
-
-&lt;p&gt;Although we will primarily focus on the skip-gram, both models are single layer neural networks that accept one-hot encoded vectors as input. We learn the weights of the hidden layer, and each row of this weight matrix is a word vector. The algorithm forces word vectors closer to each other every time words appear in each other’s context, regardless of position in the context window. &lt;strong&gt;It does this by: (1) maximizing the probability that an observed word appears in the context of a target word and (2) minimizing the probability that a randomly selected word from the vocabulary appears in the context of the target word.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;If your understanding of neural network weights and the weight matricies is still shakey, &lt;a href=&quot;http://neuralnetworksanddeeplearning.com/chap1.html&quot;&gt;this chapter&lt;/a&gt; gives a good into.&lt;/p&gt;
-
-&lt;h3 id=&quot;deep-dive&quot;&gt;Deep Dive&lt;/h3&gt;
-
-&lt;p&gt;The main idea behind the skip-gram model is that we take a word in an input sequence as the target word, and predict its context words. The context of a word is the $m$ words surrounding it. In figure 1, the window size is 2, the target word (“into”) is in red and its context words (“problems”, “turning”, “banking”, “crises”) are in blue.&lt;/p&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;!--![](/assets/word2vec_viz.png)--&gt;
-
-&lt;p align=&quot;center&quot;&gt;
-  &lt;img src=&quot;/assets/word2vec_viz.png&quot; width=&quot;90%&quot; height=&quot;90%&quot; /&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Figure 1: The skip gram prediction of target word “into” with window size 2. Taken from Stanford’s NLP course&lt;/p&gt;
-
-&lt;p&gt; &lt;/p&gt;
-
-&lt;p&gt;Let’s formalize some notation. We have an input sequence of words, $w_1, w_2,.., w_T$, each of which has a context window, $-m \le j \le m$. We’ll call this input sequence the &lt;em&gt;corpus&lt;/em&gt;, and all its unique words the &lt;em&gt;vocabulary&lt;/em&gt;. Each word in the vocabulary will have 2 vector representations during training, $u_o$ when it’s a context word and $v_c$ when it’s a target word.
-In figure 1, $u_{turning}$ is the vector representation of “turning” as a context word, and $v_{banking}$ is the vector representation of “banking” as a target word.&lt;/p&gt;
-
-&lt;p&gt;We want to calculate the probability that each word in the window, $w_{t+j}$, appears in the context of the target word $w_t$. We’ll refer to this probability as $p(w_{t+j} \lvert w_t; \theta)$.
-This may seem weird, but the probability is based on the vector representations of each word. When we encounter a word in the context of another, we alter their vector representations to be “closer”. So the more we see words in each other’s context, the closer their vectors are. The function $J(\theta)$ below describes this; $\theta$ is a placeholder representing all the vector representations. We minimize $-J(\theta)$ in order to find the optimal parameters that will maximize $p(w_{t+j} \lvert w_t; \theta)$.&lt;/p&gt;
-
-\[J(\theta) = -\frac{1}{T} \sum^{T}_{t = 1} \sum_{-m \le j \le m, j \ne 0} log(p(w_{t+j} \lvert w_t; \theta))\]
-
-&lt;p&gt;The only problem here is we have no idea how to find $p(w_{t+j} \lvert w_t; \theta)$. We’ll start with using the softmax function. This essentially calculates how similar a context word, $u_o$, is to target word $v_c$, relative to all other context words in the vocabulary. The measure of similarity between two words is measured by the dot product $u_o^T v_c$, and a larger dot product means more similar words.&lt;/p&gt;
-
-\[p(w_{t+j} \lvert w_t; \theta) = \frac{e^{u_o^T v_c}}{\sum_{w=1}^W e^{u_w^T v_c}}\]
-
-&lt;p&gt;Where:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;$W$ is the size of the vocabulary&lt;/li&gt;
-  &lt;li&gt;$c$ and $o$ are indices of the words in the vocabulary at sequence positions $t$ and $j$ respectively&lt;/li&gt;
-  &lt;li&gt;$u_o = word2vec(w_{t+j})$&lt;/li&gt;
-  &lt;li&gt;$v_c = word2vec(w_t)$&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Although we now have a way of quantifying the probability a word appears in the context of another, the $\sum_{w=1}^W e^{u_w^T v_c}$ term requires us to iterate over all words in the vocabulary, making it computationally inefficient. To deal with this, we must approximate the softmax probability. One way of doing this is called negative sampling.&lt;/p&gt;
-
-&lt;p&gt; &lt;/p&gt;
-
-&lt;h4 id=&quot;negative-sampling-loss&quot;&gt;&lt;strong&gt;Negative Sampling Loss&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;Negative sampling overcomes the need to iterate over all words in the vocabulary to compute the softmax by sub-sampling the vocabulary. We sample $k$ words and determine the probability that these words &lt;strong&gt;do not&lt;/strong&gt; co-occur with the target word. The intuition behind this is that a good model should be able to differentiate between data and noise.&lt;/p&gt;
-
-&lt;p&gt;To incorporate negative sampling, the objective function needs to be altered by replacing $p(w_{t+j} \lvert w_t)$ with:&lt;/p&gt;
-
-\[log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]\]
-
-&lt;p&gt;Where $\sigma(.)$ is the &lt;a href=&quot;https://en.wikipedia.org/wiki/Sigmoid_function&quot;&gt;sigmoid function&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt; &lt;/p&gt;
-
-&lt;p&gt;The new objective function becomes:&lt;/p&gt;
-
-\[J(\theta) = \frac{-1}{T} \sum_{t=1}^{T}J_t(\theta)
-\notag\]
-
-\[J_t(\theta) = log(\sigma(u_o^T v_c)) + \sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]
-\notag\]
-
-\[P(w) = U(w)^{3/4}/Z
-\notag\]
-
-&lt;p&gt;Let’s look at each component of and try to convince ourselves this makes sense.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;The first part,&lt;/strong&gt; $log(\sigma(u_o^Tv_c))$, can be interpreted as the log probability of the target and context words co-occurring. We want the model to find $u_o$ and $v_c$ to maximize this probability.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;The second part,&lt;/strong&gt; $\sum_{i = 1}^{k}E_{j \sim P(w)} [log(\sigma(-u_j^T v_c))]$, is where the negative sampling happens. Let’s break this up more to make it clearer. It’ll come in handy to note that $\sigma(-x) = 1 - \sigma(x)$.&lt;/p&gt;
-
-&lt;p&gt;We can first drop the $E_{j \sim P(w)}$ term, since we already know we will be sampling words from some distribution, $P(w)$. We end up with:&lt;/p&gt;
-
-\[\sum_{i = 1}^{k} log(\sigma(-u_j^T v_c)) = \sum_{i = 1}^{k} log(1 - \sigma(u_j^T v_c))
-\notag\]
-
-&lt;p&gt;Now that this is easier to read, we’re taking the log of 1 minus the probability that the sampled word, $j$, appears in the context of the target word $c$. This is just log probability that $j$ does &lt;strong&gt;not&lt;/strong&gt; appear in the context of the $c$. Since $j$ is randomly drawn out of ~$10^6$ words, there’s a very small chance it appears in the context of $c$, so this probability should be high. We do this for each of the $k$ sampled words.&lt;/p&gt;
-
-&lt;p&gt;Finally, we have to specify a distribution for negative sampling, $P(w) = U(w)^{3/4}/Z$. Here, $U(w)$ is the count of each word in the corpus (unigram distribution) and is raised to the $\frac{3}{4}$th power to sample rarer words in the vocabulary. $Z$ is just a normalization term to turn $P(w)$ into a probability distribution.&lt;/p&gt;
-
-&lt;p&gt;To summarize, this loss function is trying to maximize the probability that word $o$ appears in the context of word $c$, while minimizing the probability that a randomly selected word from the vocabulary does not appear in the context of word $c$. We use the gradient of this loss function to iteratively update the word vectors, $u_o$ and $v_c$, and eventually get our word embeddings.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://mccormickml.com/2016/04/19/word2vec-tutorial-the-skip-gram-model/&quot;&gt;Here&lt;/a&gt; is a &lt;em&gt;great&lt;/em&gt; tutorial on the skip-gram model!&lt;/p&gt;
-
-&lt;p&gt; &lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;glove&quot;&gt;GloVe&lt;/h2&gt;
-
-&lt;p&gt;GloVe (Global Vectors) is another architecture for learning word embeddings that improves on the skip-gram model by incorporating corpus statistics. Since the skip-gram model looks at each window independently, it loses corpus statistics. In contrast, GloVe uses word co-occurrence counts to capture global information about the corpus. &lt;strong&gt;GloVe learns word embeddings by minimizing the difference between word vector dot products and their log co-occurrence counts.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;deep-dive-1&quot;&gt;Deep Dive&lt;/h3&gt;
-
-&lt;h4 id=&quot;the-co-occurrence-matrix&quot;&gt;&lt;strong&gt;The Co-Occurrence Matrix&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;The co-occurrence matrix, $X$, is generated from the corpus and vocabulary. The entry at $X_{ij}$ is then the number of times word $j$ occurs in the context of word $i$. Context is defined in the same way as the skip-gram model. Summing over all the values in row $i$, will give the number of words that occur in its context, $X_i = \sum_k X_{ik}$. Then the probability of word $j$ occurring in the context of word $i$ is $P(i \lvert j) = \frac{X_{ij}}{X_i}$.&lt;/p&gt;
-
-&lt;p&gt;Below is the co-occurrence matrix for the corpus containing:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;“I like deep learning.”&lt;/li&gt;
-  &lt;li&gt;“I like NLP.”&lt;/li&gt;
-  &lt;li&gt;“I enjoy flying.”&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p align=&quot;center&quot;&gt;
-  &lt;img src=&quot;/assets/cooccurrence_matrix.png&quot; width=&quot;80%&quot; height=&quot;80%&quot; /&gt;
-&lt;/p&gt;
-
-&lt;p&gt; &lt;/p&gt;
-
-&lt;h4 id=&quot;from-softmax-to-glove&quot;&gt;&lt;strong&gt;From Softmax to GloVe&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;We can find global loss using the softmax function, $Q_{ij}$, by summing over all target-context word pairs.&lt;/p&gt;
-
-\[J = - \sum_{i \in corpus} \sum_{j \in context} log (Q_{ij})
-\notag\]
-
-&lt;p&gt;Since words $i$ and $j$ appear $X_{ij}$ times in the corpus, we don’t need to iterate over all windows in the corpus, but can iterate over the vocabulary and multiply by the co-occurrence count.&lt;/p&gt;
-
-\[J = - \sum_{i = 1}^{W} \sum_{j = 1}^{W} X_{ij} log Q_{ij}
-\notag\]
-
-&lt;p&gt;Re-arranging some terms, we can come up with this:&lt;/p&gt;
-
-\[J = - \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} P_{ij}log(Q_{ij})
-\notag\]
-
-&lt;p&gt; &lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;What’s going on here?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;strong&gt;Where did $P_{ij}$ come from?&lt;/strong&gt; - Remember that $P_{ij} = \frac{X_{ij}}{X_i}$ and $X_i = \sum_k X_{ik}$, therefore we can substitute $X_{ij} = P_{ij}X_i$.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;What’s the relationship between $P_{ij}$ and $Q_{ij}$?&lt;/strong&gt; - $P_{ij}$ is the probability that word $j$ appears in the context of word $i$, but $Q_{ij}$ is also the probability that word $j$ appears in the context of word $i$. The difference between the two lies in how they are calculated. $P_{ij}$ is calculated using the co-occurrence matrix and doesn’t change. $Q_{ij}$ is the naive softmax probability, that is calculated using the dot product of word vectors $u_j$ and $v_i$. We have the ability to change $Q_{ij}$ by changing these vectors.&lt;/li&gt;
-  &lt;li&gt;&lt;strong&gt;What’s the point of $P_{ij}log(Q_{ij})$?&lt;/strong&gt; - Now that we’ve refreshed our memory of $P$ and $Q$, we can see that $P$ is the &lt;em&gt;true&lt;/em&gt; probability distribution of context and target words, and $Q$ is some made up distribution based on the “goodness” of the word vectors. We really want these two distributions to be close to each other. Observing $H = P_{ij}log(Q_{ij})$, when $P$ and $Q$ are close to each other, $H$ is small, and when $P$ and $Q$ are far apart, $H$ is larger. Our end goal is the minimization of $J$, so the smaller $H$ is the better. This term is the cross-entropy between distributions $P$ and $Q$.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The problem here is that cross-entropy requires normalized versions of $Q_{ij}$ and $P_{ij}$ which we have to iterate over the entire vocabulary to calculate. This is the reason for using Negative Sampling in the skip-gram model. GloVe’s approach to this is dropping the normalization terms completely, so we end up with $\hat{P}$ and $\hat{Q}$, which are unnormalized distributions. The cross-entropy function is now useless, so we change our objective function to be a squared error function.&lt;/p&gt;
-
-\[\hat{J} = \sum_{i = 1}^{W} X_{i} \sum_{j = 1}^{W} (\hat{P}_{ij} - \hat{Q}_{ij})^2
-\notag\]
-
-&lt;p&gt;Now we have the squared error, weighted by the number of co-occurrences of words $i$ and $j$. There’s one last problem with this, which is that some co-occurrence counts can be massive. This will affect both the weights, $X_i$, and $\hat{P_{ij}} = X_{ij}$. To deal with this explosion in the squared term, we take $log(hat{P})$ and $log(hat{Q})$) and to deal with the explosion of weights, we introduce a function, $f$ that caps the co-occurrence count weight. We’ll apply $f$ to each target-context pair, $X_{ij}$ as opposed to only $X_i$. The new loss function becomes:&lt;/p&gt;
-
-\[\hat{J} = \sum_{w = 1}^{W} \sum_{w = 1}^{W} f(X_{ij}) (u_j^T v_i - log(X_{ij}))^2
-\notag\]
-
-&lt;p&gt;This is the loss function that the GloVe model minimizes.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;fasttext&quot;&gt;Fasttext&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/facebookresearch/fastText&quot;&gt;Fasttext&lt;/a&gt; is a powerful library for learning word embeddings that was introduced by Facebook in 2016. Its roots come from the &lt;a href=&quot;#deep-dive&quot;&gt;word2vec&lt;/a&gt; models.&lt;/p&gt;
-
-&lt;p&gt;Word2vec trains a unique vector for each word, ignoring important word sub-structure (morphological structure) and making out-of-vocabulary prediction impossible. Fasttext attempts to solve this by treating each word as a sum of its subwords. These subwords can be defined in any way, however the simplest form is a character n-gram. A vector representation is associated with each n-gram, then the vector for each word is simply the sum of each of its n-grams. &lt;strong&gt;Fasttext learns word embeddings for each subword, then treats each word as a sum of its subwords.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;deep-dive-2&quot;&gt;Deep Dive&lt;/h3&gt;
-
-&lt;p&gt;Before starting, we’ll take a step back to quantifying how similar two word vectors are. Both GloVe and word2vec do this using dot products, however we can think of the similarity more generally as an arbitrary function, $s(u_j, v_c)$.&lt;/p&gt;
-
-&lt;p&gt;Fasttext redefines this similarity measure, and represents words as a sum of smaller words, each of length $n$, called n-grams. To help the model learn prefixes and suffixes, we append “&amp;lt;” to the front and “&amp;gt;” to the back of each word. Then for n=3, the n-grams of “where” are:&lt;/p&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;where&amp;gt; = [&amp;lt;wh, whe, her, ere, re&amp;gt;]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;We have no way of determining the difference between the subword “her” and the full-word “her” (there definitely should be a difference). Appending the special characters around each word helps with this, as the tri-gram “her” is now different from the sequence “&amp;lt;her&amp;gt;”.&lt;/p&gt;
-
-&lt;p&gt;More formally, suppose we have all n-grams in the vocabulary, $G$, each represented by a vector, $\boldsymbol{z}_g$. We can refer to all the n-grams of some word, $w$, by $G_w$. Then $w$ can be represented as a sum of all n-grams. The new similarity function becomes:&lt;/p&gt;
-
-\[s(w, c) = \sum_{g \in G_w} \boldsymbol{z}_g^T v_c
-\notag\]
-
-&lt;p&gt;We learn the embeddings of each character n-gram and then each word embedding is a sum of its n-gram vectors.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;word-embeddings-in-python&quot;&gt;Word Embeddings in Python&lt;/h2&gt;
-
-&lt;p&gt;Now let’s explore word embeddings using pre-trained models in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gensim&lt;/code&gt; Python package. If you don’t have it installed, run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pip install gensim&lt;/code&gt; in your command line. Gensim offers pre-trained models from their &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gensim.downloader&lt;/code&gt; method and each model used here embeds words in a 300-dimensional space. A full list of the models available can be found &lt;a href=&quot;https://github.com/RaRe-Technologies/gensim-data&quot;&gt;here&lt;/a&gt;, or by running &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;python -m gensim.downloader --info&lt;/code&gt; in your command line.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;gensim&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;gensim.downloader&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;
-
-&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;sklearn.decomposition&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PCA&lt;/span&gt;
-&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;# clearer images if you're using a Jupyter notebook
-&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;InlineBackend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figure_format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'retina'&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;word2vec-1&quot;&gt;Word2vec&lt;/h3&gt;
-
-&lt;p&gt;For word2vec, we’ll use Google’s News dataset model, trained on news articles with a vocabulary of 3 million words and 300 dimensional embedding vectors. &lt;a href=&quot;https://github.com/chrisjmccormick/inspect_word2vec&quot;&gt;This repo&lt;/a&gt; has an in-depth analysis of the words in the model.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;word2vec_model_path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;word2vec-google-news-300&quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word2vec_model_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;word2vec_model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word2vec_model_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word2vec_model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wv&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;# remove from env
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;del&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word2vec_model&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;glove-1&quot;&gt;GloVe&lt;/h3&gt;
-
-&lt;p&gt;The glove-wiki-gigaword-300 model used here is trained on 6B tokens from Wikipedia 2014 and the Gigaword dataset, other pre-trained GloVe models can be downloaded &lt;a href=&quot;https://nlp.stanford.edu/projects/glove/&quot;&gt;from Stanford&lt;/a&gt; or &lt;a href=&quot;https://github.com/RaRe-Technologies/gensim-data/releases/download/glove-wiki-gigaword-100&quot;&gt;from Gensim&lt;/a&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;glove_model_path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;glove-wiki-gigaword-300&quot;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;glove_model_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;glove_model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;glove_model_path&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glove_model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wv&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;del&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glove_model&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;h3 id=&quot;fasttext-1&quot;&gt;Fasttext&lt;/h3&gt;
-
-&lt;p&gt;Fasttext provides pre-trained models on for multiple languages, which can be used in different ways (through the command line, downloading the model, through &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gensim&lt;/code&gt;, etc.). We’ll use the English model provided by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Gensim&lt;/code&gt; which is trained on Wikipedia 2017 and news data, but you can go through &lt;a href=&quot;https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md&quot;&gt;their Github&lt;/a&gt; to see more.&lt;/p&gt;
-
-&lt;h4 id=&quot;word-comparison&quot;&gt;&lt;strong&gt;Word Comparison&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;Now we have vector representations for all words in the vocabulary in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;wv&lt;/code&gt; and can compare the different models. We’ll add and subtract some word vectors, then see what the closest word to the resulting vector is. Papers and blog posts have exhausted the “king” - “man” + “woman” = “queen” example, so I’ll present some new ones.&lt;/p&gt;
-
-&lt;p&gt;Results generated by the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;find_most_similar&lt;/code&gt; function are of the form (word, cosine similarity), where each word is the closest to the one parsed into the function. Cosine similarity values closer to 1 mean that the vectors (words) are more similar. The function definition can be found in the &lt;a href=&quot;#appendix&quot;&gt;Appendix&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Start with: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;doctor - man + woman&lt;/code&gt;&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;word2vec: Doctor - Man + Woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;find_most_similar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GloVe: Doctor - Man + Woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;find_most_similar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fasttext: Doctor - Man + Woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;find_most_similar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fasttext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fasttext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fasttext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fasttext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; word2vec: Doctor - Man + Woman
- [('gynecologist', 0.7276507616043091),
-  ('nurse', 0.6698512434959412),
-  ('physician', 0.6674120426177979)]
-
- GloVe: Doctor - Man + Woman
- [('physician', 0.6203880906105042),
-  ('nurse', 0.6161285638809204),
-  ('doctors', 0.6017279624938965)]
-
- fasttext: Doctor - Man + Woman
- [('gynecologist', 0.6874127388000488),
-  ('nurse-midwife', 0.6773605346679688),
-  ('physician', 0.6561880111694336)]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;Interesting, what about if we make a subtle change to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;doctor - woman + man&lt;/code&gt;?&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;word2vec: Doctor - Woman + Man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;find_most_similar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctors&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;GloVe: Doctor - Woman + Man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;find_most_similar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;glove&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctors&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;dr.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;fasttext: Doctor - Woman + Man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;find_most_similar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fasttext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fasttext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fasttext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fasttext&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctors&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;doctor&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;dr.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;word2vec: Doctor - Woman + Man
-[('physician', 0.6823904514312744),
- ('surgeon', 0.5908077359199524),
- ('dentist', 0.570309042930603)]
-
-GloVe: Doctor - Woman + Man
-[('physician', 0.5128607153892517),
- ('he', 0.4661550223827362),
- ('brother', 0.46356332302093506)]
-
-fasttext: Doctor - Woman + Man
-[('physician', 0.6969557404518127),
- ('docter', 0.6826808452606201),
- ('non-doctor', 0.6698156595230103)]
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;p&gt;This is a different result from the original results. Biases in the training data are expressed by the model. Also interestingly, there are some misspelled words in fasttext. This is because of the difference in learning methods.&lt;/p&gt;
-
-&lt;p&gt; &lt;/p&gt;
-
-&lt;h4 id=&quot;visualizing-embeddings&quot;&gt;&lt;strong&gt;Visualizing Embeddings&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;For the sake of completeness, I plotted words from different walks of life to see if the algorithms were able to unravel their semantic similarities/differences. The first 2 principal components of each word vector are plotted. Some expected similarities are seen here, however, we lose a lot of information from reducing the dimension from 300 to 2.&lt;/p&gt;
-
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;plot_embeds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;dog&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;cat&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;hamster&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;pet&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;                   &lt;span class=&quot;c1&quot;&gt;# animals
-&lt;/span&gt;            &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;boy&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;girl&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;man&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;woman&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;                    &lt;span class=&quot;c1&quot;&gt;# humans
-&lt;/span&gt;            &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;grown&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;adult&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;young&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;baby&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;                &lt;span class=&quot;c1&quot;&gt;# age
-&lt;/span&gt;            &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;german&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;english&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;spanish&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;french&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;         &lt;span class=&quot;c1&quot;&gt;# languages
-&lt;/span&gt;            &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;mathematics&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;physics&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;biology&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;chemistry&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# natural sciences
-&lt;/span&gt;            &lt;span class=&quot;n&quot;&gt;w2v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-            &lt;span class=&quot;n&quot;&gt;title&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;word2vec Embedding&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# run this again, but changing w2v to glove and fasttext
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;!--
-![](/assets/word2vec_embedding.png)
-![](/assets/glove_embedding.png)
-![](/assets/fasttext_embedding.png)
---&gt;
-
-&lt;p align=&quot;center&quot;&gt;
-  &lt;img src=&quot;/assets/word2vec_embedding.png&quot; width=&quot;80%&quot; height=&quot;80%&quot; /&gt;
-&lt;/p&gt;
-
-&lt;p align=&quot;center&quot;&gt;
-  &lt;img src=&quot;/assets/glove_embedding.png&quot; width=&quot;80%&quot; height=&quot;80%&quot; /&gt;
-&lt;/p&gt;
-
-&lt;p align=&quot;center&quot;&gt;
-  &lt;img src=&quot;/assets/fasttext_embedding.png&quot; width=&quot;80%&quot; height=&quot;80%&quot; /&gt;
-&lt;/p&gt;
-
-&lt;p&gt;Wrapping up, there are some key differences between word2vec (skip-gram), GloVe and fasttext. The skip-gram iterates over the corpus predicting context words given a target word. GloVe builds on this by incorporating global corpus statistics using word co-occurrences. The results are similar to word2vec. Fasttext also builds on word2vec by breaking each word into a sum of its sub-words. It learns vectors for each subword, then combines them for prediction. This allows out-of-vocabulary prediction, but introduces the risk of misspelled words.&lt;/p&gt;
-
-&lt;p&gt;Both word2vec and GloVe can be used as frameworks for learning general similarities in text without considering what each token is made of. This makes them useful for tasks like finding similar movies given a sequence of movies watched by users. Fasttext on the other hand is more robust for translation tasks, where the likelihood of encountering an out-of-vocabulary word is higher.&lt;/p&gt;
-
-&lt;hr /&gt;
-
-&lt;h2 id=&quot;more-code&quot;&gt;More Code&lt;/h2&gt;
-&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# find the 3 most similar words to the vector &quot;vec&quot;
-&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;plot_embeds&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;title&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word_embeddings&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# pca on the embedding
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;pca&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PCA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n_components&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pca&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fit_transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;wv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-
-    &lt;span class=&quot;n&quot;&gt;ax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;ax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subplots&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scatter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;point&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;zip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word_list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;annotate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.075&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;point&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.075&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# Turn off tick labels
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xticks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([])&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;yticks&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([])&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;find_most_similar&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# vec: resulting vector from word Arithmetic
-&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;# words: list of words that comprise vec
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;wv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;similar_by_vector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;vec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;topn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;# filter out words like &quot;king&quot; and &quot;man&quot;, or else they will be included in the similarity
-&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;words&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;word_sim&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;not&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;words&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))[:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word_sim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-
-&lt;hr /&gt;
-</description>
-        <pubDate>Wed, 21 Aug 2019 19:22:00 -0400</pubDate>
-        <link>http://localhost:4000/2019/08/21/word-embeddings/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/08/21/word-embeddings/</guid>
       </item>
     
   </channel>
