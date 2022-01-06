@@ -8,7 +8,7 @@ math: true
 summary: Parameter estimation in linear regression from 2 perspectives. 
 ---
 
-In this post I approach parameter estimation in linear regression from two seemingly different perspectives, which end up with the same solution. This may be trivial to most people but I only made the connection recently and find it beautiful. 
+In this post I approach parameter estimation in linear regression from two seemingly different perspectives, which end up with the same solution. This may be trivial to most people but I only made the connection recently and find it cool. 
 
 In a linear regression setting, we want to explain our response, $y$, using a linear combination of covariates, $X$. The question is how to estimate the parameters, $\beta$, of this linear funciton. The first approach would be to make an assumption about the distribution of errors and use this to form a likelihood function from which we can do maximum likelihood estimation. A second approach could be to completely by-pass any distributional assumption on the error and instead, choose a loss function to minimize. 
 
