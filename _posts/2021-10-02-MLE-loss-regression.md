@@ -12,7 +12,7 @@ In this post I approach parameter estimation in linear regression from two seemi
 
 In a linear regression setting, we want to explain our response, $y$, using a linear combination of covariates, $X$. The question is how to estimate the parameters, $\beta$, of this linear funciton. The first approach would be to make an assumption about the distribution of errors and use this to form a likelihood function from which we can do maximum likelihood estimation. A second approach could be to completely by-pass any distributional assumption on the error and instead, choose a loss function to minimize. 
 
-At a high level these 2 approaches seem different enough, but as you peel a couple layers back, they're identical. 
+At a high level these 2 approaches seem different enough, but as you peel a couple layers back, they're identical for mean squared error loss and Gaussian noise, which are the two most common assumptions of loss function or error distributions. 
 
 
 ## Approach 1: Maximum Likelihood Estimation
