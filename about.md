@@ -10,7 +10,7 @@ tags: about
 
 ### Work
 
-I'm a masters student in statistics at the University of Waterloo and was a data scientist at [Scribd](https://www.scribd.com) before that. My general interest lie somewhere in the intersection of Bayesian statistics and machine learning. This blog is a somewhat random assortment of things I find interesting or experiments I find cool. 
+I'm a masters student in statistics at the University of Waterloo currently interning as a data scientist at [DRW](https://drw.com/), a proprietary trading firm. Before grad school I was a data scientist at [Scribd](https://www.scribd.com) for 3 years. My general interest lie somewhere in the intersection of Bayesian statistics and machine learning. This blog is a somewhat random assortment of things I find interesting or experiments I find cool.
 
 
 ### Play
