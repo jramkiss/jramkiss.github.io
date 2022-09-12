@@ -1,8 +1,8 @@
 # Site settings
 title:       Jonathan Ramkissoon
-email:       ramkissoon.jonathan@hotmail.com
+email:       ramkissoon [dot] jonathan [at] hotmail [dot] com
 author:      Jonathan Ramkissoon
-description: "Random walk through life"
+description: ""
 baseurl:     ""
 url:         "https://jramkiss.github.io"
 date_format: "%b %-d, %Y"
