@@ -5,7 +5,7 @@ date: 2022-10-22 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Importance sampling
+summary: Short blurb on importance sampling
 ---
 
 
