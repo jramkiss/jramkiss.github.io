@@ -49,8 +49,6 @@ $$
 
 If $q(x) = 0$ and $p(x) > 0$, our integral is undefined. So we must impose the condition that if $f(x) = 0$, then $q(x) = 0$, $\forall x$. This constraint is called absolute continuity, and is related to the use of the [Radon-Nikodym Theorem](https://mathworld.wolfram.com/Radon-NikodymTheorem.html) for the change of measure. 
 
-To be continued...
-
 
 <!-- ## When is this useful? 
 
