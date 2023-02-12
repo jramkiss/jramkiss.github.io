@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Math for Latent Dirichlet Allocation"
+title: "Latent Dirichlet Allocation"
 date: 2023-02-11 2:22
 comments: true
 author: "Jonathan Ramkissoon"
@@ -51,11 +51,11 @@ Where the distribution of words is conditional a matrix of conditional probabili
 
 In many cases, the Dirichlet distribution is described as a distribution of distributions. This used to give me headaches and felt like a circular definition, which is the reason for this sidenote. A $K$-dimensional Dirichlet distribution is a distribution over the $(K-1)$-simplex. If $\theta \sim \text{Dir}_K(\alpha)$, then for $i=1, \dots, K, \theta_i \ge 0$ and $\sum_i \theta_i = 1$. In other words, a sample from a K-dimensional Dirichlet distribution is a K-length vector where each element is $\ge$ zero and the sum of the vector is 1, which is the definition of a dicrete distribution. This is where the phrase "distribution over distributions" comes from. 
 
-We can then specify the joint distribution of a topic mixture with a set of $N$ topics and words. Note that this is not the likelihood function, since it is for one document only **confirm this**:
+<!-- We can then specify the joint distribution of a topic mixture with a set of $N$ topics and words. Note that this is not the likelihood function, since it is for one document only **confirm this**:
 
 $$
 p(\theta, \boldsymbol z, \boldsymbol w \mid \alpha, \beta) = p(\theta \mid \alpha) \prod_{i=1}^N p(z_i \mid \theta) p(w_i \mid z_i, \beta)
-$$
+$$ -->
 
 ## Graphical Representation 
 
