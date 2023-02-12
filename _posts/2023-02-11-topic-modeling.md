@@ -12,7 +12,7 @@ summary: An introduction to the math of latent Dirichlet allocation
 Latent Dirichlet allocation (LDA) has been the de-facto method for topic modeling over the last decade (maybe 2 decades). This post walks through the math behind how LDA works. I use the same notation as the [original paper](https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf) for consistency:
 
 - The vocavulary consists of $V$ words which are one-hot encoded vectors in the model
-- A document, $\bold{w}$, is a sequence of $N$ words, $(w_1, w_2, \dots, w_N)$
+- A document, $\boldsymbol{w}$, is a sequence of $N$ words, $(w_1, w_2, \dots, w_N)$
 - The corpus, $D$, is a collection of $M$ documents 
 
 <!-- Starting by decomposing the name, which may sound intimidating, "latent" just means hidden, so we are trying to find hidden topics in a corpus of text. "Dirichlet" is a discrete distribution of distributions. I have another post explaining this, [here](/_posts/2020-05-08-beta-and-dirichlet-distributions.md). -->
@@ -54,7 +54,7 @@ In many cases, the Dirichlet distribution is described as a distribution of dist
 We can then specify the joint distribution of a topic mixture with a set of $N$ topics and words. Note that this is not the likelihood function, since it is for one document only **confirm this**:
 
 $$
-p(\theta, \bold z, \bold w \mid \alpha, \beta) = p(\theta \mid \alpha) \prod_{i=1}^N p(z_i \mid \theta) p(w_i \mid z_i, \beta)
+p(\theta, \boldsymbol z, \boldsymbol w \mid \alpha, \beta) = p(\theta \mid \alpha) \prod_{i=1}^N p(z_i \mid \theta) p(w_i \mid z_i, \beta)
 $$
 
 ## Graphical Representation 
