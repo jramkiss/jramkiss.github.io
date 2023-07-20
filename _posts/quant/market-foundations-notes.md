@@ -181,9 +181,8 @@ The figure below plots it for **continuous compounding**.
 
 $$r(t,T) = -\frac{\ln\left(Z(t,T)\right)}{T-t}$$
 
-#### Nelson-Seigel Model of the Discount Curve
+### Nelson-Seigel Model of the Discount Curve
 
-# Nelson Siegel Model of the Yield Curve
 _(taken verbatim from course notes)_
 
 We need a model for the curve to avoid...
@@ -233,6 +232,276 @@ Note that we immediately calculate the YTM for each issue. If we plot these YTM 
     </div>
 </div>
 
-## Discount Curves, Rates and Factors
+### Misc. Notes
 
-## Repo Agreements
+- The _dirty price_ of a bond contains the accrued interest of the coupons, whereas the _clean price_ is the quoted price
+- The price of a bond always converges to its face value at the time of maturity
+
+### Poking the Yield Curve
+
+Yield curve represents the annual discount rate at different maturities. For example, if at a maturity of 10 years, the corresponding spot rate on the yield curve is 4%, this means the market expects a rate of 4% annually for the next 10 years. 
+
+- Flat curve: 
+- Steep curve: 
+- Inverted curve: 
+- Non-inverted curve: 
+
+<div class='figure' align="center">
+    <img src="_imgs/yield-curve-06-10.png" width="65%" height="65%">
+    <div class='caption' width="70%" height="70%">
+        <p> </p>
+    </div>
+</div>
+
+<div class='figure' align="center">
+    <img src="_imgs/yield-curve-COVID.png" width="65%" height="65%">
+    <div class='caption' width="70%" height="70%">
+        <p> </p>
+    </div>
+</div>
+
+**Questions:**
+- In the yield curves from 06-22, what is the economic implications of the steep yield curve?
+- Between 2022-5 and 2023-01, why did the yield curve flatten (and invert) and what are the economic implications of this? 
+
+---
+
+## Interest Rate Risk
+
+### Measuring Sensitivity
+
+For fixed income securities, it is important to measure sensitivity to interest rates. Why not estimate this relationship statistically with linear regression? There are **two challenges**:
+
+1. Which interest rate should we analyze?
+1. Over the time-series, maturity is changing, making it an inconsistent sample
+
+There are also many different rates at different term structures, so we need to check sensitivity to 1-month, 3-month, 1-years, etc. rates. Over time, a bond's maturity changes, thus we do not have a coherent estimate as the sensitivity of a 5-year bond may be different than the sensitivity of a 4-year bond. From this perspective, we have a changing target.
+
+Note that we do not have this problem as obviously for an equity target. 
+* Over a year, a share of Apple does not become a share of GM
+* Unless Apple's operation changes enormously, we expect stability in medium-range timeseries.
+
+We cannot naively measure sensitivity of a bond price to changes in the interest rate because as time passes, bond maturity is also changing. Therefore, we are not measuring the same thing, since we already know that the sensitivity 1-year out is less than the sentivity 10-years out.
+
+As seen above, a bond's price is a non-linear function of the interest rates, so there is no simple exact formula for the sensitivity, but we can approximate it using Taylor's approximation. From a Taylor's approximation to the second order, we have a percentage change in price, $P$ as
+$$\begin{align}
+\frac{dP}{P} \approx -D\times dr + \frac{1}{2}C\times (dr)^2
+\end{align}$$
+
+* $dr$ is a small change in the level of the spot curve
+* $D$ is the **duration**
+* $C$ is the **convexity**
+
+### Duration 
+
+**Duration** refers to the sensitivity of a bond (or other fixed-income product) to the **level of interest rates**. Rather than measure sensitivity to the 3-month, 1-year, or 10-year rate, measure sensitivity to a parallel shift in all these rates, all else equal.
+
+$$\begin{align}
+D \equiv -\frac{1}{P}\frac{dP}{dr}
+\end{align}$$
+
+Dduration, as expressed in this formula, is a **percentage** change in the price, (via the $1/P$ term). We denote the parallel shift in the spot curve with $dr$. The negative in the definition is so that the resulting duration will be a positive number. $dP/dr$ is a negative number, since the price of a bond is inversely related to the interest rate.
+
+If we know the duration of a fixed income asset, then we can approximate the percentage price change in response to a shift in rates. The approximation is
+
+$$\begin{align}
+\frac{dP}{P} \approx -D\times dr
+\end{align}$$
+
+
+For a **zero coupon bond** this derivative has a simple solution:
+$$\begin{align}
+D_{\text{zero}} \equiv -\frac{1}{P(t,T,0)}\frac{dP(t,T,0)}{dr} = T-t
+\end{align}$$
+
+**For zero-coupon treasuries, duration is equal to the maturity**. However, for coupon paying bonds, the duration is more complex. Duration, (as a derivative,) is a **linear operator**. Accordingly, the duration of a portfolio is the weighted average of the duration of the components. A coupon bond is simply a portfolio of zero coupon bonds.
+
+Thus,
+$$\begin{align}
+D_{\text{portfolio}} = & \sum_{i=1}^n w_iD_i
+\end{align}$$
+where $D_i()$ denotes the duration of portfolio security $i$, and where $w_i$ denotes the weight (as a fraction) of security $i$ in the portfolio.
+
+Thus, define the weights of the payments of a coupon bond as
+$$\begin{align}
+w_i \equiv & \frac{c}{2}\frac{P(t,T_i,0)}{P(t,T,c)}\text{ for } 1\le i < n\\
+\equiv & \left(1+\frac{c}{2}\right)\frac{P(t,T,0)}{P(t,T,c)}\text{ for } i=n
+\end{align}$$
+Then
+$$\begin{align}
+D_{\text{coupon bond}} \equiv& \frac{1}{P(t,T,c)}\frac{dP(t,T,c)}{dr}\\
+=& \sum_{i=1}^n w_iD_i\\
+=& \sum_{i=1}^n w_i T_i
+\end{align}$$
+where the final equality uses the result that the duration of a zero-coupon bond is simply the maturity.
+
+This definition of a weighted average of time to cashflows will not hold for other types of fixed income securities, including floating rate bonds. **Thus, consider this a result of duration for standard bonds, but retain the definition as the price sensitivity to a parallel shift in the spot curve**
+
+**A higher coupon rate decreases the duration**
+
+* The higher the coupon rate, the more cash that is arriving sooner (before maturity). i.e. more weight, $w_i$ toward the coupon payments, which are smaller than the final payment, thus decreasing the weighted average of cash flows
+* These coupons are not as affected by changes in the spot rate, as the discounting doesn't compound as long.
+* We could also see this as the higher coupon reduces the weighted average of time-to-cash.
+
+There is also a closed form solution for duration. This can be found in notebook A.3.
+
+For small shifts in the yield curve, duration gives a close approximation to the true sensitivity of price to interest rates, i.e. close approximation to the derivative of price w.r.t. interest rate. As the shifts become larger, we need something better. 
+
+Dollar duration simply reports the change in dollar terms rather than percentage of price terms:
+
+$$\begin{align}
+\text{dollar duration} = D_{\$} \equiv -\frac{dP}{dr}
+\end{align}$$
+
+#### Macauley Duration
+
+The definition of duration above is a response to a parallel shift in the **spot curve**. This is sometimes known as **Macauley Duration**.
+
+#### Modified Duration
+
+Modified duration considers a move in the bond's YTM instead of a shift in the entire **spot curve**.
+
+It requires a small modification to the duration formula above, at least for standard coupon bonds:
+
+$$\begin{align}
+\text{modified duration} \equiv D_{\text{ytm}} \equiv &  \quad \frac{1}{1+y/2} D \\
+=&  -\frac{1}{1+y/2}\frac{1}{P}\frac{dP}{dr}
+\end{align}$$
+
+Modified duration is less useful. It is a sensitivity to a change in the YTM, but YTM is specific to a particular instrument, so a shift in this ``curve'' is not well specified.
+
+Furthermore, for more complicated instruments, the YTM will not be defined, and thus Modified duration is not well defined. However, our definition of duration is defined, notwithstanding the complexity of the instrument.
+
+
+### Convexity
+
+Duration approximates the bond's price change with a linear approximation, (the first derivative.) This approximation is good for small changes in the rate, but it is inadequate for larger changes. Accordingly, we may find a second-order approximation beneficial. This second-order term is known as the **convexity** of the bond.
+
+$$\begin{align}
+\frac{dP}{P} \approx -D\times dr + \frac{1}{2}C\times (dr)^2
+\end{align}$$
+
+where $C$ denotes the convexity of the bond,
+
+$$\begin{align}
+C \equiv & \frac{1}{P}\frac{d^2P}{dr^2}
+\end{align}$$
+
+For a zero-coupon bond, one can show that the convexity is
+
+$$\begin{align}
+C =& \frac{1}{P(t,T,0)}\frac{d^2P(t,T,0)}{dr^2}\\
+=& (T-t)^2
+\end{align}$$
+
+Again, we rely on the result that a coupon bond may be decomposed as a portfolio of zero-coupon bonds (STRIPS). For a portfolio with weights $w_i$ in securities each with convexity, $C_i$, we have,
+
+$$\begin{align}
+C = \sum_{i=1}^n w_iC_i
+\end{align}$$
+
+Then for a coupon bond with cashflows at times $T_i$, we once again decompose it as follows,
+
+$$\begin{align}
+C =& \sum_{i=1}^n w_i(T_i-t)^2\\
+w_i \equiv& \frac{c}{2}\frac{P(t,T_i,0)}{P(t,T,c)}\text{ for }1\le i < n\\
+w_n \equiv& \left(1+\frac{c}{2}\right)\frac{P(t,T,0)}{P(t,T,c)}
+\end{align}$$
+
+where these are the same weights used for the coupon bond duration calculation.
+
+<div class='figure' align="center">
+    <img src="_imgs/duration-and-convexity.png" width="65%" height="65%">
+    <div class='caption' width="70%" height="70%">
+        <p> Estimation of interest rate risk using duration and convexity </p>
+    </div>
+</div>
+
+As seen in the figure above, duration alone overestimates interest rate risk beyond small changes in interest rates. This can be seen by a smaller estimated price in the tails of the plot. Convexity on the other hand provides a better estimation of the interest rate risk.
+
+## Treasury Arbitrage
+
+_Notebook `A.3 Treasury Arbitrage`
+
+## Floating Rate Notes
+
+A **floating rate bond**--or Floating Rate Note (FRN)--pays a coupon based on a particular variable short-term interest rate, $r$, as well as a pre-specified spread, $s$.
+
+Suppose that 
+- the compounding frequency of the rate is $\kappa$, denoted $r_\kappa(t,T)$. 
+- the coupon frequency is also $\kappa$.
+- the spread $s$ is with respect to rates of frequency $\kappa$
+
+**The floating-rate coupon is (annualized)**
+$$\begin{align}
+\mathcal{c}(T_i) = 100 (r(T_{i-1},T_i) + s)
+\end{align}$$
+
+Note that
+- This coupon is annualized, so the payment is $\mathcal{c}(T_i)/\kappa$, similar to how the vanilla treasury coupon was divided by 2.
+- This coupon is based on the **rate in arrears**. Thus the coupon paid at $T_i$ depends on the rate at $T_{i-1}$.
+- The spread, $s$, is fixed over the life of the bond. The coupon only "floats" due to $r$, not $s$.
+- The bond pays face value at maturity, $T$.
+
+### Timing
+The dates $T_i$, for $i=0\ldots n$ are known as the **reset dates**. 
+- $T_0 = 0$
+- $T_n = T$
+- $n$ is the number of coupon payments.
+- Given maturity $T$ and frequency $\kappa$, we have $n=\kappa T$
+
+On these dates,
+- the bond pays a coupon.
+- the following floating rate is set
+
+At the boundaries,
+- $T_0=0$, the floating rate for the payment at $T_1$ is set, though no coupon is paid.
+- $T_n=T$, the final coupon (and face value) is paid, and the bond is retired.
+
+
+### Fixed VS Floating
+
+1. Floating-rate notes outperform fixed-rate notes in periods of rising rates.
+2. Floating-rate notes underperform fixed-rate notes in falling rates.
+3. Floating-rate notes have much less volatile returns than fixed-rated notes.
+
+The figures below illustrate these facts.
+* Left y-axis: total returns
+* Right y-axis: T-bill rate
+
+<div class='figure' align="center">
+    <img src="_imgs/fixed-vs-floating.png" width="65%" height="65%">
+    <div class='caption' width="70%" height="70%">
+        <p> Fixed VS floating rate bond returns </p>
+    </div>
+</div>
+
+
+**INPUT PCA ANALYSIS INTO SENSITIVITY OF INTEREST RATES**
+
+
+
+# Currencies
+
+Currency is traded on the **spot** market at the **exchange rate**. Currency derivatives include, (in descending order of size/importance)
+* forwards
+* swaps: FX swaps and currency swaps. FX swaps are a one-time trade on the currency itself. Notional value is not traded, only the exchange rate between the two currencies. An FX swap is a forward contract to buy back the currency and they trade over days, weeks, months. The currency swaps trade on the interest rate differences between both currencies.
+* futures
+* options
+
+A few notes on the sizes here...
+* Forward currency market is larger than interest-rate forwards!
+* Swaps market for currency is about 10% the size of interest-rate swaps.
+* Currency options are relatively small, yet still about 1/3 the size of equity options!
+* FX markets are smaller than rates markets, but still huge.
+* FX trades mostly in spot, forwards, and swaps
+* Relatively small amount in options or futures
+
+
+The risk-free rate reports the risk-free rates for various currencies.
+- The data is defined such that the March value of the risk-free rate corresponds to the rate beginning in March and ending in April.
+- In terms of the class notation, $r^{f,i}_{t,t+1}$ is reported at time $t$. (It is risk-free, so it is a rate from $t$ to $t+1$ but it is know at $t$.
+- Dollars per foreign currency is a direct quote. Foreign currency per dollars is an indirect quote
+
+**PCA w/ Currencies:** take 20 currencies and find princ. comp. first component will look like USD. How??
+

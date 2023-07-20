@@ -44,3 +44,43 @@ Questions
 - Key learnings: 
 - Trader talk: Impact of Fed decision in the market, FICC trading. This talk was great, but was also quite difficult to follow exactly because of the jargon. He walked through the Fed's decision process w.r.t. inflation before, during and after COVID and how the market expectation different (at certain points) to Fed decisions. Also spoke about different realized VS implied vol trades that they do. I spoke to him after to get a better sense of how their desk works. He mentioned different models for different regimes, but the regimes they look at will be difficult to model. Eg: Russia invation, Rep. elected, 9/11, etc. The monitor headlines, but with a different usecase to Jarvis.
   - Why implied vol decreases with quantitative easing: In QE we are usually in a lower rate environment
+
+
+### Day 5 Recap:
+- Topics covered: Currency markets, exchange rates, covered and uncovered interest parity
+- Key learnings: Relationship between forward and spot excahnge rates and the risk-free rates in the respective currencies 
+- Trader talk w/ Nick Trileski - Crypto options: 
+  - Basics of Bitcoin and ETH
+  - ETH is deflationary: fees burned with transaction. 
+  - Desk provides liquidity in crypto options
+
+
+### Day 6 Recap: 
+- Topics covered: commodity futures, contango, backwardation, rolling
+- Key learnings: closing and rolling futures positions, open interest and volume, 
+- Trader talk w/ Zach Archer on Contango and Backwardation
+  - Runs grains RV desk 
+  - Oversupply = contango, undersupply=backwardation in general
+  - Cash and carry arb opportunity
+  - Backwardation example: hand sanitizer in the pandemic
+- Trader talk w/ Saku Rimali on Trading Commodities: 
+  - Trading physical futures VS cash settled futures
+  - Contango has an arb limit. Contango can't exceed carry or there is an arbitrage, trders will buy now and sell later since the money they will make from the trade is greater than the cost of the carry
+  - Rolling decreases returns in contango and increases returns in backwardation
+  - Supply and demand driven markets. Oil is a demand driven market, since oil production doesn't change that much
+
+
+### Day 7 Recap: 
+- Topics covered: ETF's
+- Key learnings: 
+- Trader talk w/ Greg Brinkman & Al Fosi on Arbitrage Mechanisms in ETF's: 
+  - Creation and redemption of ETF's. The mechanism for getting AUM into an ETF is a creation
+  - Walked through an SPY and ES example on Webworm 
+  - Arb trade example: 
+    - VXX gives same returns as VIX by holding VIX futures
+    - Barclay's creation mechanism was broken, so the price of the ETF skyrocketed
+    - If you shorted the ETF, you could not then redeem the short shares 
+- Trader talk w/ Drew Genter on Market Making: 
+  - Trade related securities to minimize exposure after market making
+  - Biggest risk to market makers is a rapid movement in price. Seems like this can mostly happen with breaking news. Should ask Drew how they currently deal with this and if a Jarvis-like product can help them
+  - 
