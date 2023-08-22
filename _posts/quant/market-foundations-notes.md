@@ -505,3 +505,54 @@ The risk-free rate reports the risk-free rates for various currencies.
 
 **PCA w/ Currencies:** take 20 currencies and find princ. comp. first component will look like USD. How??
 
+# Equity Options
+
+A **call option** on an asset gives the buyer of the call the right, but not the obligation, to buy the **underlying** asset at a pre-specified price.
+- The call option must be purchased from a counterparty willing to *sell / write* the call.
+- The price paid to buy the call is the **premium**.
+- Note the difference from forwards and swaps, which have no cost at initiation. The call option clearly has value at initialization, given that it is an option without obligation.
+
+A **put option** on an asset gives the buyer of the put the right, but not the obligation, to *sell / write* the **underlying** asset at a pre-specified price. The **strike price** (also known as the **exercise price**,) is the pre-specified price at which the owner of a call option can buy the underlying asset. Or, in the case of a put option, sell the underlying asset.
+- Note that the strike is a parameter of the contract--it is certain.
+- The strike is the future cost, (paid at exercise,) not a present value. 
+
+If the security underlying the call has a price above the strike price, it is said to be **in the money**.
+
+## Put-Call Parity
+
+- Selling a put and buying a call is the same as buying the stock outright. This is essentially creating a synthetic stock
+- Put-call parity tells us the relative value of calls / puts. It doesn't tell us the outright price of any option
+- Put-call parity is a no-arbitrage condition and is objective, only 1 holds up mathematically
+
+## Black-Scholes and Options Greeks
+
+- We are interested in the risk sensitivity of a call option 
+
+
+### Replication Argument
+
+Equity options are a derivative of the underlying stock. Thus, option price is a function of the underlying stock, $f(S)$. Consider the first-order Taylor-series approximation of $f(S)$. As we did with bond price as a function of rates, for small changes in stock price, a linear approximation will work well. Thus, the stock and option will be highly correlated. In the limit, (instantaneous movements,) they will be perfectly correlated.
+
+$$
+S_t: \text{stock price}
+f(S_t): \text{option price}
+\Delta_t: \text{change in option price for a change in the underlying}
+$$
+
+Consider the stochastic process for the hedged position, with hedge ratio $\Delta_t$:
+
+$$\begin{align}
+\Pi_t = f(S_t) - \Delta_t S_t
+\end{align}$$
+
+
+**Notes**
+- Long dated options trade like a stock
+- As we get closer and closer to expiry, we have more "convexity". i.e. the curvature of the payoff curve
+- Volatility is the main contributing factor in convexity. There're 2 ways an option can move in and out of the money: wider swings (high vol) or long time to expiry. 
+- We don't have convexity without Theta. 
+- What is the analog for $\Theta$ for bonds?: Lond term bonds have a lot of convexity. If we Delta hedge every hour, any trade we do like this will have this property (with theta). If we long the 30-y treasury and hedge out with a different bond, you will have negative theta. 
+- Selling options has positive $\Theta$. If we sold the option and Delta hedged (buy back the Delta amount of the stock), we gain as time goes by (inverse of the Theta position) 
+- Gamma VS Theta idea is very important
+- We can think of implied vol in a similar way to yields on bonds. This is just a way of quoting the expensiveness of the option. 
+- $\Rho$ is the risk-free rate adjustment to the strike price. 

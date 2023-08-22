@@ -83,4 +83,16 @@ Questions
 - Trader talk w/ Drew Genter on Market Making: 
   - Trade related securities to minimize exposure after market making
   - Biggest risk to market makers is a rapid movement in price. Seems like this can mostly happen with breaking news. Should ask Drew how they currently deal with this and if a Jarvis-like product can help them
-  - 
+  - Crude oil options contracts, market making in crude oil
+
+### Day 8 Recap:
+- Topics covered: options
+- Trader talk w/ Dave Freiman on Equity Index options
+  - Desk does vol directional trades, options market making on VIX, NASDAQ, Russel
+  - Have multiple people who monitor news with alerts, etc. I think he is actually talking about April
+- Trader tak w/ Fiona Zhang on interest rate hikes: This talk was difficult to follow, the speaker didn't do enough explanation for most of the concepts / instruments they trade 
+
+
+### Day 9 Recap: 
+- Topics covered: Options greeks
+- Trader talk w/ Alex Fisher on market making in nat gas: This was a quite short talk that provided an overview of nat gas markets
