@@ -19,7 +19,7 @@
     <link rel="alternate" type="application/rss+xml" title="RSS Feed for Jonathan Ramkissoon" href="/feed.xml" />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/pixyll.css?202111131455" type="text/css">
+    <link rel="stylesheet" href="/css/pixyll.css?202311051958" type="text/css">
 
     <!-- Fonts -->
     
@@ -73,17 +73,26 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
 <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 -->
 
-<script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "all" } } }); </script>
-  <script type="text/x-mathjax-config">
-   MathJax.Hub.Config({
-     tex2jax: {
-       inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-       processEscapes: true
-     }
-   });
-</script>
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<!-- <script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "all" } } }); </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script> -->
+<!-- <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script> -->
 
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
     
 
     <!-- Verifications -->
@@ -95,7 +104,7 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="article">
     <meta property="og:title" content="First Steps with Word Embeddings">
-    <meta property="og:description" content="Random walk through life">
+    <meta property="og:description" content="">
     <meta property="og:url" content="http://localhost:4000/2019/08/21/word-embeddings/">
     <meta property="og:site_name" content="Jonathan Ramkissoon">
     

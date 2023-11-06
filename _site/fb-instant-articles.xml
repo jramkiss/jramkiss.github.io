@@ -4,335 +4,737 @@
     <title></title>
     <link>http://localhost:4000</link>
     <description>
-      Random walk through life
+      
     </description>
     
         
             <item>
-                <title>Honey, my pdf is greater than 1!</title>
-                <link>http://localhost:4000/2021/10/29/my-pdf/</link>
+                <title>(not so) Simple Linear Regression</title>
+                <link>http://localhost:4000/2023/07/09/regression/</link>
                 <content:encoded>
                     <![CDATA[
-                    <p>This is a confusing concept because of the density function for discrete distributions. These have a probability mass function, not a probability density function, and the interpretation is what we’re accustomed to. If we evalute the PMF at any point, $X = x$, that value corresponds to the probability of us observing $X = x$. So if we toss a coin, then $p(X = \text{Head})$ is the probability of observing a head.</p>
+                    <p>This is my attempt at creating a reference post for linear regression. It starts with a brief introduction of the regression problem and then jumps into to estimation, where different ways of deriving the regression estimators are discussed. The assumptions of the OLS regression model are then presented and individually tinkered with to get a better intuition around them. Finally, a variety of additonal connections and proofs are presented regarding different aspects of the regression model.</p>
 
-<p>When we try to extend this logic to probability density functions, weird things happen. Because PDF’s describe continuous distributions, the probability that we observe the exact value $X = x$ is 0 (as you have probably heard 100 times). So evaluating the PDF at a particular point doesn’t correspond to a probability. Then what does it correspond to? And how do we interpret it?</p>
+<h2 id="linear-regression">Linear Regression</h2>
 
-<p>It helps to take a step back. The PDF, $f(x)$, is the derivative of the cumulative distribution function, $F(x)$. So at any given point, $X = x$ in the support, in order to get the value of the PDF, we can differentate the CDF and evaluate it at $X = x$. If you let this marinate for a bit, things should start to clear up and it becomes less natural to interpret the value as a probability.</p>
+<p>The linear regression model models the conditional expectation of $\mathbb{E}(Y \mid X)$ with a linear function:</p>
 
-<p> </p>
+\[f(X; \beta) = \beta_0 + \sum_{j=1}^P x_j \beta_j\]
 
-<p align="center">
-  <img src="/assets/Normal_pdf_cdf.png" width="80%" height="80%" />
-</p>
+<p>There are many ways of estimating $\beta$, each with their tradeoffs. However, by far the most widely used is OLS estimation. This provides a simple framework that can be analyzed from both a statistical and mathematical perspective. From a statistical point of view, OLS estimates allow for rigorous statistical analysis of models through distributional assumptions on the estimated parameters. From a mathematical point of view, OLS estimates can be derived and analyzed using only linear algebra concepts.</p>
 
-<p> </p>
+<h2 id="ordinary-least-squares-regression">Ordinary Least Squares Regression</h2>
 
-<p>So it’s not a probability, what is it? Well, we could interpret it similar to how we interpret gradients. A specific point in a function doesn’t have a gradient. However, we can take a really small slice of the function and find the gradient there, then make claims about the gradient in that region. So, now we know that higher values of this derivative correspond to regions that are more likely, and vice versa for smaller values of the derviative.</p>
+<p>The standard OLS model finds the parameters of a “best fitting” line of the form 
+$f(X) = \sum_{i=0}^p X_i \beta_i$ by minimizing the vertical distance between each point and that line. This is found by minimizing the following equation:</p>
+
+\[\begin{align*}
+S(\beta) &amp;= \sum_{i=1}^N (X_i\beta - y_i)^2 \\
+\end{align*}\]
+
+<p>A visual representation of this is shown in the figure below. Note that OLS does <strong>not</strong> minimize the distance between each point and the OLS estimate, since this would mean minimizing the length of perpenticular lines connecting each point to the OLS estiamte. Instead, the OLS objective minimizes the distance along the y-axis.</p>
+
+<blockquote>
+  <p>From a statistical point of view, this criterion is reasonable if the training observations $(x_i, y_i)$ are drawn independently from their poplulation, or if the $x_i$’s are not independent, but conditionally independent given $y_i$.</p>
+</blockquote>
+
+<p>I don’t quite understand the statement above, which was taken from Elements of Statistical Learning. My intuition is that the latter case happens often in autoregressive models.</p>
+
+<div class="figure" align="center">
+    <img src="../assets/OLS_estimate.png" width="100%" height="100%" />
+    <div class="caption" width="50%" height="50%">
+        <p> OLS estimate with simulated data. The OLS loss function minimizes the vertical distance (L2 distance) </p>
+    </div>
+</div>
+
+<h3 id="estimation">Estimation</h3>
+
+<p>Minimizing $S(\beta)$ above is the same as maximizing the likelihood function under the assumption of Gaussian error (I discuss this more in my <a href="https://jramkiss.github.io/2022/01/05/MLE-loss-regression/">Gaussian Noise and Mean Squared Error</a> post). Using matrix notation, we can re-write $S(\beta)$ to be:</p>
+
+\[\begin{align*}
+S(\beta) &amp;= (y - X\beta)^T (y - X\beta) \\
+\end{align*}\]
+
+<p>This is a quadratic in terms of $\beta$, so differentiating twice gives us:</p>
+
+\[\begin{align*}
+\frac{\partial S}{\partial \beta} = -2X^T(y - X\beta) \\
+\frac{\partial^2 S}{\partial \beta \partial \beta^T} = 2X^TX
+\end{align*}\]
+
+<p>Assuming that $X$ has <strong>full-rank</strong> (i.e. all columns of $X$ are linearly independent, for $X \in \mathbb{R}^{p \times N}, p \lt N$) and therefor $X^TX$ is positive definite, we set the first derivative to zero: $X^T(y - X\beta) = 0$, resulting in the unique solution:</p>
+
+\[\hat{\beta} = (X^TX)^{-1}X^T y\]
+
+<h4 id="geometric-interpretation">Geometric Interpretation</h4>
+
+<p>Another way to interpret the estimation problem is through the lens of projections. The features (or design matrix as statisticians will call it), $X$, span a subspace of $\mathbb{R}^P$, called the column space of $X$. We minimize $S(\beta)$ by choosing $\hat{\beta}$ such that the residual vector, $y - \hat{y}$ is orthogonal to the column space of $X$. This is represented mathematically by $X^T(y - X\beta) = 0$.</p>
+
+<p>TODO: add plots and expand:</p>
+<ul>
+  <li>Orthogonality between X and $\epsilon$</li>
+  <li>$Cov(y, \epsilon)$</li>
+  <li>Decomposition of $y$ into 2 orthogonal components: X and residual</li>
+  <li>$Cov(\hat{\epsilon}, \hat{y})$: Is there a relationship between the residuals and the fitted values</li>
+  <li>$Cov(\hat{\epsilon}, y)$: Is there a relationship between the residuals and targets?</li>
+  <li>Why do we plot residuals VS fitted values when diagnosing regressions?</li>
+</ul>
+
+<h3 id="ols-assumptions">OLS Assumptions</h3>
+
+<p>Up until now, we have only made one soft assumption for the linear regression model, which is that the conditional expectation, $\mathbb{E}(Y \mid X)$, can be reasonably approximated with a linear function. As I mentioned in the intro, we can view the OLS estimates through different lenses. Through the eyes of a statistician, the first question that arises is: what is the distribution of my estimator? To answer this question, we need a few more assumptions. Firstly, assume that the deviation of $y$ around its conditional expectation, $\mathbb{E}(Y \mid X)$, is Gaussian. It turns out that deriving the OLS estimates in the manner above, or by specifying the resulting likelihood function from this distributional assumption yields the same result. Finally, we also assume that the observations, $y_i$ are uncorrelated and have constant variance.</p>
+
+\[\begin{align*}
+y &amp;= X\beta + \epsilon \\
+\epsilon &amp;\sim \mathcal{N}(0, \sigma^2) \\
+y &amp;\sim \mathcal{N}(X\beta, \sigma^2)
+\end{align*}\]
+
+<p>Therefore, the distribution of $\hat{\beta}$ is:</p>
+
+\[\begin{align*}
+\hat{\beta} &amp;\sim \mathcal{N}(\beta, (X^TX)^{-1}X \text{Var} (y)((X^TX)^{-1}X^T)^T) \\
+\hat{\beta} &amp;\sim \mathcal{N}(\beta, (X^TX)^{-1} \sigma^2)
+\end{align*}\]
+
+<p>This distribution will be useful when analyzing the impact of model assumptions later on!</p>
+
+<h4 id="multicollinearity-in-features">Multicollinearity in Features</h4>
+
+<ul>
+  <li>impact on estimates</li>
+  <li>impact on invertability of matrix</li>
+  <li>impact on distribution of parameters</li>
+</ul>
+
+<p>In practice, it is unlikely that all columns of $X$ are linearly independent, which means that $X$ is not full-rank and $(X^T X)$ is a singlular matrix which does not have a unique inverse. In these cases, the resulting solution will still be a projection of $y$ onto the column space of $X$, however there will be more than one way to epxress this projection. This makes interpretation of the individual $\beta$’s unreliable.</p>
+
+<p>Multicollinearity also affects the variance of the estimators. The variance of coefficient $j$ can be expressed in terms of $R^2_j$, the coefficient of determination for estimator $j$ as:</p>
+
+\[\begin{align*}
+\text{Var}(\beta_j \mid X) &amp;= \frac{1}{1 - R^2_j} \frac{\hat{\sigma}^2}{\sum_{i=1}^n (x_{ij} - \bar{x}_j)^2}
+\end{align*}\]
+
+<p>Proof of $Var(\beta_j)$: <a href="https://en.wikipedia.org/wiki/Variance_inflation_factor#cite_note-3">here</a>. Here, $R^2<em>j$ is the $R^2$ obtained from the regression of $x_j$ onto $x</em>{1:j-1, j+1:p}$, which measures how related $x_j$ is to the other covariates. We can clearly see that as $R^2_j$ approaches $1$, the variance of coefficient $j$ explodes. To show why this is dangerous in real life, we can think of a contrived example with $p » 2$ covariates, where $x_1 = \alpha x_2, \alpha \in \mathbb{R}$. Without knowing the relationship between $x_1$ and $x_2$ before hand and fitting a regression, the variance of both $\hat{\beta}_1$ and $\hat{\beta}_2$ will be extremely large, due to large $R^2_1$ and $R^2_2$. In practice, penalization terms can be added to the loss function in order to curb this problem.</p>
+
+<h4 id="linear-relationship-between-x-and-y">Linear Relationship Between $X$ and $Y$</h4>
+
+<p>As such, a core assumption of the model is that the relationship between $Y$ and $X$ can be reasonable approximated linearly. What makes this model so universal is that the variables, $X$, can be arbitrary transforms or combinations of other features.</p>
+
+<h4 id="exogeneity">Exogeneity</h4>
+
+<p>This is an assumption about the relationship between the errors and the features. Specifically it states that $\mathbb{E}(\epsilon \mid X) = 0$, which implies that $\epsilon$ is uncorrelated with $X$ (uncorrelation does not imply independence).</p>
+
+<h4 id="homoskedasticity">Homoskedasticity</h4>
+
+<p>Assumption of constant variance in response variable, which shows up in the residuals after fitting a model. This is an assumption that the residuals are uncorrelated across observations and have the same variance.</p>
+
+<h3 id="faq">FAQ</h3>
+
+<p>Questions to answer:</p>
+
+<ul>
+  <li>What are the assumptions of linear regression</li>
+  <li>What happens when each of these assumptions are broke. With proofs, code and explanations</li>
+  <li>Can the $R^2$ get larger with penalized regression? Eg: ridge/lasso</li>
+  <li>What happens to regression estimates when the features have high multicollinearity? Proof</li>
+  <li>What happens to the $R^2$ when we add another covariate to our regression?</li>
+  <li>What does the condition number tell us and how can we use it?</li>
+  <li>Multicollinearity affects the inversion of the feature matrix. If the determinant is very close to 0, the determinant of the inverted matrix will become extremely large. This will multiply the noise in the data. How does this work?</li>
+  <li>A stock’s $\beta$ is calculated by regressing its returns onto the S&amp;P 500 returns. What is the change in interepretation when we flip this regression and why is it like this?</li>
+  <li>Eigenvalues are not uniquely determined. How does this affect linear regression and PCA?</li>
+  <li>What are the differences between linear regression and the weights of the first principal component?</li>
+  <li>What variables are correlated with the error terms?</li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><a href="https://cran.r-project.org/doc/contrib/Faraway-PRA.pdf">Linear Regression Notes - IIT</a></li>
+</ul>
 
                     ]]>
                 </content:encoded>
-                <guid isPermaLink="false">/2021/10/29/my-pdf/</guid>
+                <guid isPermaLink="false">/2023/07/09/regression/</guid>
                 <description>
                     
-                    Can the values of a probability density function be greater than 1?
+                    Theortical and practical considerations with OLS regression
                     
                 </description>
-                <pubDate>Fri, 29 Oct 2021 02:22:00 -0400</pubDate>
+                <pubDate>Sun, 09 Jul 2023 02:22:00 -0400</pubDate>
                 <author>Jonathan Ramkissoon</author>
             </item>
         
     
         
             <item>
-                <title>Variational Lower Bound</title>
-                <link>http://localhost:4000/2021/10/28/ELBO/</link>
+                <title>Latent Dirichlet Allocation</title>
+                <link>http://localhost:4000/2023/02/11/topic-modeling/</link>
                 <content:encoded>
                     <![CDATA[
-                    <h2 id="variational-lower-bound">Variational Lower Bound</h2>
-
-<p>Exact posterior inference is hard in most Bayesian models. Variational inference proposes a way of approximating a posterior over latent variables, $p(z \mid x)$, with a <em>variational distribution</em>, $q(z \mid x)$. The idea is that we can specify some family of distributions, $q_{\theta}(.)$ to approximate the true posterior, then learn the distributional parameters, $\theta$ that make $q_{\theta}$ as close as possible to the true posterior.</p>
-
-<h4 id="how-to-measure-closeness">How to measure closeness?</h4>
-
-<p>One way of measuring closeness in distribution is with <a href="https://en.wikipedia.org/wiki/Kullback–Leibler_divergence">Kullback-Leibler divergence</a>. The KL-divergence between the variational distributions, $q$ and the true posterior, $p(Z \mid x)$ is:</p>
-
-\[KL(q(Z) \mid \mid p(Z \mid x)) = E_q \left[ log \frac{q(Z)}{p(Z \mid x)} \right]\]
-
-<p>Important to note, is that KL(q || p) $\ne$ KL(p || q) and the KL-divergence is non-negative.</p>
-
-<p>The key idea behind VI is to minimize the KL divergence with respect to the variational paramters, $\theta$. Turns out that we can’t do this directly, and instead have to minimize another function that is equal to the KL-divergence up to a constant.</p>
-
-<h4 id="marginal-likelihood">Marginal Likelihood</h4>
-
-<p>First we combine Jensen’s inequality and the log-marginal likelihood:</p>
-
-\[\begin{aligned}
-\log p(x) &amp;= \log \int_Z p(x, z) dz \\
-&amp;= \log \int_Z p(x, z) \frac{q(z)}{q(z)} dz \\
-&amp;= \log E_q \left[ \frac{p(x, z)}{q(z)} \right] \\
-\end{aligned}\]
-
-<p>From Jensen’s inequality: $f(E(X)) \ge E(f(X))$:</p>
-
-\[\begin{aligned}
-\log p(x) \ge E_q \left[ \log \frac{p(x, z)}{q(z)} \right] \\
-\log p(x) \ge E_q \left[ \log p(x, z) \right] - E_q \left[ \log q(z) \right]
-\end{aligned}\]
-
-<p>$p(x)$ is typically referred to as the evidence, so I believe that’s why this bound is called the evidence lower bound or ELBO.</p>
-
-<p> </p>
-
-<h4 id="kl-divergence-again">KL-Divergence (again)</h4>
-
-\[\begin{aligned}
-KL(q(Z) \mid \mid p(Z \mid x)) &amp;= E_q \left[ \log \frac{q(Z)}{p(Z \mid x)} \right] \\
-&amp;= E_q \left[ \log q(Z) - \log p(Z \mid x) \right] \\
-&amp;= E_q \left[ \log q(Z) \right] - E_q \left[ \log p(Z \mid x) \right] + \log p(x) \\
-&amp;= - \left( E_q \left[ \log p(Z \mid x) \right] - E_q \left[ \log q(Z) \right] \right) + \log p(x)
-\end{aligned}\]
-
-<p>So we have decomposed the KL-divergence between the posterior and the variational distribution into the log marginal likelihood plus the ELBO. This is cool. In order to minimize the KL-divergence, we can maximize the evidence lower bound with respect to $\theta$, which usually requires us to decompose the ELBO further.</p>
-
-<p> </p>
-
-<p>Some really useful resources for this are:</p>
+                    <p>Latent Dirichlet allocation (LDA) has been the de-facto method for topic modeling over the last decade (maybe 2 decades). This post walks through the math behind how LDA works. I use the same notation as the <a href="https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf">original paper</a> for consistency:</p>
 
 <ul>
-  <li><a href="https://www.cs.princeton.edu/courses/archive/fall11/cos597C/lectures/variational-inference-i.pdf">David Blei’s VI lecture</a></li>
-  <li><a href="https://arxiv.org/pdf/1312.6114.pdf">Original VAE paper</a></li>
+  <li>The vocavulary consists of $V$ words which are one-hot encoded vectors in the model</li>
+  <li>A document, $\boldsymbol{w}$, is a sequence of $N$ words, $(w_1, w_2, \dots, w_N)$</li>
+  <li>The corpus, $D$, is a collection of $M$ documents</li>
+</ul>
+
+<!-- Starting by decomposing the name, which may sound intimidating, "latent" just means hidden, so we are trying to find hidden topics in a corpus of text. "Dirichlet" is a discrete distribution of distributions. I have another post explaining this, [here](/_posts/2020-05-08-beta-and-dirichlet-distributions.md). -->
+
+<h2 id="introduction">Introduction</h2>
+
+<p>LDA is a generative probabilistic model of documents in a corpus. The easiest way to conceptualize LDA is to consider how it “thinks” about documents, i.e. how it generates documents. I will first explain a simple version of this process in plane words, then introduce notation and math.</p>
+
+<p>1) Choose a document length, $N$<br />
+2) Choose a discrete distribution of topics for that document. This can be thought of as a weighted (normalized) list of topics that summarize the document. For example, if we have <a href="https://www.wired.com/story/openai-dalle-copyright-intellectual-property-art/">this</a> article, a possible topic distribution can be 50% “AI”, 50% “Art” and 0% for all other topics<br />
+3) Start creating the document word-by-word as: 
+   1) Choose a single topic from the topic distribution above<br />
+   2) Choose a word conditional on the chosen topic</p>
+
+<p>This generative process makes it clear that LDA is a hierarchical model.</p>
+
+<h2 id="probabilistic-model">Probabilistic Model</h2>
+
+<p>And here is some more notation that will be used throughout the post, but has already been introduced by the generative algorithm in the introduction:</p>
+
+<ul>
+  <li>The corpus is considered to have $K$ topics which is a hyperparameter that must be set in advance</li>
+  <li>The random variable representing the distribution of distribution of topics for a given document is $\theta \in \mathbb{R}^K$. This is not a typo and will become clear later and is the variable of importance to us</li>
+  <li>A single topic from the topic distribution, $\theta$, is given by $z$. Each word is associated with a topic, so the word $w_n$ is associated with topic $z_n$</li>
+</ul>
+
+<p>With this notation, the algorithm above can be re-written as:</p>
+
+<p>1) Sample a document length, $N \sim p(N)$. This is taken to be $\text{Poi}(\nu)$ in the original paper, but the choice of prior here is of little consequence<br />
+2) Sample a topic distribution, $\theta \sim \text{Dir}(\alpha)$ <br />
+3) For each of the $N$ words: <br />
+   1) Sample a topic, $z_i \sim \text{Multinom}(\theta)$ <br />
+   2) Sample a word, $w_i \sim p(w_i \mid z_i, \beta)$</p>
+
+<p>Where the distribution of words is conditional a matrix of conditional probabilities, $\beta \in \mathbb{R}^{K \times V}$, which are parameters of the model. Each entry in this matrix, $\beta_{ij} = p(w_j = 1 \mid z_i = 1)$, represents the probability that word $j$ occurs given that we have selected topic $i$.</p>
+
+<h4 id="sidenote-distribution-of-distributions">Sidenote: Distribution of Distributions</h4>
+
+<p>In many cases, the Dirichlet distribution is described as a distribution of distributions. This used to give me headaches and felt like a circular definition, which is the reason for this sidenote. A $K$-dimensional Dirichlet distribution is a distribution over the $(K-1)$-simplex. If $\theta \sim \text{Dir}_K(\alpha)$, then for $i=1, \dots, K, \theta_i \ge 0$ and $\sum_i \theta_i = 1$. In other words, a sample from a K-dimensional Dirichlet distribution is a K-length vector where each element is $\ge$ zero and the sum of the vector is 1, which is the definition of a dicrete distribution. This is where the phrase “distribution over distributions” comes from.</p>
+
+<!-- We can then specify the joint distribution of a topic mixture with a set of $N$ topics and words. Note that this is not the likelihood function, since it is for one document only **confirm this**:
+
+$$
+p(\theta, \boldsymbol z, \boldsymbol w \mid \alpha, \beta) = p(\theta \mid \alpha) \prod_{i=1}^N p(z_i \mid \theta) p(w_i \mid z_i, \beta)
+$$ -->
+
+<h2 id="graphical-representation">Graphical Representation</h2>
+
+<div class="figure" align="center">
+    <img src="/assets/LDA_pgm.png" width="65%" height="65%" />
+    <div class="caption" width="70%" height="70%">
+        <p> Plate notation for LDA, taken from the original paper. </p>
+    </div>
+</div>
+
+<p>From the plate notation, $(\alpha, \beta)$ are generated once for the entire corpus. Following this, a new topic distribution, $\theta$ is generated for each document, resulting in $M$ total samples. For each of these samples $z$ and $w$ are generated $N$ times per document, conditional on $\theta$. The sampling of the $\theta$ for each document allows documents to be associated with more than one topic.</p>
+
+<p>This approach is more flexible than a Dirichlet-Multinomial mixture model, where the Dirichlet distribution is sampled once for the corpus, then the document topic is generated by a Multinomial conditioned on the Dirichlet sample. Not only is this less flexible from the standpoint of a traditional hierarchical model, it also restricts documents to only have one topic. By using $\alpha, \beta$ as global variables (sampled once per corpus) and conditioning on them, documents are allowed to have a distribution of topics.</p>
+
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/2023/02/11/topic-modeling/</guid>
+                <description>
+                    
+                    An introduction to the math of latent Dirichlet allocation
+                    
+                </description>
+                <pubDate>Sat, 11 Feb 2023 02:22:00 -0500</pubDate>
+                <author>Jonathan Ramkissoon</author>
+            </item>
+        
+    
+        
+            <item>
+                <title>Refresher on Importance Sampling</title>
+                <link>http://localhost:4000/2022/10/22/importance-sampling/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <p>Long story short, importance sampling is a method for approximating integrals using samples from a probability distribution. It is widely used in statistics, since many quantities of interest can be expressed as integrals. The idea behind importance sampling is to first express the integral in terms of some probability measure, then change the measure to something easier to work with.</p>
+
+<p>The token example of one such quantity is the expectation of a random quantity $f(X)$ with respect to some probability measure (probability distribution), $P$:</p>
+
+\[E_{P}(f(X)) = \int_{-\infty}^{\infty} f(x) p(x) dx\]
+
+<p>One way to approximate this integral is to use crude Monte Carlo, where we sample $x_1, …, x_n$ from $P$. Then an estimate of $E_{P}(f(X))$ is:</p>
+
+\[\hat{E}_{P}(f(X)) = \frac{1}{n} \sum_{i=1}^n f(x_i)\]
+
+<p>This estimate seems fine at first glance, but we very quickly run into problems. What happens if we can’t sample from $P$? Importance sampling provides a solution to this problem by changing the measure (density) from $P$ to $Q$.</p>
+
+<h2 id="importance-sampling-intuition">Importance Sampling Intuition</h2>
+
+<p>We can re-write an arbitrary expected value of $f(X)$ w.r.t. the probability measure $P$ as:</p>
+
+\[\begin{aligned}
+E_{P}(f(X)) &amp;= E_{P}(f(X) \frac{q(X)}{q(X)}) \\
+                      &amp;= \int_{-\infty}^{\infty} f(x) \frac{q(X)}{q(X)} p(x) dx \\
+                      &amp;= \int_{-\infty}^{\infty} f(x) \frac{p(X)}{q(X)} q(x) dx \\
+                      &amp;= \int_{-\infty}^{\infty} w(X) q(x) dx
+\end{aligned}\]
+
+<p>Here I let $w(X) = f(x) \frac{p(X)}{q(X)}$ to illustrate that this integral starts to look like $E_{Q}(w(X))$. Remember the problem we had with using crude Monte Carlo on $P$ was that it was too difficult to sample from. However, we have just expressed an expectation over $P$ in terms of another measure, $Q$. If $Q$ is easier to sample from, then we can use crude Monte Carlo and circumvent the original sampling difficulties with $P$. Thereby, approximating an expectation over $P$ without ever sampling from it.</p>
+
+<p>The story isn’t over yet, since we haven’t talked about $Q$ at all. We have to impose some conditions on how $Q$ is chosen, and there is both theory and intuition to back this up. For starters, if we look at how $w(X)$ is defined:</p>
+
+\[w(X) = f(x) \frac{p(X)}{q(X)}\]
+
+<p>If $q(x) = 0$ and $p(x) &gt; 0$, our integral is undefined. So we must impose the condition that if $f(x) = 0$, then $q(x) = 0$, $\forall x$. This constraint is called absolute continuity, and is related to the use of the <a href="https://mathworld.wolfram.com/Radon-NikodymTheorem.html">Radon-Nikodym Theorem</a> for the change of measure.</p>
+
+<!-- ## When is this useful? 
+
+Importance sampling is particularly useful when we can evaluate $P$ but it is difficult or impossible to sapmle from. These situations are surpringly common, especially in Bayesian statistics. 
+
+Importance sampling is also useful when we are interested in simulated tail events. To see this we can consider trying to evaluate $E_{P}(f(X) \mid X > 5)$, where $X \sim N(0, 1)$. One way of doing this using crude Monte Carlo is to sample $x^* \sim N(0, 1)$ and accept $x^*$ if it is greater than 5, reject otherwise. Then after collecting enough values of $x^*$, we can take the average $\frac{1}{n} \sum_{i=1}^n f(x^*_i)$. It is not hard to see that we will end up rejecting 
+
+## Example: Tail Expectation -->
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/2022/10/22/importance-sampling/</guid>
+                <description>
+                    
+                    Short blurb on importance sampling
+                    
+                </description>
+                <pubDate>Sat, 22 Oct 2022 02:22:00 -0400</pubDate>
+                <author>Jonathan Ramkissoon</author>
+            </item>
+        
+    
+        
+            <item>
+                <title>Gaussian Noise and Mean Squared Error</title>
+                <link>http://localhost:4000/2022/01/05/MLE-loss-regression/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <p>In this post I approach parameter estimation in linear regression from two seemingly different perspectives, which end up with the same solution. This may be trivial to most people but I only made the connection recently and find it cool.</p>
+
+<p>In a linear regression setting, we want to explain our response, $y$, using a linear combination of covariates, $X$. The question is how to estimate the parameters, $\beta$, of this linear funciton. The first approach would be to make an assumption about the distribution of errors and use this to form a likelihood function from which we can do maximum likelihood estimation. A second approach could be to completely by-pass any distributional assumption on the error and instead, choose a loss function to minimize.</p>
+
+<p>At a high level these 2 approaches seem different enough, but as you peel a couple layers back, they’re identical for mean squared error loss and Gaussian noise, which are the two most common assumptions of loss function or error distributions.</p>
+
+<h2 id="approach-1-maximum-likelihood-estimation">Approach 1: Maximum Likelihood Estimation</h2>
+
+<p>In order to do maximum likelihood estimation, we need a statistical model for the data. With the assumption of Normally distributed additive errors, the model of the data becomes:</p>
+
+\[y_i = X_i\beta + \epsilon_i, \qquad \qquad \epsilon_i \sim N(0, \sigma^2)\]
+
+\[y_i \sim N(X\beta, \sigma^2)\]
+
+<p>And the likelihood and log-likelihood function follow naturally:</p>
+
+\[L(\beta) = \prod_{i = 1}^n f(x_i)\]
+
+\[L(\beta) = \prod_{i = 1}^n \frac{1}{\sqrt{2\pi\sigma^2}} \exp{\{\frac{-1}{2\sigma^2}(y - X\beta)^T(y - X\beta)\}}\]
+
+\[l(\beta) = \sum_{i = 1}^n -\frac{1}{2}\log(2\pi \sigma^2) - \frac{1}{2\sigma^2}(y - X\beta)^T(y - X\beta)\]
+
+<p>To minimize this with respect to $\beta$, set the partial derivative to zero:</p>
+
+\[\frac{\partial l}{\partial \beta} = \frac{1}{\sigma^2}X^T(y - X\beta) = 0\]
+
+\[\hat{\beta_{\text{MLE}}} = (X^TX)^{-1}X^Ty\]
+
+<p>Of course, this isn’t a surprise at all.</p>
+
+<h2 id="approach-2-mean-squared-error">Approach 2: Mean Squared Error</h2>
+
+<p>Now imagine you’ve never did any statistics and have never heard aobut a distribution, it would be quite difficult to explicitly make a distributional assumption about the errors. However, you still need to find the parameters of the model. To do this, we can minimize the mean squared error between the observed data and the estimated data.</p>
+
+\[J(\beta) = \sum_{i = 1}^n (y - X\beta)^2 = (y - X\beta)^T(y - X\beta)\]
+
+<p>The goal now is:</p>
+
+\[\underset{\beta}{\text{min}} \quad J(\beta) = (y - X\beta)^T(y - X\beta)\]
+
+<p>As usual, set the partial derivative of $J(\beta)$ equal to 0:</p>
+
+\[\frac{\partial J(\beta)}{\partial \beta} = -2X^T(y - X\beta)\]
+
+\[\hat{\beta} = (X^TX)^{-1}X^Ty\]
+
+<p>This is the same estimate from approach 1, but we haven’t mentioned any distributions. Given a bit of thought it makes sense, since on the log-scale the Gaussian kernel looks like MSE loss.</p>
+
+                    ]]>
+                </content:encoded>
+                <guid isPermaLink="false">/2022/01/05/MLE-loss-regression/</guid>
+                <description>
+                    
+                    Parameter estimation in linear regression from 2 perspectives.
+                    
+                </description>
+                <pubDate>Wed, 05 Jan 2022 02:22:00 -0500</pubDate>
+                <author>Jonathan Ramkissoon</author>
+            </item>
+        
+    
+        
+            <item>
+                <title>Bayesian Hierarchical Classification in Numpyro</title>
+                <link>http://localhost:4000/2021/01/29/hierarchical_classification/</link>
+                <content:encoded>
+                    <![CDATA[
+                    <h2 id="introduction">Introduction</h2>
+
+<p>In this post I build a Bayesian hierarchical model to classify <a href="https://www.kaggle.com/kashnitsky/hierarchical-text-classification">Amazon products from Kaggle</a> into a taxonomy using their titles. The taxonomy is hierarchical in nature and we can benefit from incorporating this structure into a model. First we’ll look at the taxonomy and class membership, then talk about simple approaches to the classification problem. Finally, we’ll build the Bayesian model and write it up in Numpyro.</p>
+
+<p> </p>
+
+<h2 id="hierarchical-class-structure">Hierarchical Class Structure</h2>
+
+<p>Below is a diagram of the class structure. Each product (datapoint) is a member of a child category, which is in turn a member of a parent category. For example a broom is a member of the “household supplies” child category, which is in turn a member of the “health personal care” parent category. 
+For this problem we have $6$ parent classes and $64$ child classes.</p>
+
+<div class="figure" align="center">
+    <img src="/assets/amazon_taxonomy.png" width="50%" height="30%" />
+    <div class="caption" width="40%" height="40%">
+        <p> Taxonomy structure for 2 parent classes (on the left) and 5 of their children classes (on the right). This is a small subset of parent and children classes. </p>
+    </div>
+</div>
+
+<p> </p>
+
+<p>A simple way of assigning categories to our data would be to flatten the hierarchy and only consider the child classes. This would turn our problem into a $64$ class classification problem which can be solved with logistic regression / SVM / many other things. The drawback of this approach is that we make the assumption that each class is independednt, which we know is incorrect.</p>
+
+<p>We want to leverage the fact that “action toy figures” and “baby toddler toys” come from the same parent class, “toy games”. Intuitively, this can help when we don’t have a lot of training data for a particular child class, or if we come across an item at inference time that we don’t have a subclass for. One way to deal with this problem is by using hierarchical modelling.</p>
+
+<h2 id="data-and-preprocessing">Data and Preprocessing</h2>
+
+<p>Before diving into the model, here is the data we’re working with:</p>
+
+<div class="figure" align="center">
+    <img src="/assets/Amazon-taxonomy-data.png" width="90%" height="90%" />
+</div>
+
+<p> </p>
+
+<p>I use TF-IDF scores of item titles to classify them into the taxonomy. <code class="language-plaintext highlighter-rouge">Gensim</code> was used to calculate TF-IDF scores, but <code class="language-plaintext highlighter-rouge">sklearn</code> is fine. I found that <code class="language-plaintext highlighter-rouge">Gensim</code> is more memory efficient when working with <em>much</em> larger datasets.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">%%</span><span class="n">time</span>
+<span class="c1"># find tf-idf scores for training set
+</span><span class="n">dct</span> <span class="o">=</span> <span class="n">Dictionary</span><span class="p">(</span><span class="n">X_train</span><span class="p">.</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">)))</span>
+<span class="n">dct</span><span class="p">.</span><span class="n">filter_extremes</span><span class="p">(</span><span class="n">no_below</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">no_above</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">keep_n</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">dct</span><span class="p">.</span><span class="n">compactify</span><span class="p">()</span>
+
+<span class="n">train_corpus</span> <span class="o">=</span> <span class="p">[</span><span class="n">dct</span><span class="p">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">))</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">X_train</span><span class="p">]</span>  <span class="c1"># BoW format
+</span><span class="n">tfidf_model</span> <span class="o">=</span> <span class="n">TfIdfTransformer</span><span class="p">()</span>
+
+<span class="n">train_tfidf</span> <span class="o">=</span> <span class="n">tfidf_model</span><span class="p">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">train_corpus</span><span class="p">)</span>
+<span class="n">train_tfidf</span> <span class="o">=</span> <span class="n">corpus2dense</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">,</span> <span class="n">num_terms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dct</span><span class="p">))</span> <span class="c1"># can also use: corpus2csc
+</span><span class="k">print</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="n">test_corpus</span> <span class="o">=</span> <span class="p">[</span><span class="n">dct</span><span class="p">.</span><span class="n">doc2bow</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">))</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">X_test</span><span class="p">]</span> 
+<span class="n">test_tfidf</span> <span class="o">=</span> <span class="n">corpus2dense</span><span class="p">(</span><span class="n">tfidf_model</span><span class="p">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test_corpus</span><span class="p">),</span> <span class="n">num_terms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">dct</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">test_tfidf</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Finally we encode the labels for parent and children classes in 2 different ways: <code class="language-plaintext highlighter-rouge">labelEncoder</code> and <code class="language-plaintext highlighter-rouge">labelBinarizer</code>. The former maps each class into an integer, which we’ll use to fit a couple <code class="language-plaintext highlighter-rouge">sklearn</code> models to compare against our Bayesian model. The latter one-hot encodes the target variable, which we’ll use for the Bayesian model.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">le</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="p">.</span><span class="n">LabelEncoder</span><span class="p">()</span>
+<span class="n">parent_target</span> <span class="o">=</span> <span class="n">le</span><span class="p">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">parent_train</span><span class="p">)</span>
+<span class="n">children_target</span> <span class="o">=</span> <span class="n">le</span><span class="p">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">children_train</span><span class="p">)</span>
+
+<span class="n">parent_target_test</span> <span class="o">=</span> <span class="n">le</span><span class="p">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">parent_test</span><span class="p">)</span>
+<span class="n">children_target_test</span> <span class="o">=</span> <span class="n">le</span><span class="p">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">children_test</span><span class="p">)</span>
+
+<span class="n">lb</span> <span class="o">=</span> <span class="n">LabelBinarizer</span><span class="p">()</span>
+<span class="n">parent_binr</span> <span class="o">=</span> <span class="n">lb</span><span class="p">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">parent_train</span><span class="p">)</span>
+<span class="n">children_binr</span> <span class="o">=</span> <span class="n">lb</span><span class="p">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">children_train</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p> </p>
+
+<h2 id="bayesian-hierarchical-modeling">Bayesian Hierarchical Modeling</h2>
+
+<p>The class structure can be explicitly represented by our priors in a hierarchical model, so let’s do that. Our underlying model will be a logistic regression with target, $y$, being the children classes. Therefore $\beta \in R^{p \times c}$, where $p$ is the length of the TF-IDF vector and $c$ is the number of children classes, $64$ in this case.</p>
+
+\[Z = X \beta + \epsilon\]
+
+\[y = \text{softmax}(Z)\]
+
+<p>Column $i$ of $\beta$ are the regression coefficients for class $i$. We know that class $i$ is the child of parent class $p_i$, and that $i$ has siblings which also come from parent class $p_i$. We want each child of parent $p_i$ to have the same prior, which we can represent below:</p>
+
+\[\begin{equation*}
+  \beta_p \sim N(\beta_{\mu_p}, \sigma_{\mu_p}^2) \\[10pt]
+  \beta_c = \beta_p \times \alpha \\[10pt]
+  \beta \sim N(\beta_c, \sigma_c^2) \\[10pt]
+  \epsilon \sim N(0, 1) \\[10pt]
+\end{equation*}\]
+
+<p>Here, $\beta_{\p}$ is the hierarchical prior for each parent class and $\beta_c$ is the prior mean for each child class. We transform $\beta_p$ into $\beta_c$ by multiplying by another matrix, $\alpha \in R^{p \times c}$. This $\alpha$ is a matrix that links each children class to its parent.</p>
+
+<h2 id="inference-in-numpyro">Inference in Numpyro</h2>
+
+<p><a href="http://num.pyro.ai/en/latest/getting_started.html">Numpyro</a> is another probabilistic programming language built on Pyro and <a href="https://jax.readthedocs.io/en/latest/">JAX</a>. It’s supposed to blazing fast thanks to speed ups provided by JAX, so this is a good opportunity to try it out.</p>
+
+<!-- def hierarchical_model (X, Y=None):
+    num_features = X.shape[1]
+    num_samples = X.shape[0]
+    
+    beta_0_mean = jnp.zeros((dim_X, np.array([num_parent_classes])[0]))
+    beta_0_sd = jnp.ones((dim_X, np.array([num_parent_classes])[0]))
+    beta_0 = numpyro.sample("beta_0", dist.Normal(beta_0_mean, beta_0_sd))
+    
+    jnp_prior_mean = jnp.matmul(beta_0, alpha) 
+    beta = numpyro.sample("beta", dist.Normal(jnp_prior_mean, jnp.ones(jnp_prior_mean.shape)))
+
+    resp = numpyro.deterministic("X_est", jnp.matmul(X, beta))
+    with numpyro.plate("data", size = num_samples):
+        err = numpyro.sample("err", dist.StudentT(df = 1)) 
+        probs = softmax(resp + err.reshape(-1, 1))
+        numpyro.sample("Y", dist.Multinomial(probs = probs), obs = Y)
+         -->
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># functions for inference and prediction. Will post the model code soon.
+# helper function for HMC inference
+</span><span class="k">def</span> <span class="nf">run_inference</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">rng_key</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> 
+                  <span class="n">num_warmup</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> 
+                  <span class="n">num_samples</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> 
+                  <span class="n">num_chains</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">"Starting MCMC: "</span><span class="p">)</span>
+    <span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">num_warmup</span> <span class="o">=</span> <span class="n">num_warmup</span><span class="p">,</span> 
+                <span class="n">num_samples</span> <span class="o">=</span> <span class="n">num_samples</span><span class="p">,</span> 
+                <span class="n">num_chains</span> <span class="o">=</span> <span class="n">num_chains</span><span class="p">)</span>
+    <span class="n">mcmc</span><span class="p">.</span><span class="n">run</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">'</span><span class="se">\n</span><span class="s">MCMC elapsed time:'</span><span class="p">,</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mcmc</span>
+
+<span class="c1"># helper function for prediction
+</span><span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">rng_key</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">handlers</span><span class="p">.</span><span class="n">substitute</span><span class="p">(</span><span class="n">handlers</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">rng_key</span><span class="p">),</span> <span class="n">samples</span><span class="p">)</span>
+    <span class="c1"># note that Y will be sampled in the model because we pass Y=None here
+</span>    <span class="n">model_trace</span> <span class="o">=</span> <span class="n">handlers</span><span class="p">.</span><span class="n">trace</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="n">get_trace</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model_trace</span><span class="p">[</span><span class="s">'Y'</span><span class="p">][</span><span class="s">'value'</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Numpyro provides a <code class="language-plaintext highlighter-rouge">reparam</code> function, to change hierarchical model specifications from centered to non-centered parameterizations. We’ll use this to help with inference.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">X</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s">"float32"</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">children_binr</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s">"float32"</span><span class="p">)</span> <span class="c1"># binarized labels
+</span>
+<span class="n">_num_chains</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">_num_samples</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">numpyro</span><span class="p">.</span><span class="n">set_host_device_count</span><span class="p">(</span><span class="n">_num_chains</span><span class="p">)</span>
+<span class="n">rng_key</span><span class="p">,</span> <span class="n">rng_key_predict</span> <span class="o">=</span> <span class="n">random</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">random</span><span class="p">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="n">reparam_model</span> <span class="o">=</span> <span class="n">reparam</span><span class="p">(</span><span class="n">hierarchical_model</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s">'beta'</span><span class="p">:</span> <span class="n">LocScaleReparam</span><span class="p">(</span><span class="mi">0</span><span class="p">)})</span>
+<span class="n">non_centered_mcmc</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span><span class="n">model</span> <span class="o">=</span> <span class="n">reparam_model</span><span class="p">,</span> 
+                                  <span class="n">rng_key</span> <span class="o">=</span> <span class="n">rng_key</span><span class="p">,</span> 
+                                  <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">,</span> 
+                                  <span class="n">num_warmup</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> 
+                                  <span class="n">num_samples</span> <span class="o">=</span> <span class="n">_num_samples</span><span class="p">,</span> 
+                                  <span class="n">num_chains</span> <span class="o">=</span> <span class="n">_num_chains</span><span class="p">,</span>
+                                  <span class="n">chain_method</span> <span class="o">=</span> <span class="s">'vectorized'</span><span class="p">)</span>
+<span class="n">nc_samples</span> <span class="o">=</span> <span class="n">non_centered_mcmc</span><span class="p">.</span><span class="n">get_samples</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">"MCMC complete"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Train set accuracy, child categories:  0.7351668726823238
+Test set accuracy, child categories:  0.6277708071936429
+</code></pre></div></div>
+
+<h2 id="comparison-to-flat-classification">Comparison to Flat Classification</h2>
+
+<p>Of course, we need to compare this hierarchical model against simpler formulations. One of the simplest approaches to this problem is to flatten the hierarchy, which we do by disregarding the parent classes. We’ll compare a Ridge classifier, SVM classifier and logistic regression:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># rige classifier
+</span><span class="n">ridge_clf</span> <span class="o">=</span> <span class="n">RidgeClassifier</span><span class="p">().</span><span class="n">fit</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"Ridge classifier train set accuracy, children classes: "</span><span class="p">,</span> <span class="n">ridge_clf</span><span class="p">.</span><span class="n">score</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"Ridge classifier test set accuracy, children classes: "</span><span class="p">,</span> <span class="n">ridge_clf</span><span class="p">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target_test</span><span class="p">))</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">''</span><span class="p">)</span>
+
+<span class="c1"># linear SVM
+</span><span class="n">sgd_clf</span> <span class="o">=</span> <span class="n">SGDClassifier</span><span class="p">(</span><span class="n">loss</span> <span class="o">=</span> <span class="s">"hinge"</span><span class="p">,</span> <span class="c1"># linear SVM, "log" for logistic regression
+</span>                        <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> 
+                        <span class="n">n_jobs</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> 
+                        <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
+                        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">).</span><span class="n">fit</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"SVM classifier train set accuracy, children classes: "</span><span class="p">,</span> <span class="n">sgd_clf</span><span class="p">.</span><span class="n">score</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"SVM classifier test set accuracy, children classes: "</span><span class="p">,</span> <span class="n">sgd_clf</span><span class="p">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target_test</span><span class="p">))</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">''</span><span class="p">)</span>
+
+<span class="c1"># logistic regression
+</span><span class="n">log_reg</span> <span class="o">=</span> <span class="n">SGDClassifier</span><span class="p">(</span><span class="n">loss</span> <span class="o">=</span> <span class="s">"log"</span><span class="p">,</span> <span class="c1"># linear SVM, "log" for logistic regression
+</span>                        <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> 
+                        <span class="n">n_jobs</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> 
+                        <span class="n">random_state</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
+                        <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">).</span><span class="n">fit</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target</span><span class="p">)</span>
+<span class="c1"># log_reg.predict_proba(test_tfidf.T)
+</span><span class="k">print</span><span class="p">(</span><span class="s">"Logistic Regression train set accuracy, children classes: "</span><span class="p">,</span> <span class="n">log_reg</span><span class="p">.</span><span class="n">score</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"Logistic Regression test set accuracy, children classes: "</span><span class="p">,</span> <span class="n">log_reg</span><span class="p">.</span><span class="n">score</span><span class="p">(</span><span class="n">test_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">children_target_test</span><span class="p">))</span>
+</code></pre></div></div>
+<p> </p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Ridge classifier train set accuracy, children classes:  0.7184796044499382
+Ridge classifier test set accuracy, children classes:  0.6273525721455459
+
+SVM classifier train set accuracy, children classes:  0.7481458590852905
+SVM classifier test set accuracy, children classes:  0.6288163948138854
+
+Logistic Regression train set accuracy, children classes:  0.7081788215904409
+Logistic Regression test set accuracy, children classes:  0.6286072772898369
+</code></pre></div></div>
+
+<h2 id="next-steps">Next Steps</h2>
+
+<p>There is where this post stops because of time constraints, but to really understand the differences in models, I’m writing some interesting areas to look into in the future.</p>
+
+<ul>
+  <li>Performance of parent categories: I expect the hierarchical model to perform well on the parent-level categories, since we implicitly model these in our regression. In particular I’m interested in the parent-level preformance for classes that have few datapoints.</li>
+  <li>Out-of-distribution examples: Because our model is Bayesian, it should also be able to detect out-of-distribution samples better than the frequentist models. We can test this by applying a random text dataset to the models.</li>
 </ul>
 
 <p> </p>
-
-<h3 id="aside-latent-variable-problem">Aside: Latent Variable Problem</h3>
-
-<p>A latent variable is a quantity that we don’t directly observe. This arises for different reasons. It could be because of observational noise or that the quantity doesn’t really exist, for example the clusters in a GMM. Lots of interesting problem formulations contain latent variables which brings some challenges during inference.</p>
-
-<p>In models like this, if $Z$ was our observed data, then we can use the likelihood function to do inference on $\theta$ and walk away happily. However, $X$ is observed and only connected to $\theta$ through $Z$.</p>
-
-<p>The model is:</p>
-
-\[Z_j \sim f(z \mid \theta), \qquad j = 1, ..., m\]
-
-\[X_i \sim g(x \mid Z), \qquad i = 1, ..., n\]
-
-<p>In order to do inference on $\theta$, we need the likelihood function, $L(\theta \mid X)$, which we can only get by introducing $Z$ and integrating it out.</p>
-
-\[L(\theta \mid X) \propto f(x \mid \theta) = \int_Z p(X, Z \mid \theta) dZ\]
-
-\[\qquad = \int_Z p(X \mid Z) p(Z \mid \theta) dZ\]
-
-<p>This integral is almost definitely intractable, which leads into the main idea of this blog post: variational lower bounds.</p>
-
-                    ]]>
-                </content:encoded>
-                <guid isPermaLink="false">/2021/10/28/ELBO/</guid>
-                <description>
-                    
-                    Variational (evidence) lower bound and the latent variable problem
-                    
-                </description>
-                <pubDate>Thu, 28 Oct 2021 02:22:00 -0400</pubDate>
-                <author>Jonathan Ramkissoon</author>
-            </item>
-        
-    
-        
-            <item>
-                <title>Inference on SDE's</title>
-                <link>http://localhost:4000/2021/09/29/inference-on-SDEs/</link>
-                <content:encoded>
-                    <![CDATA[
-                    <p>A stochastic differential equation describes the change in some variable, $X$, at a given time, $t$.</p>
-
-\[d X_t = \mu(X_{t-1}, \theta) dt + \sigma(X_{t-1}, \theta) dW_t\]
-
-<h2 id="why-is-inference-hard">Why is inference hard?</h2>
-
-<ul>
-  <li>The likelihood is intractable: We cannot write down the likelihood. This makes maximum likehood inference nearly impossible, and</li>
-</ul>
-
-                    ]]>
-                </content:encoded>
-                <guid isPermaLink="false">/2021/09/29/inference-on-SDEs/</guid>
-                <description>
-                    
-                    In this post I want to explore stochastic differential equations and why inference on them is difficult
-                    
-                </description>
-                <pubDate>Wed, 29 Sep 2021 02:22:00 -0400</pubDate>
-                <author>Jonathan Ramkissoon</author>
-            </item>
-        
-    
-        
-            <item>
-                <title>Introduction to Approximate Bayesian Inference</title>
-                <link>http://localhost:4000/2021/06/29/approximate-bayesian-computing/</link>
-                <content:encoded>
-                    <![CDATA[
-                    <h2 id="introduction-what">Introduction (What)</h2>
-
-<p>Approximate Bayesian computing is a family of approximate inference methods targeted at drawing approximate posterior samples when the likelihood, $p(X \mid \theta)$ is computationally intractable but it is easy to sample from the model, $X \sim p(. \mid \theta)$. These are generally simulation based models, where it is easy to generate $X$ if we have $\theta$, but impossible to write down the likelihood. Some examples of these models are <strong>exmaples here</strong></p>
-
-<p>The lack of a likelihood function makes Bayesian inference particularly challenging, since the usual way of modelling the posterior is through the product of the likelihood and the priors. To proceed with inference, we have to either directly approximate the posterior, or first approximate the likelihood, then use it to model the posterior.</p>
-
-<p>Since we can’t estimate $L(\theta; X)$, but we can sample from $p(X \mid \theta)$ easily, one direction for inference is as follows:</p>
-
-<p>1) Propose $\theta_1 \sim p(\theta)$ using the prior on $\theta$ <br />
-2) Simulate data using $p(X_1 \mid \theta_1)$ <br />
-3) If the distance between $X_1$ and $X_{obs}$ is less than $\epsilon$, we accept $\theta_1$, and reject otherwise. We can use summary statistics to define distance here. <br />
-4) Now each accepted $\theta$ is an sample from the approximate posterior $p(\theta \mid X)$. This approximation comes from an approximation to the likelihood, which is dependent on, $\epsilon$.</p>
-
-<p>This is called a rejection sampling scheme and not surprisingly, it isn’t the most efficient or robust. It is sensitive to the choice of summary statistics and threshold, and there is a tradeoff between statistical and computational efficiency. <a href="https://academic.oup.com/sysbio/article/66/1/e66/2420817">This paper</a> has lots more about it.</p>
-
-<p>Aside from these drawbacks, if we think about this algorithm a bit, each draw of $\theta$ is independent, and we can probably do more to inform future draws of $\theta$.</p>
-
-<p> </p>
-
-<!-- ### Rejection-Sampling 
-
-
-##### Rejection-Sampling in an ideal world
-
-An early method for generating samples from approximate posterior distributions is [rejection-sampling](https://www.genetics.org/content/genetics/145/2/505.full.pdf). In an ideal world with a tractable likelihood function, we would first sample a candidate parameter from the prior, $\theta^{\ast} \sim p(\theta)$. Then forward-simulate our data, $X^{\ast}\sim p(X \mid \theta^{\ast})$, to get a sample from the joint distribution, $(\theta^{\ast}, X^{\ast}) \sim p(\theta^{\ast}, X^{\ast})$. If the simulated data, $X^{\ast}$, "matches" the observed data, $X$, we accept $\theta^{\ast}$ and repeat the process. After repeating this many times, we end up with approximate samples from the posterior, $p(\theta \mid X)$. 
-Now I only have one question... how are we sure this works?? Here's an explanation below: 
-
-$$ p(\theta^{\ast}, X^{\ast}) = p(X^{\ast} \mid \theta^{\ast}) p(\theta) I_X(X^{\ast}) $$
-
-Where $I_X$ is 1 if $X^{\ast}$ "matches" $X$, and 0 otherwise. Therefore, averaging $I_X(X^{\ast})$ for all values of $X^{\ast}$ will give the acceptance probability of the our rejection-sampling method, since we only accept when the simulated data matches the observed data. 
-
-Marginalizing $X^{\ast}$, we get:
-
-$$ p(\theta^{\ast}) = \int p(X^{\ast} \mid \theta^{\ast}) p(\theta^{\ast}) I_X(X^{\ast})  dX^{\ast} $$
-
-$$ p(\theta^{\ast}) = p(X \mid \theta^{\ast}) p(\theta^{\ast}) \propto p(\theta^{\ast} \mid X) $$
-
-So the distribution of our resulting $\theta^{\ast}$'s is proportional to the posterior distribution we were after in the first place. An intuition for this method is to keep trying to recreate the observed data using different values of $\theta$. For the reconstructions that are really close to the observed data, keep the values of $\theta$, otherwise throw it out. 
-
-&nbsp;
-
-
-##### Rejection-sampling in practice 
-
-We want to do inference on models with intractable likelihoods, so we need to introduce some more approximations. The posterior conditional on the full dataset, $p(\theta \mid X_{obs})$, is approximated by effectively summarizing $X_{obs}$ with summary statistics, $s_{obs}$. We end up with $p(\theta \mid s_{obs}) \propto p(s_{obs} \mid \theta)p(\theta)$. Since the likelihood is intractable, $p(s_{obs} \mid \theta)$ is also likely intractable and we have to introduce another approximation of $p_{ABC}(\theta \mid s_{obs}) = \int p(\theta, s \mid s_{obs}) ds$.
-
-$$ p(\theta, s \mid s_{obs}) \propto K(\mid \mid s' - s_{obs} \mid \mid) p(s \mid \theta) p(\theta) $$
-
-Where $K$ is a kernel that measures how far away $s'$ is from $s_{obs}$.
-
-From Wikipedia: 
-> The outcome of the ABC rejection algorithm is a sample of parameter values approximately distributed according to the desired posterior distribution, and, crucially, obtained without the need to explicitly evaluate the likelihood function.
-
-Below is code for a simulated example using the first rejection scheme described above. This exposes some holes in the rejection-sampling methodology. Firstly, it is very inefficient if $p(\theta)$ is far from $p(\theta \mid X)$, which it usually is. Second, the sampling scheme doesn't take into account previously sampled points. 
-
-```python 
-num_tries = 10000
-for eps in [0.5]: #, 0.4, 0.3, 0.2, 0.1]:
-    # we never call the `likelihood` function
-    samples = []
-    for _try in range(num_tries):
-        # 1) simulate \sigma from prior
-        prior_sim = sigma_prior.rvs(size = 1)
-        # 2) forward generate data using the value of \sigma just samples
-        data_sim = simulator(prior_sim)
-        # 3) calculate the sufficient statistic of the simulated data
-        sim_ss = sufficient_summary(data_sim)
-        # 4) compare the estimated stat and the actual stat. 
-        if (distance(sim_ss, data_ss) < eps):
-            # accept
-            samples.append(prior_sim)
-    samples = np.array(samples).T
-    fraction_accepted = len(samples) / num_tries
-```
-
-
-### ABC in MCMC -->
-
-<!-- ## So What
-
-## Now What -->
 
 <hr />
 
-<h3 id="questions">Questions</h3>
+<h2 id="bloopers-parent-posterior-as-children-prior">Bloopers: Parent Posterior as Children Prior</h2>
+
+<p>I also experimented with another formulation where I first fit a logistic regression to predict the parent classes, and obtained the posterior mean for $\beta_p$. I then used $\beta_p$ as the prior mean for another regression, where I predict the children classes. Th formulation turned out to not work as well as the traditional hierarchical model, and I suspect it is because when using the posterior mean of $\beta_p$, the posterior variance was disregarded. This no longer made the model hierarchical, but simply just changed the prior mean for $\beta_c$.</p>
+
+<p>The code I used to run this is below:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># first fit parent regression
+</span><span class="k">def</span> <span class="nf">parent_model</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">Y</span> <span class="o">==</span> <span class="bp">None</span> <span class="p">:</span> 
+        <span class="n">dim_Y</span> <span class="o">=</span> <span class="mi">6</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">dim_Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">numpyro</span><span class="p">.</span><span class="n">sample</span><span class="p">(</span><span class="s">"beta"</span><span class="p">,</span> <span class="n">dist</span><span class="p">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">jnp</span><span class="p">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dim_Y</span><span class="p">)),</span> <span class="n">jnp</span><span class="p">.</span><span class="n">ones</span><span class="p">((</span><span class="n">X</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dim_Y</span><span class="p">))</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span> 
+    <span class="n">err</span> <span class="o">=</span> <span class="n">numpyro</span><span class="p">.</span><span class="n">sample</span><span class="p">(</span><span class="s">"err"</span><span class="p">,</span> <span class="n">dist</span><span class="p">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">))</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> <span class="o">+</span> <span class="n">err</span>
+    <span class="n">probs</span> <span class="o">=</span> <span class="n">softmax</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span> <span class="c1"># jax softmax, not scipy
+</span>    <span class="n">numpyro</span><span class="p">.</span><span class="n">sample</span><span class="p">(</span><span class="s">"Y"</span><span class="p">,</span> <span class="n">dist</span><span class="p">.</span><span class="n">Multinomial</span><span class="p">(</span><span class="n">probs</span> <span class="o">=</span> <span class="n">probs</span><span class="p">),</span> <span class="n">obs</span> <span class="o">=</span> <span class="n">Y</span><span class="p">)</span>
+
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s">"float32"</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">parent_binr</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s">"float32"</span><span class="p">)</span> <span class="c1"># binarized labels
+</span>
+<span class="n">_num_chains</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">_num_samples</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">numpyro</span><span class="p">.</span><span class="n">set_host_device_count</span><span class="p">(</span><span class="n">_num_chains</span><span class="p">)</span>
+<span class="n">rng_key</span><span class="p">,</span> <span class="n">rng_key_predict</span> <span class="o">=</span> <span class="n">random</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">random</span><span class="p">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">mcmc</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span><span class="n">model</span> <span class="o">=</span> <span class="n">parent_model</span><span class="p">,</span> 
+                     <span class="n">rng_key</span> <span class="o">=</span> <span class="n">rng_key</span><span class="p">,</span> 
+                     <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">,</span>
+                     <span class="n">num_warmup</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> 
+                     <span class="n">num_samples</span> <span class="o">=</span> <span class="n">_num_samples</span><span class="p">,</span> 
+                     <span class="n">num_chains</span> <span class="o">=</span> <span class="n">_num_chains</span><span class="p">)</span>
+<span class="n">parent_samples</span> <span class="o">=</span> <span class="n">mcmc</span><span class="p">.</span><span class="n">get_samples</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"MCMC complete"</span><span class="p">)</span>
+
+<span class="c1"># predict Y_test at inputs X_test
+</span><span class="n">vmap_args</span> <span class="o">=</span> <span class="p">(</span><span class="n">parent_samples</span><span class="p">,</span> <span class="n">random</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">rng_key_predict</span><span class="p">,</span> <span class="n">_num_chains</span> <span class="o">*</span> <span class="n">_num_samples</span><span class="p">))</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">samples</span><span class="p">,</span> <span class="n">rng_key</span><span class="p">:</span> <span class="n">predict</span><span class="p">(</span><span class="n">parent_model</span><span class="p">,</span> <span class="n">rng_key</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">X</span><span class="p">))(</span><span class="o">*</span><span class="n">vmap_args</span><span class="p">)</span>
+
+<span class="c1"># compute mean prediction and confidence interval around median
+</span><span class="n">mean_prediction</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">percentiles</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">95.0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">class_predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mean_prediction</span><span class="p">).</span><span class="nb">apply</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">argmax</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"Training set accuracy: "</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">class_predictions</span> <span class="o">==</span> <span class="n">parent_target</span><span class="p">))</span>
+</code></pre></div></div>
+<p> </p>
+
+<p>Now construct the prior mean for the child regression by using the posterior mean of the parent regression.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># use the posterior of the parent regression as the prior mean for the child regression
+</span><span class="n">beta_posterior</span> <span class="o">=</span> <span class="n">parent_samples</span><span class="p">[</span><span class="s">"beta"</span><span class="p">]</span>
+<span class="n">posterior_mean</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">beta_posterior</span><span class="p">)</span>
+
+<span class="n">posterior_mean_df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">posterior_mean</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">parent_class_list</span><span class="p">)</span>
+
+<span class="n">prior_mean</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">children_class_list</span> <span class="p">:</span>
+    <span class="n">prior_mean</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">posterior_mean_df</span><span class="p">[</span><span class="n">class_tree</span><span class="p">[</span><span class="n">c</span><span class="p">]]</span>
+    
+<span class="n">prior_mean</span><span class="p">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre></div></div>
+<p> </p>
+
+<p>And re-run a similar model, but this time using the children labels as the target:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># model for the child classes
+</span><span class="k">def</span> <span class="nf">child_model</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">numpyro</span><span class="p">.</span><span class="n">sample</span><span class="p">(</span><span class="s">"beta"</span><span class="p">,</span> <span class="n">dist</span><span class="p">.</span><span class="n">Normal</span><span class="p">(</span><span class="n">jnp_prior_mean</span><span class="p">,</span> <span class="n">jnp</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="n">jnp_prior_mean</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">numpyro</span><span class="p">.</span><span class="n">sample</span><span class="p">(</span><span class="s">"err"</span><span class="p">,</span> <span class="n">dist</span><span class="p">.</span><span class="n">Normal</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+    <span class="n">resp</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> <span class="o">+</span> <span class="n">err</span>
+    <span class="n">probs</span> <span class="o">=</span> <span class="n">softmax</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span> <span class="c1"># jax softmax, not scipy
+</span>    <span class="n">numpyro</span><span class="p">.</span><span class="n">sample</span><span class="p">(</span><span class="s">"Y"</span><span class="p">,</span> <span class="n">dist</span><span class="p">.</span><span class="n">Multinomial</span><span class="p">(</span><span class="n">probs</span> <span class="o">=</span> <span class="n">probs</span><span class="p">),</span> <span class="n">obs</span> <span class="o">=</span> <span class="n">Y</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">train_tfidf</span><span class="p">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s">"float32"</span><span class="p">)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">children_binr</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s">"float32"</span><span class="p">)</span> <span class="c1"># binarized labels
+</span><span class="n">jnp_prior_mean</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">prior_mean</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s">"float32"</span><span class="p">)</span>
+
+<span class="n">_num_chains</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">_num_samples</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">numpyro</span><span class="p">.</span><span class="n">set_host_device_count</span><span class="p">(</span><span class="n">_num_chains</span><span class="p">)</span>
+<span class="n">rng_key</span><span class="p">,</span> <span class="n">rng_key_predict</span> <span class="o">=</span> <span class="n">random</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">random</span><span class="p">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+<span class="n">child_model_reparam</span> <span class="o">=</span> <span class="n">reparam</span><span class="p">(</span><span class="n">child_model</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s">'beta'</span><span class="p">:</span> <span class="n">LocScaleReparam</span><span class="p">(</span><span class="mi">0</span><span class="p">)})</span>
+
+<span class="n">child_mcmc</span> <span class="o">=</span> <span class="n">run_inference</span><span class="p">(</span><span class="n">model</span> <span class="o">=</span> <span class="n">child_model_reparam</span><span class="p">,</span> 
+                           <span class="n">rng_key</span> <span class="o">=</span> <span class="n">rng_key</span><span class="p">,</span> 
+                           <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">,</span>
+                           <span class="n">num_warmup</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> 
+                           <span class="n">num_samples</span> <span class="o">=</span> <span class="n">_num_samples</span><span class="p">,</span> 
+                           <span class="n">num_chains</span> <span class="o">=</span> <span class="n">_num_chains</span><span class="p">)</span>
+<span class="n">child_samples</span> <span class="o">=</span> <span class="n">child_mcmc</span><span class="p">.</span><span class="n">get_samples</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"MCMC complete"</span><span class="p">)</span>
+
+
+<span class="c1"># predict Y_test at inputs X_test
+</span><span class="n">vmap_args</span> <span class="o">=</span> <span class="p">(</span><span class="n">child_samples</span><span class="p">,</span> <span class="n">random</span><span class="p">.</span><span class="n">split</span><span class="p">(</span><span class="n">rng_key_predict</span><span class="p">,</span> <span class="n">_num_chains</span> <span class="o">*</span> <span class="n">_num_samples</span><span class="p">))</span>
+<span class="n">children_predictions</span> <span class="o">=</span> <span class="n">vmap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">samples</span><span class="p">,</span> <span class="n">rng_key</span><span class="p">:</span> <span class="n">predict</span><span class="p">(</span><span class="n">child_model</span><span class="p">,</span> <span class="n">rng_key</span><span class="p">,</span> <span class="n">samples</span><span class="p">,</span> <span class="n">X</span><span class="p">))(</span><span class="o">*</span><span class="n">vmap_args</span><span class="p">)</span>
+
+<span class="c1"># compute mean prediction and confidence interval around median
+</span><span class="n">mean_children_prediction</span> <span class="o">=</span> <span class="n">jnp</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">children_predictions</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">percentiles</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">children_predictions</span><span class="p">,</span> <span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">95.0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">child_class_predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mean_children_prediction</span><span class="p">).</span><span class="nb">apply</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">argmax</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">"Train set accuracy, child categories: "</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">mean</span><span class="p">(</span><span class="n">child_class_predictions</span> <span class="o">==</span> <span class="n">children_target</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p> </p>
+
+<p>The test set accuracy of the child model using this formulation was around 44%, significantly worse than both the frequentist models and non-centered hierarchical model.</p>
+
+<hr />
+
+<h2 id="helpful-resources">Helpful Resources</h2>
 
 <ul>
-  <li>Since ABC methods are targeted at problems with intractable likelihoods, do you need a tractable likelihood for VI? Do you need a tractable likelihood for all other posterior approximations? What about Laplace approximation?
-    <ul>
-      <li>We need a likelihood function for the Laplace approximation becasue we approximate the maximum of the posterior, which is the likelihood multiplied by the priro. I think we also need it for VI but it’s not clear where it shows up in the ELBO for me right now.</li>
-    </ul>
-  </li>
-  <li>Do SMC methods require likeilhood functions?
-    <ul>
-      <li>Yes, in order to compute the importance weights we need knowledge of $p(y_t \mid x_t, \theta)$</li>
-    </ul>
-  </li>
-  <li>In what situations are likelihoods computationally intractable? How could a likelihood be computationally intractable but the model could be easy to sample from? I <strong>really</strong> don’t understand this. Isn’t sampling from the <code class="language-plaintext highlighter-rouge">model</code> the same as sampling from the likelihood?
-    <ul>
-      <li>This happens in simulation models, like SDE’s. We have a closed for solution for how the model/latent variables evolve, but no way to right down the likelihood. Not quite sure what the reason for us not being able to write down the likelihood is but I think it has something to do with latent variables and dependence between observations? But then if it has something to do with the dependence between observations, that would imply that we can’t write down the likelihood for any reasonably complex time-series model… yea idk.</li>
-    </ul>
-  </li>
-  <li>Is approximate bayesian computation the same as approximate bayesian inference? It seems like ABC is a sub-field of approximate inference
-    <ul>
-      <li>From what I understand, ABC is a subfield of approximate inference specifically dealing with the case where we don’t have a tractable likelihood. The other parts of approximate inference deals with approximating the posterior distribution for efficiency reasons, like variational inference or Laplace approximation.</li>
-    </ul>
-  </li>
-  <li>What does <code class="language-plaintext highlighter-rouge">explicit likelihood</code> mean? I see this all over the literature. Does it just mean we don’t have a analytic likelihood that we can write down?
-    <ul>
-      <li>I think so.</li>
-    </ul>
-  </li>
-  <li>What is an example of a nuisance parameter? Is the hierarchical parameter an example of this?
-    <ul>
-      <li>I think this is just a latent variable, which we have to integrate out to do inference on the parameters.</li>
-    </ul>
-  </li>
+  <li><a href="https://florianwilhelm.info/2020/10/bayesian_hierarchical_modelling_at_scale/">Finally! Bayesian Hierarchical Modelling at Scale - Florian Wilhelm</a></li>
+  <li><a href="https://rlouf.github.io/post/jax-random-walk-metropolis/">Massively parallel MCMC with JAX</a></li>
 </ul>
 
-<h2 id="annotated-bib">Annotated Bib</h2>
-
-<h3 id="apprroximate-bayesian-computation">Apprroximate Bayesian Computation</h3>
-
-<ul>
-  <li><a href="https://www.maths.lu.se/fileadmin/maths/forskning_research/InferPartObsProcess/abc_slides.pdf">Intro to ABC Slides</a>: Very comprehensive slides, this is where I got the proof that the rejection-sampling scheme works.</li>
-  <li><a href="https://arxiv.org/abs/2004.04620">Bayesian Computation with Intractable Likelihoods</a></li>
-  <li><a href="http://bebi103.caltech.edu.s3-website-us-east-1.amazonaws.com/2017/tutorials/aux9_abc.html">Jupyter notebook on ABC with code</a>: Plots and code on ABC from scratch</li>
-  <li><a href="https://www.semanticscholar.org/paper/A-tutorial-on-approximate-Bayesian-computation-Turner-Zandt/88974ed0ac2f5d9c1c6a0cf04ac7306045540c9c">Paper Tutorial on ABC</a></li>
-  <li><a href="https://journals.plos.org/ploscompbiol/article/file?id=10.1371/journal.pcbi.1002803&amp;type=printable">Overview of ABC</a></li>
-  <li><a href="https://storage.googleapis.com/plos-corpus-prod/10.1371/journal.pcbi.1002803/1/pcbi.1002803.pdf?X-Goog-Algorithm=GOOG4-RSA-SHA256&amp;X-Goog-Credential=wombat-sa%40plos-prod.iam.gserviceaccount.com%2F20210623%2Fauto%2Fstorage%2Fgoog4_request&amp;X-Goog-Date=20210623T212921Z&amp;X-Goog-Expires=86400&amp;X-Goog-SignedHeaders=host&amp;X-Goog-Signature=85cc0b8ea6a192df72554cf38a8227930aa0ed069e094e42782cdc53cae796847e8a5024535f90da9da14d26e97ff3882ee521ec196b704db7b0750faa05a0e82a6f6e4fac9109ce21f3eb06982d80a588b1ebc1908e0ab0dfa67f202afe95d2707e100a3f83060a3dd1d7fac1b1dc39c5cb24014bdb463ba3760411855a3277b2901fac0b999136c4d83ee0cbbfa700d0c1f4d986f6b595c508a6d2e844857e872f733f323f799a2c27a733813e669645a650d71e4f9456a4e0079dbd860220604444a67d2abc6f995aa64cc29813c61b25da4e6cd584fadad419b1fa440142ba2f4344bb0ef9714bdf492b2fffc3aae33758e78cc7054c1662cacbcf820ce7">Approxiimate Bayesian Computation, in a Bio Journal</a></li>
-  <li><a href="https://arxiv.org/pdf/2103.02407.pdf">A Comparison of Likelihood-Free Methods With and Without Summary Statistics</a></li>
-  <li><a href="https://www.cs.ubc.ca/~arnaud/delmoral_doucet_jasra_smcabc.pdf">https://www.cs.ubc.ca/~arnaud/delmoral_doucet_jasra_smcabc.pdf</a>: Connection between ABC and SMC</li>
-</ul>
-
-<h3 id="approximate-inference">Approximate Inference</h3>
-
-<ul>
-  <li><a href="http://yingzhenli.net/home/pdf/topics_approx_infer.pdf">Yingzhen Li Topics in Approximate Inference</a></li>
-  <li><a href="http://yingzhenli.net/home/en/?page_id=345">Yingzhen Li papers</a>: Lots of work on approximate inference, with easy to understand “cartoons”.</li>
-  <li><a href="http://yingzhenli.net/home/en/?page_id=1341">Neurips2020 Tutorial on Approximate Inference</a></li>
-  <li></li>
-</ul>
-
-<h3 id="normalizing-flows-and-conditional-density-estimation">Normalizing Flows and Conditional Density Estimation</h3>
-
-<ul>
-  <li><a href="https://arxiv.org/pdf/1903.00954.pdf">Conditional Density Estimation with NN’s</a></li>
-  <li><a href="https://papers.nips.cc/paper/2018/file/6a61d423d02a1c56250dc23ae7ff12f3-Paper.pdf">Gaussian Process Conditional Density Estimation</a></li>
-  <li><a href="http://proceedings.mlr.press/v139/arbel21a.html">Annealed Flow Transport Monte Carlo</a>: Combining SCM samplers with Normalizing flows</li>
-</ul>
 
                     ]]>
                 </content:encoded>
-                <guid isPermaLink="false">/2021/06/29/approximate-bayesian-computing/</guid>
+                <guid isPermaLink="false">/2021/01/29/hierarchical_classification/</guid>
                 <description>
                     
-                    Intro to ABC
+                    In this post I use Numpyro to build a Bayesian hierarchical model to classify Amazon products into a taxonomy.
                     
                 </description>
-                <pubDate>Tue, 29 Jun 2021 02:22:00 -0400</pubDate>
+                <pubDate>Fri, 29 Jan 2021 02:22:00 -0500</pubDate>
                 <author>Jonathan Ramkissoon</author>
             </item>
         
@@ -1026,7 +1428,7 @@ It’s difficult to come to a general conclusion on this, but interestingly the 
                 <guid isPermaLink="false">/2020/07/29/overconfident-nn/</guid>
                 <description>
                     
-                    I trained a classifier on images of animals and gave it an image of myself, it's 98% confident I'm a dog. This is an exploration of a possible Bayesian fix. Code available too
+                    I trained a classifier on images of animals and gave it an image of myself, it&apos;s 98% confident I&apos;m a dog. This is an exploration of a possible Bayesian fix. Code available too
                     
                 </description>
                 <pubDate>Wed, 29 Jul 2020 12:22:00 -0400</pubDate>

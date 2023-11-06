@@ -10,7 +10,7 @@
     <link rel="dns-prefetch" href="//maxcdn.bootstrapcdn.com">
     <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Random walk through life">
+    <meta name="description" content="">
     <meta name="robots" content="all">
     <meta name="author" content="Jonathan Ramkissoon">
     
@@ -19,7 +19,7 @@
     <link rel="alternate" type="application/rss+xml" title="RSS Feed for Jonathan Ramkissoon" href="/feed.xml" />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/pixyll.css?202111131455" type="text/css">
+    <link rel="stylesheet" href="/css/pixyll.css?202311051958" type="text/css">
 
     <!-- Fonts -->
     
@@ -73,17 +73,26 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
 <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
 -->
 
-<script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "all" } } }); </script>
-  <script type="text/x-mathjax-config">
-   MathJax.Hub.Config({
-     tex2jax: {
-       inlineMath: [ ['$','$'], ["\\(","\\)"] ],
-       processEscapes: true
-     }
-   });
-</script>
-<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<!-- <script type="text/x-mathjax-config"> MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "all" } } }); </script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script> -->
+<!-- <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script> -->
 
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
     
 
     <!-- Verifications -->
@@ -95,7 +104,7 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="article">
     <meta property="og:title" content="Home">
-    <meta property="og:description" content="Random walk through life">
+    <meta property="og:description" content="">
     <meta property="og:url" content="http://localhost:4000/">
     <meta property="og:site_name" content="Jonathan Ramkissoon">
     
@@ -109,7 +118,7 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
         <meta name="twitter:creator" content="@_jramkissoon" />
     
     <meta name="twitter:title" content="Home" />
-    <meta name="twitter:description" content="Random walk through life" />
+    <meta name="twitter:description" content="" />
     <meta name="twitter:url" content="http://localhost:4000/" />
     
     <!-- <meta name="twitter:image" content="http://localhost:4000/assets/profile.JPG" /> -->
@@ -184,13 +193,13 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
         <div class="post py3">
           <!-- <p class="post-meta">
 	    
-	      Oct 29, 2021
+	      Jul 9, 2023
 	    
 	  </p> -->
-          <a href="/2021/10/29/my-pdf/" class="post-link"><h4 class="h4 post-title">Honey, my pdf is greater than 1!</h4></a>
+          <a href="/2023/07/09/regression/" class="post-link"><h4 class="h4 post-title">(not so) Simple Linear Regression</h4></a>
           <span class="post-summary">
             
-              Can the values of a probability density function be greater than 1?
+              Theortical and practical considerations with OLS regression
             
           </span>
         </div>
@@ -198,13 +207,13 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
         <div class="post py3">
           <!-- <p class="post-meta">
 	    
-	      Oct 28, 2021
+	      Feb 11, 2023
 	    
 	  </p> -->
-          <a href="/2021/10/28/ELBO/" class="post-link"><h4 class="h4 post-title">Variational Lower Bound</h4></a>
+          <a href="/2023/02/11/topic-modeling/" class="post-link"><h4 class="h4 post-title">Latent Dirichlet Allocation</h4></a>
           <span class="post-summary">
             
-              Variational (evidence) lower bound and the latent variable problem
+              An introduction to the math of latent Dirichlet allocation
             
           </span>
         </div>
@@ -212,13 +221,13 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
         <div class="post py3">
           <!-- <p class="post-meta">
 	    
-	      Sep 29, 2021
+	      Oct 22, 2022
 	    
 	  </p> -->
-          <a href="/2021/09/29/inference-on-SDEs/" class="post-link"><h4 class="h4 post-title">Inference on SDE's</h4></a>
+          <a href="/2022/10/22/importance-sampling/" class="post-link"><h4 class="h4 post-title">Refresher on Importance Sampling</h4></a>
           <span class="post-summary">
             
-              In this post I want to explore stochastic differential equations and why inference on them is difficult
+              Short blurb on importance sampling
             
           </span>
         </div>
@@ -226,13 +235,27 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
         <div class="post py3">
           <!-- <p class="post-meta">
 	    
-	      Jun 29, 2021
+	      Jan 5, 2022
 	    
 	  </p> -->
-          <a href="/2021/06/29/approximate-bayesian-computing/" class="post-link"><h4 class="h4 post-title">Introduction to Approximate Bayesian Inference</h4></a>
+          <a href="/2022/01/05/MLE-loss-regression/" class="post-link"><h4 class="h4 post-title">Gaussian Noise and Mean Squared Error</h4></a>
           <span class="post-summary">
             
-              Intro to ABC
+              Parameter estimation in linear regression from 2 perspectives.
+            
+          </span>
+        </div>
+      
+        <div class="post py3">
+          <!-- <p class="post-meta">
+	    
+	      Jan 29, 2021
+	    
+	  </p> -->
+          <a href="/2021/01/29/hierarchical_classification/" class="post-link"><h4 class="h4 post-title">Bayesian Hierarchical Classification in Numpyro</h4></a>
+          <span class="post-summary">
+            
+              In this post I use Numpyro to build a Bayesian hierarchical model to classify Amazon products into a taxonomy.
             
           </span>
         </div>
@@ -275,20 +298,6 @@ MathJax.Hub.Register.MessageHook("TeX Jax - parse error",function (message) {
           <span class="post-summary">
             
               I trained a classifier on images of animals and gave it an image of myself, it's 98% confident I'm a dog. This is an exploration of a possible Bayesian fix. Code available too
-            
-          </span>
-        </div>
-      
-        <div class="post py3">
-          <!-- <p class="post-meta">
-	    
-	      May 15, 2020
-	    
-	  </p> -->
-          <a href="/2020/05/15/beta-and-dirichlet-distributions/" class="post-link"><h4 class="h4 post-title">Notes on the Beta and Dirichlet Distributions</h4></a>
-          <span class="post-summary">
-            
-              The Beta and Dirichlet distributions are related to each other in a similar way to the Binomial and Multinomial distributions. This post explains the relationship between these 4 distributions using a simple example and some code.
             
           </span>
         </div>

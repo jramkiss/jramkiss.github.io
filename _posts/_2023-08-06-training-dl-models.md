@@ -34,13 +34,13 @@ with random initialization, $p(y_i | X_i) = \frac{1}{k}$. So we expect $-\log (\
 
 **Question**: Why are activation functions needed and why would you not use the identity function?
 
-**Answer**: Activation functions allow neural networks to learn non-linear relationships in data. Using an identity function will be the same as not using any activation function.
+**Answer**: Activation functions allow neural networks to learn non-linear relationships in data. Using an identity function will not introduce any non-linearity into the model.
 
 **Question**: What problems arise when using tanh and sigmoid activation functions? 
 
-**Answer**: The answer to this question lies in the gradient of these functions and the backpropagation algorithm: 
+**Answer (INCOMPLETE)**: The answer to this question lies in the gradient of these functions and the backpropagation algorithm: 
 
-<!-- First recall how gradients flow through a neural network. For an activation function, $\sigma(x)$, weight matrices, $W_1, W_2, W_3$, a simple 2-layer NN is as follows:  
+First recall how gradients flow through a neural network. For an activation function, $\sigma(x)$, weight matrices, $W_1, W_2, W_3$, a simple 2-layer NN is as follows:  
 
 $$ \hat{y} = W_3 \sigma(W_2\sigma(W_1X)) $$
 
@@ -54,7 +54,7 @@ $$
 \\
 \frac{\mathrm{d} L(\hat{y}, y)}{\mathrm{d} W_2} = 
 \end{align}
-$$ -->
+$$
 
 ```python
 import matplotlib.pyplot as plt
@@ -96,6 +96,13 @@ ax[1].legend()
 plt.tight_layout();
 ```
 
+<div class='figure' align="center">
+    <img src="../assets/activation-functions.png" width="100%" height="100%">
+    <div class='caption'  width="50%" height="50%">
+        <p>  </p>
+    </div>
+</div>
+
 $$
 \tanh(x) = \frac{e^x - e^{-x}}{e^x + e^{-x}} \\
 \frac{\mathrm{d}}{\mathrm{d}x} \tanh(x) = 1 - \tanh(x)^2  \\
@@ -111,10 +118,42 @@ $$
 Both of these activation functions saturate when the absolute value of the input is too large. The main problem with this saturation is that the gradients will be 0 and they will update less frequently during training. 
 
 
-**Question**: How does ReLU activate functions help solve issues with sigmoid and tanh activations and what new problems do ReLU present?
+**Question**: How does ReLU activation functions help solve issues with sigmoid and tanh activations and what new problems do ReLU present?
 
 **Answer**: 
 
 **Question**: Why do neurons tend to die when using ReLU activations with a high learning rate?
 
 **Answer**:
+
+**Question:** In a multi-task model with hard parameter sharing, what is the difference between parsing multiple different inputs as opposed to the same input with multiple labels?
+
+**Answer:** 
+
+## General Knowledge Questions
+
+**Question**: What is layer and batch normalization and how do they help avoid vanishing and exploding gradients?
+
+**Question**: How does batch normalization affect the convergence of deep networks?
+
+**Question**: Why is initialization of neural networks important? 
+
+**Question**: How do residual connections in ResNets help in training deeper models?
+
+**Question**: What are the advantages of using the attention mechanism in sequence models? What problem with recurrent architectures does the attention mechanism solve?
+
+**Question**: How do vanishing and exploding gradients arise in neural networks? How do they affect training performance and how can they be mitigated?
+
+**Question**: What are the trade-offs between bi-directional and uni-directional RNN's?
+
+**Question**: Why might one choose max-pooling over average pooling in a convolutional neural network? 
+
+**Question**: How does the choice of optimizer impact model convergence and final performance?
+
+**Question**: Why might my models's loss suddenly spike or become NaN during training? 
+
+**Question**: How do learning rate schedules like cosine annealing or learning rate warmup affect training dynamics?
+
+**Question**: What are some effective strategies for parallelizing and distributing deep learning model training across multiple GPU's or nodes? 
+
+**Question**: 
