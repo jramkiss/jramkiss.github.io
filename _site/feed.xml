@@ -3,227 +3,278 @@
   <channel>
     <title>Jonathan Ramkissoon</title>
     <description></description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <link>http://localhost:4444/</link>
+    <atom:link href="http://localhost:4444/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
-        <title>(not so) Simple Linear Regression</title>
-        <description>&lt;p&gt;This is my attempt at creating a reference post for linear regression. It starts with a brief introduction of the regression problem and then jumps into to estimation, where different ways of deriving the regression estimators are discussed. The assumptions of the OLS regression model are then presented and individually tinkered with to get a better intuition around them. Finally, a variety of additonal connections and proofs are presented regarding different aspects of the regression model.&lt;/p&gt;
+        <title>State-Space Models and Particle Filtering</title>
+        <description>&lt;p&gt;In this post I introduce state-space (latent variable) models and explain the filtering problem. We’ll then see how importance sampling and particle filtering are used to do inference on this class of models.&lt;/p&gt;
 
-&lt;h2 id=&quot;linear-regression&quot;&gt;Linear Regression&lt;/h2&gt;
+&lt;h2 id=&quot;state-space-models&quot;&gt;State Space Models&lt;/h2&gt;
 
-&lt;p&gt;The linear regression model models the conditional expectation of $\mathbb{E}(Y \mid X)$ with a linear function:&lt;/p&gt;
+&lt;p&gt;State-space models are a general class of latent variable models widely used in engineering, economics and finance to model the evolution of dynamic systems. They are characterized by an unobserved &lt;a href=&quot;https://en.wikipedia.org/wiki/Discrete-time_Markov_chain&quot;&gt;discrete-time Markov process&lt;/a&gt;, $X_t, t \ge 0$ and observations, $Y_t, t \ge 1$. In these models, we assume that $Y_t$ is conditionally independent given $X_t$, and both the transition density for the Markov process, $f(X_t \mid X_{t-1})$ and the observation model, $g(Y_t \mid X_t)$ are given.&lt;/p&gt;
 
-\[f(X; \beta) = \beta_0 + \sum_{j=1}^P x_j \beta_j\]
-
-&lt;p&gt;There are many ways of estimating $\beta$, each with their tradeoffs. However, by far the most widely used is OLS estimation. This provides a simple framework that can be analyzed from both a statistical and mathematical perspective. From a statistical point of view, OLS estimates allow for rigorous statistical analysis of models through distributional assumptions on the estimated parameters. From a mathematical point of view, OLS estimates can be derived and analyzed using only linear algebra concepts.&lt;/p&gt;
-
-&lt;h2 id=&quot;ordinary-least-squares-regression&quot;&gt;Ordinary Least Squares Regression&lt;/h2&gt;
-
-&lt;p&gt;The standard OLS model finds the parameters of a “best fitting” line of the form 
-$f(X) = \sum_{i=0}^p X_i \beta_i$ by minimizing the vertical distance between each point and that line. This is found by minimizing the following equation:&lt;/p&gt;
-
-\[\begin{align*}
-S(\beta) &amp;amp;= \sum_{i=1}^N (X_i\beta - y_i)^2 \\
-\end{align*}\]
-
-&lt;p&gt;A visual representation of this is shown in the figure below. Note that OLS does &lt;strong&gt;not&lt;/strong&gt; minimize the distance between each point and the OLS estimate, since this would mean minimizing the length of perpenticular lines connecting each point to the OLS estiamte. Instead, the OLS objective minimizes the distance along the y-axis.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;From a statistical point of view, this criterion is reasonable if the training observations $(x_i, y_i)$ are drawn independently from their poplulation, or if the $x_i$’s are not independent, but conditionally independent given $y_i$.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;I don’t quite understand the statement above, which was taken from Elements of Statistical Learning. My intuition is that the latter case happens often in autoregressive models.&lt;/p&gt;
+&lt;p&gt;These densities are parameterzied by $\Theta$, and parameter inference on these models is concerned with the estimation of $\Theta$.&lt;/p&gt;
 
 &lt;div class=&quot;figure&quot; align=&quot;center&quot;&gt;
-    &lt;img src=&quot;../assets/OLS_estimate.png&quot; width=&quot;100%&quot; height=&quot;100%&quot; /&gt;
-    &lt;div class=&quot;caption&quot; width=&quot;50%&quot; height=&quot;50%&quot;&gt;
-        &lt;p&gt; OLS estimate with simulated data. The OLS loss function minimizes the vertical distance (L2 distance) &lt;/p&gt;
+    &lt;img src=&quot;/assets/state-space-model.png&quot; width=&quot;90%&quot; /&gt;
+    &lt;div class=&quot;caption&quot; width=&quot;40%&quot; height=&quot;40%&quot;&gt;
+        &lt;p&gt; Visual representation of a generic state-space model. $X_t$ is the state of the system at time $t$, which we don&apos;t have &quot;access&quot; to, and $Y_t$ is the observation of the system. &lt;/p&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;h3 id=&quot;estimation&quot;&gt;Estimation&lt;/h3&gt;
-
-&lt;p&gt;Minimizing $S(\beta)$ above is the same as maximizing the likelihood function under the assumption of Gaussian error (I discuss this more in my &lt;a href=&quot;https://jramkiss.github.io/2022/01/05/MLE-loss-regression/&quot;&gt;Gaussian Noise and Mean Squared Error&lt;/a&gt; post). Using matrix notation, we can re-write $S(\beta)$ to be:&lt;/p&gt;
+&lt;p&gt;A very simple SSM is a random-walk + noise:&lt;/p&gt;
 
 \[\begin{align*}
-S(\beta) &amp;amp;= (y - X\beta)^T (y - X\beta) \\
+x_t &amp;amp;= x_{t-1} + \epsilon_{t-1}, \qquad \epsilon_t \sim N(0, \sigma^2_{\epsilon}) \\
+y_t &amp;amp;= x_t + r_t, \qquad r_t \sim N(0, \sigma^2_{r}) \\ 
 \end{align*}\]
 
-&lt;p&gt;This is a quadratic in terms of $\beta$, so differentiating twice gives us:&lt;/p&gt;
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;250&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sigma2_eps&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sigma2_r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;eps&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scale&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sigma2_eps&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scale&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sigma2_r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cumsum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;eps&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;fig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subplots&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Latent states&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scatter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arange&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;N&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;color&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;firebrick&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Observations&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;legend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;figure&quot; align=&quot;center&quot;&gt;
+    &lt;img src=&quot;/assets/random-walk-noise.png&quot; width=&quot;90%&quot; /&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Practitioners are typically interested in either parameter estimation or estimation of the latent states, $X_t$. For example, a common usecase of these models in engineering is for object tracking, where we only have access to a noisy measurement of the object’s position at a point in time. In this case, the latent state is the exact position of the object, which we are more interested in estimating compared to the model parameters, $\Theta$. This problem of estimating the latent states is called the Bayesian filtering problem.&lt;/p&gt;
+
+&lt;p&gt;At this point you may wonder why I have made the distinction between estimation of parameters and latent states, since we can’t really have one without the other. Actually, we can. There are some methods for parameter inference that lend well to cases where we don’t care about the latent states, and therefore these are integrated out. To see this, consider the likelihood function for the state space model above:&lt;/p&gt;
 
 \[\begin{align*}
-\frac{\partial S}{\partial \beta} = -2X^T(y - X\beta) \\
-\frac{\partial^2 S}{\partial \beta \partial \beta^T} = 2X^TX
+\mathcal{L}(\Theta \mid Y_{1:T}) &amp;amp;= \int \left[ \pi(X_0) \prod_{t=0}^T g(Y_t \mid X_t, \Theta) \prod_{n=1}^T f(X_n \mid X_{n=1}, \Theta) \right] dX_{0:T}
 \end{align*}\]
 
-&lt;p&gt;Assuming that $X$ has &lt;strong&gt;full-rank&lt;/strong&gt; (i.e. all columns of $X$ are linearly independent, for $X \in \mathbb{R}^{p \times N}, p \lt N$) and therefor $X^TX$ is positive definite, we set the first derivative to zero: $X^T(y - X\beta) = 0$, resulting in the unique solution:&lt;/p&gt;
+&lt;p&gt;If this integral could be approximated somehow, we can bypass the filtering problem and directly maximize the likelihood function to find the MLE. Anyway, that’s enough of a tangent.&lt;/p&gt;
 
-\[\hat{\beta} = (X^TX)^{-1}X^T y\]
+&lt;h3 id=&quot;bayesian-filtering&quot;&gt;Bayesian Filtering&lt;/h3&gt;
 
-&lt;h4 id=&quot;geometric-interpretation&quot;&gt;Geometric Interpretation&lt;/h4&gt;
-
-&lt;p&gt;Another way to interpret the estimation problem is through the lens of projections. The features (or design matrix as statisticians will call it), $X$, span a subspace of $\mathbb{R}^P$, called the column space of $X$. We minimize $S(\beta)$ by choosing $\hat{\beta}$ such that the residual vector, $y - \hat{y}$ is orthogonal to the column space of $X$. This is represented mathematically by $X^T(y - X\beta) = 0$.&lt;/p&gt;
-
-&lt;p&gt;TODO: add plots and expand:&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Orthogonality between X and $\epsilon$&lt;/li&gt;
-  &lt;li&gt;$Cov(y, \epsilon)$&lt;/li&gt;
-  &lt;li&gt;Decomposition of $y$ into 2 orthogonal components: X and residual&lt;/li&gt;
-  &lt;li&gt;$Cov(\hat{\epsilon}, \hat{y})$: Is there a relationship between the residuals and the fitted values&lt;/li&gt;
-  &lt;li&gt;$Cov(\hat{\epsilon}, y)$: Is there a relationship between the residuals and targets?&lt;/li&gt;
-  &lt;li&gt;Why do we plot residuals VS fitted values when diagnosing regressions?&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;ols-assumptions&quot;&gt;OLS Assumptions&lt;/h3&gt;
-
-&lt;p&gt;Up until now, we have only made one soft assumption for the linear regression model, which is that the conditional expectation, $\mathbb{E}(Y \mid X)$, can be reasonably approximated with a linear function. As I mentioned in the intro, we can view the OLS estimates through different lenses. Through the eyes of a statistician, the first question that arises is: what is the distribution of my estimator? To answer this question, we need a few more assumptions. Firstly, assume that the deviation of $y$ around its conditional expectation, $\mathbb{E}(Y \mid X)$, is Gaussian. It turns out that deriving the OLS estimates in the manner above, or by specifying the resulting likelihood function from this distributional assumption yields the same result. Finally, we also assume that the observations, $y_i$ are uncorrelated and have constant variance.&lt;/p&gt;
+&lt;p&gt;Bayesian filtering is the problem of estimating the marginal posterior of the state $X_t$ given all previous observations, $Y_{1:t}$, $p(X_t \mid Y_{1:t})$. Note that this distribution is in some sense (not really) the reverse of the observation model, but does not follow any Markov or conditional independence assumptions. However, the conditional independence and Markov assumptions can be used to construct recursive definitions of the quantities we are interested in. &lt;a href=&quot;https://users.aalto.fi/~ssarkka/pub/bfs_book_2023_online.pdf&quot;&gt;Bayesian Filtering and Smoothing&lt;/a&gt; does a good job explaining these recursive equations for computing the predictive distribution, $p(X_t \mid Y_{1:t-1})$ and filtering distribution, $p(X_t \mid Y_{1:t})$:&lt;/p&gt;
 
 \[\begin{align*}
-y &amp;amp;= X\beta + \epsilon \\
-\epsilon &amp;amp;\sim \mathcal{N}(0, \sigma^2) \\
-y &amp;amp;\sim \mathcal{N}(X\beta, \sigma^2)
+p(X_t \mid Y_{1:t-1}) &amp;amp;= \int f(x_t \mid x_{t-1}) g(x_{t-1} \mid y_{1:t-1}) dx_{t-1} \\
+p(X_t \mid Y_{1:t}) &amp;amp;= \frac{1}{Z_t} g(y_t \mid x_t) p(x_t \mid y_{1:t-1}) \\
 \end{align*}\]
 
-&lt;p&gt;Therefore, the distribution of $\hat{\beta}$ is:&lt;/p&gt;
+&lt;p&gt;Where $Z_t$ is a normalizing constant.&lt;/p&gt;
 
-\[\begin{align*}
-\hat{\beta} &amp;amp;\sim \mathcal{N}(\beta, (X^TX)^{-1}X \text{Var} (y)((X^TX)^{-1}X^T)^T) \\
-\hat{\beta} &amp;amp;\sim \mathcal{N}(\beta, (X^TX)^{-1} \sigma^2)
-\end{align*}\]
+&lt;p&gt;The question now is how do we actually “find” these distributions in practice? I say “find” here because we would really be interested in a closed form solution, but if that isn’t available we’ll take the next best thing. It turns out that when the underlying dynamics are linear and Gaussian, as in our random walk + noise example, the Kalman filter provides a closed form for the filtering distribution. However, if the underlying dynamics are non-linear but still Gaussian, we no longer have a closed form solution but can approximate the filtering distribution with an extended Kalman filter. The final case is where the underlying dynamics are non-linear and the filtering distribution is non-Gaussian. For these cases we need particle filters.&lt;/p&gt;
 
-&lt;p&gt;This distribution will be useful when analyzing the impact of model assumptions later on!&lt;/p&gt;
+&lt;h2 id=&quot;particle-filtering&quot;&gt;Particle Filtering&lt;/h2&gt;
 
-&lt;h4 id=&quot;multicollinearity-in-features&quot;&gt;Multicollinearity in Features&lt;/h4&gt;
+&lt;p&gt;In the bootstrap particle filter, we use the transition density as the proposal density in the importance samling step.&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;impact on estimates&lt;/li&gt;
-  &lt;li&gt;impact on invertability of matrix&lt;/li&gt;
-  &lt;li&gt;impact on distribution of parameters&lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;Model:&lt;/p&gt;
 
-&lt;p&gt;In practice, it is unlikely that all columns of $X$ are linearly independent, which means that $X$ is not full-rank and $(X^T X)$ is a singlular matrix which does not have a unique inverse. In these cases, the resulting solution will still be a projection of $y$ onto the column space of $X$, however there will be more than one way to epxress this projection. This makes interpretation of the individual $\beta$’s unreliable.&lt;/p&gt;
+\[x_t = \frac{1}{2}x_{t-1} + \frac{25x_{t-1}}{1 + x_{t-1}^2} + 8cos(1.2t) + v_t\]
 
-&lt;p&gt;Multicollinearity also affects the variance of the estimators. The variance of coefficient $j$ can be expressed in terms of $R^2_j$, the coefficient of determination for estimator $j$ as:&lt;/p&gt;
+\[y_t = \frac{x_t^2}{20} + w_t\]
 
-\[\begin{align*}
-\text{Var}(\beta_j \mid X) &amp;amp;= \frac{1}{1 - R^2_j} \frac{\hat{\sigma}^2}{\sum_{i=1}^n (x_{ij} - \bar{x}_j)^2}
-\end{align*}\]
+\[x_0 \sim N(0, \sigma_1^2)\]
 
-&lt;p&gt;Proof of $Var(\beta_j)$: &lt;a href=&quot;https://en.wikipedia.org/wiki/Variance_inflation_factor#cite_note-3&quot;&gt;here&lt;/a&gt;. Here, $R^2&lt;em&gt;j$ is the $R^2$ obtained from the regression of $x_j$ onto $x&lt;/em&gt;{1:j-1, j+1:p}$, which measures how related $x_j$ is to the other covariates. We can clearly see that as $R^2_j$ approaches $1$, the variance of coefficient $j$ explodes. To show why this is dangerous in real life, we can think of a contrived example with $p » 2$ covariates, where $x_1 = \alpha x_2, \alpha \in \mathbb{R}$. Without knowing the relationship between $x_1$ and $x_2$ before hand and fitting a regression, the variance of both $\hat{\beta}_1$ and $\hat{\beta}_2$ will be extremely large, due to large $R^2_1$ and $R^2_2$. In practice, penalization terms can be added to the loss function in order to curb this problem.&lt;/p&gt;
+\[w_t \sim N(0, 1)\]
 
-&lt;h4 id=&quot;linear-relationship-between-x-and-y&quot;&gt;Linear Relationship Between $X$ and $Y$&lt;/h4&gt;
+\[v_k \sim N(0, \sigma_k^2)\]
 
-&lt;p&gt;As such, a core assumption of the model is that the relationship between $Y$ and $X$ can be reasonable approximated linearly. What makes this model so universal is that the variables, $X$, can be arbitrary transforms or combinations of other features.&lt;/p&gt;
-
-&lt;h4 id=&quot;exogeneity&quot;&gt;Exogeneity&lt;/h4&gt;
-
-&lt;p&gt;This is an assumption about the relationship between the errors and the features. Specifically it states that $\mathbb{E}(\epsilon \mid X) = 0$, which implies that $\epsilon$ is uncorrelated with $X$ (uncorrelation does not imply independence).&lt;/p&gt;
-
-&lt;h4 id=&quot;homoskedasticity&quot;&gt;Homoskedasticity&lt;/h4&gt;
-
-&lt;p&gt;Assumption of constant variance in response variable, which shows up in the residuals after fitting a model. This is an assumption that the residuals are uncorrelated across observations and have the same variance.&lt;/p&gt;
-
-&lt;h3 id=&quot;faq&quot;&gt;FAQ&lt;/h3&gt;
-
-&lt;p&gt;Questions to answer:&lt;/p&gt;
+&lt;p&gt;Outline of SMC algorithm:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;What are the assumptions of linear regression&lt;/li&gt;
-  &lt;li&gt;What happens when each of these assumptions are broke. With proofs, code and explanations&lt;/li&gt;
-  &lt;li&gt;Can the $R^2$ get larger with penalized regression? Eg: ridge/lasso&lt;/li&gt;
-  &lt;li&gt;What happens to regression estimates when the features have high multicollinearity? Proof&lt;/li&gt;
-  &lt;li&gt;What happens to the $R^2$ when we add another covariate to our regression?&lt;/li&gt;
-  &lt;li&gt;What does the condition number tell us and how can we use it?&lt;/li&gt;
-  &lt;li&gt;Multicollinearity affects the inversion of the feature matrix. If the determinant is very close to 0, the determinant of the inverted matrix will become extremely large. This will multiply the noise in the data. How does this work?&lt;/li&gt;
-  &lt;li&gt;A stock’s $\beta$ is calculated by regressing its returns onto the S&amp;amp;P 500 returns. What is the change in interepretation when we flip this regression and why is it like this?&lt;/li&gt;
-  &lt;li&gt;Eigenvalues are not uniquely determined. How does this affect linear regression and PCA?&lt;/li&gt;
-  &lt;li&gt;What are the differences between linear regression and the weights of the first principal component?&lt;/li&gt;
-  &lt;li&gt;What variables are correlated with the error terms?&lt;/li&gt;
+  &lt;li&gt;Initialization:
+    &lt;ul&gt;
+      &lt;li&gt;For $i = 1, …, N$, sample $x_0^{(i)} \sim p(x_0)$ and set $t = 1$.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Importance sampling step:
+    &lt;ul&gt;
+      &lt;li&gt;For $i = 1, …, N$, sample $x_t \sim p(x_t \mid x_{t-1}^{(i)})$ and inlcude in $x_{0:t}$&lt;/li&gt;
+      &lt;li&gt;For $i = 1, …, N$, evaluate the importance weights:
+  \(w_t^{(i)} = p(y_t \mid x_t^{(i)})\)&lt;/li&gt;
+      &lt;li&gt;Normalize importance weights&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Selection step:
+    &lt;ul&gt;
+      &lt;li&gt;Resample with replacement $N$ particles $(x_{0:t}^{(i)}, i = 1, …, N)$ according to $w_t^{(i)}$&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;h4 id=&quot;approximating-distrbituions-with-importance-sampling&quot;&gt;Approximating Distrbituions with Importance Sampling&lt;/h4&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://cran.r-project.org/doc/contrib/Faraway-PRA.pdf&quot;&gt;Linear Regression Notes - IIT&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-        <pubDate>Sun, 09 Jul 2023 02:22:00 -0400</pubDate>
-        <link>http://localhost:4000/2023/07/09/regression/</link>
-        <guid isPermaLink="true">http://localhost:4000/2023/07/09/regression/</guid>
-      </item>
-    
-      <item>
-        <title>Latent Dirichlet Allocation</title>
-        <description>&lt;p&gt;Latent Dirichlet allocation (LDA) has been the de-facto method for topic modeling over the last decade (maybe 2 decades). This post walks through the math behind how LDA works. I use the same notation as the &lt;a href=&quot;https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf&quot;&gt;original paper&lt;/a&gt; for consistency:&lt;/p&gt;
+&lt;p&gt;Importance sampling gives us a way of approximating integrals, however in the filtering problem we are interested in estimating a distribution. We can use the fact that any distribution, $\pi(x)$, can be expressed as a sum of Dirac delta functions. Suppose ${X^{(i)}}_{i=1}^N$ are samples from $\pi(x)$, then the empirical representation of $\pi(x)$ is:&lt;/p&gt;
 
-&lt;ul&gt;
-  &lt;li&gt;The vocavulary consists of $V$ words which are one-hot encoded vectors in the model&lt;/li&gt;
-  &lt;li&gt;A document, $\boldsymbol{w}$, is a sequence of $N$ words, $(w_1, w_2, \dots, w_N)$&lt;/li&gt;
-  &lt;li&gt;The corpus, $D$, is a collection of $M$ documents&lt;/li&gt;
-&lt;/ul&gt;
+\[\hat{\pi}^N(dx) = \frac{1}{N} \sum_{i=1}^N \delta_{X^{(i)}}(dx)\]
 
-&lt;!-- Starting by decomposing the name, which may sound intimidating, &quot;latent&quot; just means hidden, so we are trying to find hidden topics in a corpus of text. &quot;Dirichlet&quot; is a discrete distribution of distributions. I have another post explaining this, [here](/_posts/2020-05-08-beta-and-dirichlet-distributions.md). --&gt;
+&lt;p&gt;Where $\delta_{X}(A)$ is the Dirac measure, defined as:&lt;/p&gt;
 
-&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+\[\delta_{X}(A) =
+\begin{cases}
+1 \qquad X \in A,\\
+0 \qquad X \notin A
+\end{cases}\]
 
-&lt;p&gt;LDA is a generative probabilistic model of documents in a corpus. The easiest way to conceptualize LDA is to consider how it “thinks” about documents, i.e. how it generates documents. I will first explain a simple version of this process in plane words, then introduce notation and math.&lt;/p&gt;
+&lt;p&gt;As an aside, I’ll quickly review how this empirical representation can be used in the importance sampling context, presented in &lt;a href=&quot;/_posts/2022-10-22-importance-sampling.md&quot;&gt;this post&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;1) Choose a document length, $N$&lt;br /&gt;
-2) Choose a discrete distribution of topics for that document. This can be thought of as a weighted (normalized) list of topics that summarize the document. For example, if we have &lt;a href=&quot;https://www.wired.com/story/openai-dalle-copyright-intellectual-property-art/&quot;&gt;this&lt;/a&gt; article, a possible topic distribution can be 50% “AI”, 50% “Art” and 0% for all other topics&lt;br /&gt;
-3) Start creating the document word-by-word as: 
-   1) Choose a single topic from the topic distribution above&lt;br /&gt;
-   2) Choose a word conditional on the chosen topic&lt;/p&gt;
+&lt;p&gt;Suppose we want to approximate a distribution that is known up to a normalizing constant:&lt;/p&gt;
 
-&lt;p&gt;This generative process makes it clear that LDA is a hierarchical model.&lt;/p&gt;
+\[\pi(x) = \frac{\gamma(x)}{\int \gamma(x) dx}\]
 
-&lt;h2 id=&quot;probabilistic-model&quot;&gt;Probabilistic Model&lt;/h2&gt;
+&lt;p&gt;Using the importance sampling approach with proposal density, $q(x)$:&lt;/p&gt;
 
-&lt;p&gt;And here is some more notation that will be used throughout the post, but has already been introduced by the generative algorithm in the introduction:&lt;/p&gt;
+\[\begin{aligned}
+\pi(x) &amp;amp;= \frac{\frac{\gamma(x)}{q(x)}q(x)}{\int \frac{\gamma(x)}{q(x)}q(x) dx} \\
+       &amp;amp;= \frac{w(x)q(x)}{\int w(x)q(x) dx}
+\end{aligned}\]
 
-&lt;ul&gt;
-  &lt;li&gt;The corpus is considered to have $K$ topics which is a hyperparameter that must be set in advance&lt;/li&gt;
-  &lt;li&gt;The random variable representing the distribution of distribution of topics for a given document is $\theta \in \mathbb{R}^K$. This is not a typo and will become clear later and is the variable of importance to us&lt;/li&gt;
-  &lt;li&gt;A single topic from the topic distribution, $\theta$, is given by $z$. Each word is associated with a topic, so the word $w_n$ is associated with topic $z_n$&lt;/li&gt;
-&lt;/ul&gt;
+&lt;p&gt;Let ${X^{(i)}}_{i=1}^N$ be $N$ samples from the proposal density. The empirical representation of $q(x)$ is then:&lt;/p&gt;
 
-&lt;p&gt;With this notation, the algorithm above can be re-written as:&lt;/p&gt;
+\[\hat{q}(dx) = \frac{1}{N} \sum_{i=1}^N \delta_{X^{(i)}}(dx)\]
 
-&lt;p&gt;1) Sample a document length, $N \sim p(N)$. This is taken to be $\text{Poi}(\nu)$ in the original paper, but the choice of prior here is of little consequence&lt;br /&gt;
-2) Sample a topic distribution, $\theta \sim \text{Dir}(\alpha)$ &lt;br /&gt;
-3) For each of the $N$ words: &lt;br /&gt;
-   1) Sample a topic, $z_i \sim \text{Multinom}(\theta)$ &lt;br /&gt;
-   2) Sample a word, $w_i \sim p(w_i \mid z_i, \beta)$&lt;/p&gt;
+&lt;p&gt;Then the approximation of $\pi(x)$ becomes:&lt;/p&gt;
 
-&lt;p&gt;Where the distribution of words is conditional a matrix of conditional probabilities, $\beta \in \mathbb{R}^{K \times V}$, which are parameters of the model. Each entry in this matrix, $\beta_{ij} = p(w_j = 1 \mid z_i = 1)$, represents the probability that word $j$ occurs given that we have selected topic $i$.&lt;/p&gt;
+\[\begin{aligned}
+\hat{\pi}(dx) &amp;amp;= \frac{w(x)\hat{q}(x)}{\int w(x)\hat{q}(x) dx} \\
+             &amp;amp;= \frac{w(x)\frac{1}{N} \sum_{i=1}^N \delta_{X^{(i)}}(dx)}{\int w(x) \frac{1}{N} \sum_{i=1}^N \delta_{X^{(i)}}(dx) dx} \\
+             &amp;amp;= \text{\textbf{HOW DO YOU GET TO THE NEXT STEP??}} \\
+             &amp;amp;= \frac{\sum_{i=1}^N w(X^{(i)})\delta_{X^{(i)}}(dx)}{\frac{1}{N} \sum_{i=1}^N w(X^{(i)})}\\
+\end{aligned}\]
 
-&lt;h4 id=&quot;sidenote-distribution-of-distributions&quot;&gt;Sidenote: Distribution of Distributions&lt;/h4&gt;
+&lt;hr /&gt;
 
-&lt;p&gt;In many cases, the Dirichlet distribution is described as a distribution of distributions. This used to give me headaches and felt like a circular definition, which is the reason for this sidenote. A $K$-dimensional Dirichlet distribution is a distribution over the $(K-1)$-simplex. If $\theta \sim \text{Dir}_K(\alpha)$, then for $i=1, \dots, K, \theta_i \ge 0$ and $\sum_i \theta_i = 1$. In other words, a sample from a K-dimensional Dirichlet distribution is a K-length vector where each element is $\ge$ zero and the sum of the vector is 1, which is the definition of a dicrete distribution. This is where the phrase “distribution over distributions” comes from.&lt;/p&gt;
+&lt;!-- ## Overall Problem 
 
-&lt;!-- We can then specify the joint distribution of a topic mixture with a set of $N$ topics and words. Note that this is not the likelihood function, since it is for one document only **confirm this**:
+---
+
+## State-Space Models
+
+State-space models (also called hidden Markov-models) are a general class of latent-variable models, characterized by an unobserved discrete-time Markov process, ${X}_{t \ge 0}$, and observations, ${Y_t }_{t\ge 0}$. In these models, $Y_t$ is conditionally independent given $X_t$. 
+
+A state-space model is fully specified by the following two distributions, namely the transition density and measurement model respectively. Both of which are parameterized by static parameters, $\theta$:
 
 $$
-p(\theta, \boldsymbol z, \boldsymbol w \mid \alpha, \beta) = p(\theta \mid \alpha) \prod_{i=1}^N p(z_i \mid \theta) p(w_i \mid z_i, \beta)
-$$ --&gt;
+X_t \mid X_{t-1} \sim f(X \mid X_{t-1}, \theta), \\
+Y_t \mid Y_t \sim g(Y \mid X_t, \theta)
+$$
 
-&lt;h2 id=&quot;graphical-representation&quot;&gt;Graphical Representation&lt;/h2&gt;
 
-&lt;div class=&quot;figure&quot; align=&quot;center&quot;&gt;
-    &lt;img src=&quot;/assets/LDA_pgm.png&quot; width=&quot;65%&quot; height=&quot;65%&quot; /&gt;
-    &lt;div class=&quot;caption&quot; width=&quot;70%&quot; height=&quot;70%&quot;&gt;
-        &lt;p&gt; Plate notation for LDA, taken from the original paper. &lt;/p&gt;
+&lt;div class=&apos;figure&apos; align=&quot;center&quot;&gt;
+    &lt;img src=&quot;../assets/SSM.png&quot; width=&quot;90%&quot;&gt;
+    &lt;div class=&apos;caption&apos; width=&quot;40%&quot; height=&quot;40%&quot;&gt;
+        &lt;p&gt; Graphical representation of a state-space model  &lt;/p&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;p&gt;From the plate notation, $(\alpha, \beta)$ are generated once for the entire corpus. Following this, a new topic distribution, $\theta$ is generated for each document, resulting in $M$ total samples. For each of these samples $z$ and $w$ are generated $N$ times per document, conditional on $\theta$. The sampling of the $\theta$ for each document allows documents to be associated with more than one topic.&lt;/p&gt;
+We are generally interested in the estimation of the latent process, $\{X_t\}_{t \ge 0}$, or the static parameters, $\theta$, or both, conditional on the observed data, $Y_{1:t}$. The former is the estimation of $p(X_t \mid Y_{1:t}), 1 \le t \le T$, which is the Bayesian filtering problem. The latter is the estimation of the posterior $p(\theta \mid Y_{1:T}, X_{0:T})$, which is the standard parameter inference problem.
 
-&lt;p&gt;This approach is more flexible than a Dirichlet-Multinomial mixture model, where the Dirichlet distribution is sampled once for the corpus, then the document topic is generated by a Multinomial conditioned on the Dirichlet sample. Not only is this less flexible from the standpoint of a traditional hierarchical model, it also restricts documents to only have one topic. By using $\alpha, \beta$ as global variables (sampled once per corpus) and conditioning on them, documents are allowed to have a distribution of topics.&lt;/p&gt;
+The challenge posed by the filtering problem is in the efficient estimation of the filtering distribution, $p(X_t \mid Y_{1:t})$. As we will see in the next sections, importance sampling provides a way of estimating an arbitrary distribution, $p(X)$ using weighted samples from a proposal, but naively applying this to filtering problem is inefficeint.
 
+The parameter inference problem is challenging because for non-linear, non-Gaussian state-space models the likelihood function is intractable. Calculating this likelihood involves integrating out all the latent states, $X_t$, as follows: 
+
+$$
+L(\theta \mid Y_{0:T}) = \int \left[\pi(X_0) \cdot \prod_{n=0}^T g(Y_n \mid X_n, \theta) \cdot \prod_{n=1}^T f(X_n \mid X_{n-1}, \theta)\right] d X_{0:T}.
+$$
+
+Where $\pi(X_0)$ is a prior on the initial state of the latent process. Again, importance sampling provides a way of approximating integrals, but will be grossly inefficient for something as complex and high-dimensional as this.
+
+I find that the combination of math and code makes algorithms much easier to understand, so here&apos;s the math. I&apos;ll mainly follow the notation from [this](https://www.stats.ox.ac.uk/~doucet/doucet_defreitas_gordon_smcbookintro.pdf) paper, but will only write down the neccessities. 
+
+The latent states, $X_t$ are modelled as a Markov process with initial state $p(x_0)$ and transition equation $p(x_t \mid x_{t-1})$. The observed data, $Y_t$, is assumed to be conditionally independent given the hidden state at time $t$, $X_t$, and has density $p(Y_t \mid X_t)$. The model is completely specified by the following: 
+
+$$
+\begin{aligned}
+X_0 \sim p(x_0) &amp; \qquad \qquad \text{Initial state} \\
+p(X_t \mid X_{t-1}) &amp;  \qquad \qquad \text{Transition density} \\
+p(Y_t \mid X_t) &amp; \qquad \qquad \text{Marginal of $Y_t \mid X_t$?}
+\end{aligned}
+$$
+
+The aim is to estimate the posterior distribution of the latent states, $p(X_t \mid Y_t)$, which we use the bootstrap particle filter for. 
+
+
+## Bootstrap Particle Filter 
+
+The key idea behind particle filtering comes from importance sampling. In importance sampling, we empirically approximate a distribution, $p(x \mid y)$ by sampling from a proposal distribution, $q(x \mid y)$ and re-weighting the samples according to: 
+
+$$ 
+
+In the bootstrap particle filter, we use the transition density as the proposal density in the importance samling step.
+
+Model:
+
+$$ x_t = \frac{1}{2}x_{t-1} + \frac{25x_{t-1}}{1 + x_{t-1}^2} + 8cos(1.2t) + v_t $$
+
+$$ y_t = \frac{x_t^2}{20} + w_t $$
+
+$$ x_0 \sim N(0, \sigma_1^2) $$
+
+$$ w_t \sim N(0, 1) $$
+
+$$ v_k \sim N(0, \sigma_k^2) $$
+
+
+Outline of SMC algorithm: 
+
+* Initialization: 
+    * For $i = 1, ..., N$, sample $x_0^{(i)} \sim p(x_0)$ and set $t = 1$.
+    
+* Importance sampling step: 
+    * For $i = 1, ..., N$, sample $x_t \sim p(x_t \mid x_{t-1}^{(i)})$ and inlcude in $x_{0:t}$
+    * For $i = 1, ..., N$, evaluate the importance weights:
+    $$ w_t^{(i)} = p(y_t \mid x_t^{(i)}) $$
+    * Normalize importance weights
+    
+* Selection step: 
+    * Resample with replacement $N$ particles $(x_{0:t}^{(i)}, i = 1, ..., N)$ according to $w_t^{(i)}$
+
+
+## Questions to answer
+
+- Setup a simple bootstrap filter with the math of a latent variable model 
+- How to deal with particle degeneracy and impoverishment? When I run the resampling step, the same particles are resampled, so we still end up with just 1 particle
+
+#### Bonus 
+
+- How is parameter inference done with SMC
+
+
+# Particle Filtering
+
+Particle filters are a class of Monte Carlo methods used to approximate the filtering distribution \(p(x_t \mid y_{0:t})\) and the log-likelihood, \(l(\theta)\) by propagating and re-weighting particles. At timepoint, \(t\), we sample \(X_t\) conditional on particles from the previous timepoint \(X_t \sim f(X_t \mid X_{t-1}, \theta)\) using the transition density. These new particles are then re-weighted according to the current observations, \(Y_t\), using the measurement model, \(w_t = g(Y_t \mid X_t, \theta)\). 
+
+A key ingredient to these methods is the use of a resampling step to re-weight particles at certain timepoints.
+
+
+## Importance Sampling
+
+- https://ib.berkeley.edu/labs/slatkin/eriq/classes/guest_lect/mc_lecture_notes.pdf
+- https://www.stat.ubc.ca/~bouchard/courses/stat520-sp2014-15/lecture/2015/03/10/notes-lecture6.html
+- https://bjlkeng.github.io/posts/importance-sampling-and-estimating-marginal-likelihood-in-variational-autoencoders/
+
+
+## SMC
+
+- [OG SMC tutorial](https://www.cs.ubc.ca/~arnaud/doucet_johansen_tutorialPF.pdf)
+- https://www.stat.ubc.ca/~bouchard/courses/stat520-sp2014-15/lecture/2015/03/17/notes-lecture8.html
+- https://www.stat.ubc.ca/~bouchard/courses/stat520-sp2014-15/lecture/2015/03/15/notes-lecture7.html
+- https://umbertopicchini.wordpress.com/2016/10/19/sequential-monte-carlo-bootstrap-filter/
+
+ --&gt;
 </description>
-        <pubDate>Sat, 11 Feb 2023 02:22:00 -0500</pubDate>
-        <link>http://localhost:4000/2023/02/11/topic-modeling/</link>
-        <guid isPermaLink="true">http://localhost:4000/2023/02/11/topic-modeling/</guid>
+        <pubDate>Mon, 28 Nov 2022 02:22:00 -0500</pubDate>
+        <link>http://localhost:4444/2022/11/28/IS-and-SMC/</link>
+        <guid isPermaLink="true">http://localhost:4444/2022/11/28/IS-and-SMC/</guid>
       </item>
     
       <item>
@@ -268,8 +319,8 @@ Importance sampling is also useful when we are interested in simulated tail even
 ## Example: Tail Expectation --&gt;
 </description>
         <pubDate>Sat, 22 Oct 2022 02:22:00 -0400</pubDate>
-        <link>http://localhost:4000/2022/10/22/importance-sampling/</link>
-        <guid isPermaLink="true">http://localhost:4000/2022/10/22/importance-sampling/</guid>
+        <link>http://localhost:4444/2022/10/22/importance-sampling/</link>
+        <guid isPermaLink="true">http://localhost:4444/2022/10/22/importance-sampling/</guid>
       </item>
     
       <item>
@@ -323,8 +374,8 @@ Importance sampling is also useful when we are interested in simulated tail even
 &lt;p&gt;This is the same estimate from approach 1, but we haven’t mentioned any distributions. Given a bit of thought it makes sense, since on the log-scale the Gaussian kernel looks like MSE loss.&lt;/p&gt;
 </description>
         <pubDate>Wed, 05 Jan 2022 02:22:00 -0500</pubDate>
-        <link>http://localhost:4000/2022/01/05/MLE-loss-regression/</link>
-        <guid isPermaLink="true">http://localhost:4000/2022/01/05/MLE-loss-regression/</guid>
+        <link>http://localhost:4444/2022/01/05/MLE-loss-regression/</link>
+        <guid isPermaLink="true">http://localhost:4444/2022/01/05/MLE-loss-regression/</guid>
       </item>
     
       <item>
@@ -674,8 +725,8 @@ Logistic Regression test set accuracy, children classes:  0.6286072772898369
 
 </description>
         <pubDate>Fri, 29 Jan 2021 02:22:00 -0500</pubDate>
-        <link>http://localhost:4000/2021/01/29/hierarchical_classification/</link>
-        <guid isPermaLink="true">http://localhost:4000/2021/01/29/hierarchical_classification/</guid>
+        <link>http://localhost:4444/2021/01/29/hierarchical_classification/</link>
+        <guid isPermaLink="true">http://localhost:4444/2021/01/29/hierarchical_classification/</guid>
       </item>
     
       <item>
@@ -970,8 +1021,8 @@ Hierarchical models also work because the resulting posterior is changed complet
 The $t_{\nu}(\mu, \sigma^2)$ distribution can be represented with a Gaussian with mean $\mu$ and variance term distributed as an Inverse-$\chi^2$ with $\nu$ degrees of freedom --&gt;
 </description>
         <pubDate>Fri, 29 Jan 2021 02:22:00 -0500</pubDate>
-        <link>http://localhost:4000/2021/01/29/hierarchical-models/</link>
-        <guid isPermaLink="true">http://localhost:4000/2021/01/29/hierarchical-models/</guid>
+        <link>http://localhost:4444/2021/01/29/hierarchical-models/</link>
+        <guid isPermaLink="true">http://localhost:4444/2021/01/29/hierarchical-models/</guid>
       </item>
     
       <item>
@@ -1164,8 +1215,8 @@ Gaussian Process Regression takes a different approach. We don&apos;t drop the l
 - The GP is a prior over functions. It is a prior because we specify that we want smooth functions, and we want our points to be related in a certain way, which we do with the kernel. --&gt;
 </description>
         <pubDate>Tue, 05 Jan 2021 19:22:00 -0500</pubDate>
-        <link>http://localhost:4000/2021/01/05/gaussian-processes/</link>
-        <guid isPermaLink="true">http://localhost:4000/2021/01/05/gaussian-processes/</guid>
+        <link>http://localhost:4444/2021/01/05/gaussian-processes/</link>
+        <guid isPermaLink="true">http://localhost:4444/2021/01/05/gaussian-processes/</guid>
       </item>
     
       <item>
@@ -1335,8 +1386,8 @@ It’s difficult to come to a general conclusion on this, but interestingly the 
 
 </description>
         <pubDate>Wed, 29 Jul 2020 12:22:00 -0400</pubDate>
-        <link>http://localhost:4000/2020/07/29/overconfident-nn/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/07/29/overconfident-nn/</guid>
+        <link>http://localhost:4444/2020/07/29/overconfident-nn/</link>
+        <guid isPermaLink="true">http://localhost:4444/2020/07/29/overconfident-nn/</guid>
       </item>
     
       <item>
@@ -1591,8 +1642,8 @@ Now we want more information. We’re interested in the distribution of people w
 --&gt;
 </description>
         <pubDate>Fri, 15 May 2020 12:22:00 -0400</pubDate>
-        <link>http://localhost:4000/2020/05/15/beta-and-dirichlet-distributions/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/05/15/beta-and-dirichlet-distributions/</guid>
+        <link>http://localhost:4444/2020/05/15/beta-and-dirichlet-distributions/</link>
+        <guid isPermaLink="true">http://localhost:4444/2020/05/15/beta-and-dirichlet-distributions/</guid>
       </item>
     
       <item>
@@ -1890,8 +1941,215 @@ The residuals follow a Normal distribution with zero mean, and no have dependenc
 --&gt;
 </description>
         <pubDate>Wed, 15 Apr 2020 12:22:00 -0400</pubDate>
-        <link>http://localhost:4000/2020/04/15/covid-changepoint-analysis/</link>
-        <guid isPermaLink="true">http://localhost:4000/2020/04/15/covid-changepoint-analysis/</guid>
+        <link>http://localhost:4444/2020/04/15/covid-changepoint-analysis/</link>
+        <guid isPermaLink="true">http://localhost:4444/2020/04/15/covid-changepoint-analysis/</guid>
+      </item>
+    
+      <item>
+        <title>Ordinary VS Bayesian Linear Regression</title>
+        <description>&lt;p&gt;Bayesian methods are usually shrouded in mystery, hidden behind pages of math that no practitioner has the patience to understand. Why should I even use this complicated black magic if other models are better? Also, since when is there a Bayesian version of simple linear regression? And while we’re at it, what in the world is &lt;a href=&quot;https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo&quot;&gt;MCMC&lt;/a&gt; and should I even care?&lt;/p&gt;
+
+&lt;p&gt;The goal of this post is to answer all these questions and to explain the intuition behind Bayesian thinking without using math. To do this, we’ll fit an ordinary linear regression and a Bayesian linear regression model to a practical problem. The post itself isn’t code-heavy, but rather provides little snippets for you to follow along. I’ve included the notebook with all the code &lt;a href=&quot;https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;problem&quot;&gt;Problem&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Does business freedom affect GDP the same for European and non-European nations?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This is the problem we want to answer. The data is taken from the &lt;a href=&quot;https://www.heritage.org/index/&quot;&gt;Heritage Foundation&lt;/a&gt; and is as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;business_freedom&lt;/code&gt;: Score between 0-100 of a country’s business freedom. Higher score means more freedom&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;is_europe&lt;/code&gt;: Whether or not a country is in Europe&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;log_gdppc&lt;/code&gt; - Log of GDP per capita&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;We’ll answer the problem by fitting a linear model to the data and comparing the regression coefficients for countries inside and outside Europe. If the coefficients are significantly different, that will tell us about the effect of business freedom on GDP.&lt;/p&gt;
+
+&lt;p&gt;To supplement the model, we’ll also add an interaction term between &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;business_freedom&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;is_europe&lt;/code&gt; and call it &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;business_freedom_x_region&lt;/code&gt;. Here’s what the data looks like for countries inside and outside Europe.&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;/assets/europe_data_viz.png&quot; width=&quot;80%&quot; height=&quot;80%&quot; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;h2 id=&quot;regression-model&quot;&gt;Regression Model&lt;/h2&gt;
+
+&lt;p&gt;Below is the regression model we have for our data that is based on observations $(X, y)$ and parameters $(\beta, \sigma)$.&lt;/p&gt;
+
+\[y = \beta_0 + \beta_1X_1 + \beta_2X_2 + \beta_3X_3 + \epsilon
+\tag{1}\]
+
+\[\beta = (\beta_0, \beta_1, \beta_2, \beta_3)
+\notag\]
+
+\[\epsilon \sim N(0, \sigma^{2})
+\notag\]
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;h3 id=&quot;ordinary-linear-regression&quot;&gt;Ordinary Linear Regression&lt;/h3&gt;
+
+&lt;p&gt;Ordinary linear regression takes equation &lt;a href=&quot;#regression-model&quot;&gt;(1)&lt;/a&gt; and finds optimal values for $(\beta, \sigma)$ by minimizing the distance between the estimated value of $y$, and the observed value of $y$.
+Below is an implementation of the model in Sklearn and a plot of the regression lines for European and non-European nations.&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;features&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;business_freedom&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;business_freedom_x_region&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;is_europe&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;log_gdppc&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LinearRegression&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;dict&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;zip&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;list&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;columns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;coef_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)])&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# code for posterior plots is in the notebook linked at the bottom of this post
+&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# backout the slopes of the regression lines for nations in and out of Europe
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Slope for European Nations: &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;nb&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;business_freedom&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;business_freedom_x_region&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Slope for non-European Nations: &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;coef&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;business_freedom&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Slope for European Nations:  0.026
+Slope for non-European Nations:  0.046
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;/assets/linear_regression_fit.png&quot; width=&quot;80%&quot; height=&quot;80%&quot; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Although the slope for non-European countries is twice as large as European countries (0.046 VS 0.026), the absolute value of both numbers is small. Are these estimates really that different? Ideally we want a measure of confidence for each estimate, then we can be more sure that they are different. Keep this problem in mind for the next section and we’ll see how Bayesian regression solves it.&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;h3 id=&quot;bayesian-regression&quot;&gt;Bayesian Regression&lt;/h3&gt;
+
+&lt;p&gt;Starting back from the regression model in &lt;a href=&quot;#regression-model&quot;&gt;(1)&lt;/a&gt;, since $\epsilon$ is Normally distributed, $y$ is also Normally distributed in this model. So assuming that we have values for $(\beta, \sigma)$, we can write down a distribution for $y$. This is called the &lt;em&gt;likelihood&lt;/em&gt; distribution.&lt;/p&gt;
+
+\[p(y | \beta, \sigma) \sim N (X\beta, \sigma^2)
+\tag{2}\]
+
+&lt;p&gt;Remember that we’re interested in estimating values for $\beta$ so that we can plug them back into our model and interpret the regression slopes. Before we get to estimating, the Bayesian framework allows us to add anything we know about our parameters to the model. In this case we don’t know anything about $\beta$ which is fine, but we know that $\sigma$ can’t be less than 0 because it is a standard deviation. This step is referred to as &lt;em&gt;prior specification&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Since we don’t know anything about $\beta$, we’ll use an uninformative prior (think flat probability distribution) of $N(0, 5)$. For $\sigma$ we’ll use $U(0, 10)$, which ensures only positive values. The choice of $10$ as the upper bound here is somewhat arbitrary, the rational is that $\sigma$ probably won’t be very high based on the values of our response variable, $y$.&lt;/p&gt;
+
+\[p(\beta) \sim N(0, 5)
+\notag\]
+
+\[p(\sigma) \sim U(0, 10)
+\notag\]
+
+&lt;p&gt;Now we want to get the distribution $p(\beta | y, \sigma)$, which is proportional to the likelihood (2) multiplied by the priors. This is called the posterior formulation.
+In real world applications, the posterior distribution is usually intractable (cannot be written down). Here’s where MCMC and variational inference come into play with Bayesian methods - they are used to draw samples from intractable posterior distributions, so that we can learn about our parameters. At this point you may be wondering why are we concerned with a distribution when $\beta$ is a number (vector of numbers). Well, the distribution gives us more information about $\beta$, then we can find point estimates by finding the mean, median, mode, etc.&lt;/p&gt;
+
+&lt;p&gt;To write the Bayesian model in Python, we’ll use &lt;a href=&quot;http://pyro.ai&quot;&gt;Pyro&lt;/a&gt;. I skip over small details in the code, however Pyro has amazing examples in their docs if you want to learn more.&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# specify the linear model
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;BayesianRegression&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PyroModule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in_features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out_features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;__init__&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linear&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PyroModule&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Linear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;](&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;in_features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;out_features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;# PyroSample used to declare priors:
+&lt;/span&gt;        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PyroSample&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;5.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;expand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out_features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;in_features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bias&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PyroSample&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;5.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;expand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;out_features&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;forward&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;None&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;sigma&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pyro&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sample&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;sigma&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Uniform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;10.&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;bp&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linear&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;squeeze&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;# sample from the posterior
+&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;obs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pyro&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sample&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;obs&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sigma&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;obs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;BayesianRegression&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;auto_guide&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;AutoDiagonalNormal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;svi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SVI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# bayesian regression class
+&lt;/span&gt;          &lt;span class=&quot;n&quot;&gt;guide&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;auto_guide&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# using auto guide
+&lt;/span&gt;          &lt;span class=&quot;n&quot;&gt;optim&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pyro&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;optim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Adam&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;lr&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.05&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}),&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# optimizer
+&lt;/span&gt;          &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Trace_ELBO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# loss function
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;num_iterations&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2500&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# param_store is where pyro stores param estimates
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pyro&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clear_param_store&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# inference loop
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_iterations&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# calculate the loss and take a gradient step
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;svi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;step&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;250&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;[iteration %04d] loss: %.4f&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;For posterior inference, we use stochastic variational inference, which is a method used to approximate probability distributions. The code above initializes the stochastic variational inference sampler and runs it for $2500$ iterations. Now the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Predictive&lt;/code&gt; class can be used to generate posterior samples for each parameter. We’ll only plot the posterior distributions for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;business_freedom&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;business_freedom_x_region&lt;/code&gt; as these are the most important.&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;num_samples&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;predictive&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Predictive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;guide&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;auto_guide&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;num_samples&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_samples&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;return_sites&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;linear.weight&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;linear.bias&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;obs&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;_RETURN&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;pred&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;predictive&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x_data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pred&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;linear.weight&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;bias&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pred&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;linear.bias&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# code for posterior plots is in the notebook linked at the bottom of this post
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;!-- space for plot of posterior disitbutrions --&gt;
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;/assets/posteriors.png&quot; width=&quot;85%&quot; height=&quot;85%&quot; /&gt;
+&lt;/p&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;p&gt;Here is where the advantage of Bayesian linear regression starts to show. With Ordinary linear regression we end up with point estimates of parameters, but now we have an entire distribution for each parameter, and can use it to determine confidence levels. By combining appropriate posteriors and taking the mean, we can calculate a distribution for the slopes and compare them to the point estimates from &lt;a href=&quot;#ordinary-linear-regression&quot;&gt;ordinary linear regression&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;slope_inside_europe&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# business_freedom + business_freedom_x_region
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slope_outside_europe&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weight&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# business_freedom
+&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Slope for European nations: &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slope_inside_europe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# business_freedom + interaction
+&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Slope for non-European nations: &quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;torch&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slope_outside_europe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# business_freedom
+&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;fig&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;distplot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slope_inside_europe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kde_kws&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;label&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;European nations&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;distplot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;slope_outside_europe&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kde_kws&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;label&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Non-European nations&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;fig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;suptitle&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;log(GDP Per Capita) vs Business Freedom&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Slope for European nations:  0.023792317
+Slope for non-European nations:  0.040710554
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;p&gt;These estimates are different to the ones from Ordinary linear regression. This is because of the priors we used in the Bayesian model. Neither method is necessarily “more correct”. Actually, if we were to specify all flat priors and sample from the true posterior distribution, the parameter estimates would be the same.&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;/assets/bayesian_slopes.png&quot; width=&quot;85%&quot; height=&quot;85%&quot; /&gt;
+&lt;/p&gt;
+&lt;!-- space for plot of difference in slopes --&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;p&gt;Although the absolute value of these slopes are small, we now have more confidence that the they are different becuase their distributions don’t overlap.&lt;/p&gt;
+
+&lt;p&gt;Returning to the questions we asked at the beginning of this post:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;Why should I even use this complicated black magic if other models are better?&lt;/em&gt;&lt;/strong&gt; - Different tools for different jobs. Non-Bayesian models are not as expressive as their Bayesian counterparts. If all we care about is predictive power, then there’s little need for parameter confidence intervals and a non-Bayesian approach will suffice in most instances. However, when we want to do inference and compare effects (coefficients) with some level of confidence, Bayesian methods shine.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;Since when is there a Bayesian version of simple linear regression?&lt;/em&gt;&lt;/strong&gt; - There’s a Bayesian version of most models. If we have a model for data that can be expressed as a probability distribution, then we can specify distributions for its parameters and come up with a Bayesian formulation.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;em&gt;What in the world is &lt;a href=&quot;https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo&quot;&gt;MCMC&lt;/a&gt; and should I even care?&lt;/em&gt;&lt;/strong&gt; - MCMC is a family of methods used to sample arbitrary probability distributions. In Bayesian problems, the posterior distribution is not usually well defined, so we use MCMC algorithms to sample them.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt; &lt;/p&gt;
+
+&lt;p&gt;All the code for this blog post can be viewed &lt;a href=&quot;https://nbviewer.jupyter.org/github/jramkiss/jramkiss.github.io/blob/master/_posts/notebooks/regression_VS_bayesian_regression.ipynb&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 01 Mar 2020 02:54:00 -0500</pubDate>
+        <link>http://localhost:4444/2020/03/01/regression-vs-bayesian-regression/</link>
+        <guid isPermaLink="true">http://localhost:4444/2020/03/01/regression-vs-bayesian-regression/</guid>
       </item>
     
   </channel>
