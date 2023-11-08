@@ -6,10 +6,11 @@ $base-font-weight: normal !default;
 $bold-font-weight: bold !default;
 $heading-font-weight: 500 !default;
 
-// $font-family: "PT Sans", -apple-system, ".SFNSText-Regular", "San Francisco";
-$font-family: -apple-system, Helvetica, arial, sans-serif;
+$font-family: "Serif", "PT Sans", -apple-system, ".SFNSText-Regular", "San Francisco";
+// $font-family: -apple-system, Helvetica, arial, sans-serif;
 // $heading-font-family: 'PT Serif', -apple-system, ".SFNSText-Regular", "San Francisco";
-$heading-font-family: -apple-system, Helvetica, arial, sans-serif;
+$heading-font-family: "Serif", "PT Sans", -apple-system, ".SFNSText-Regular", "San Francisco";
+// $heading-font-family: -apple-system, Helvetica, arial, sans-serif;
 $monospace-font-family: monospace, 'Source Code Pro', Consolas !default;
 
 $line-height: 1.25 !default;
@@ -31,7 +32,7 @@ $h1-responsive-max: 3.84rem !default;
 $abbr-border-bottom: 1px black dotted;
 
 // Page width
-$measure-width: 40rem !default;
+$measure-width: 45rem !default;
 
 // Viewport widths
 $viewport-small: 32em;
