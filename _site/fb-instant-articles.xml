@@ -9,7 +9,7 @@
     
         
             <item>
-                <title>Refresher on Importance Sampling</title>
+                <title>Approximating Integrals with Importance Sampling</title>
                 <link>http://localhost:4444/2022/10/22/importance-sampling/</link>
                 <content:encoded>
                     <![CDATA[
@@ -57,7 +57,7 @@ Importance sampling is also useful when we are interested in simulated tail even
                 <guid isPermaLink="false">/2022/10/22/importance-sampling/</guid>
                 <description>
                     
-                    Short blurb on importance sampling
+                    Short blurb on approximating integrals with importance sampling
                     
                 </description>
                 <pubDate>Sat, 22 Oct 2022 02:22:00 -0400</pubDate>

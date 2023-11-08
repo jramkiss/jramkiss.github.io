@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "Refresher on Importance Sampling"
+title: "Approximating Integrals with Importance Sampling"
 date: 2022-10-22 2:22
 comments: true
 author: "Jonathan Ramkissoon"
 math: true
-summary: Short blurb on importance sampling
+summary: Short blurb on approximating integrals with importance sampling
 ---
 
 
